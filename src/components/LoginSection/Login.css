@@ -1,0 +1,14 @@
+#login-section {
+    width: 140px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 14px;
+}
+
+#info-login {
+    width: 140px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #888888;
+}
