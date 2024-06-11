@@ -12,3 +12,63 @@
     padding-bottom: 10px;
     color: #888888;
 }
+
+#login-form {
+    border-radius: 5px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    width: 420px;
+    padding: 24px 16px;
+    border: 2px solid #f9f8f8;
+}
+
+.forgot-password-link {
+    font-size: 12px;
+}
+
+.login-form-box {
+    font-size: 14px;
+    width: 390px;
+    border: none;
+    height: 30px;
+    border-radius: 5px;
+    border: 2px solid #f9f8f8;
+    margin: 8px 0px;
+}
+
+.login-form-label {
+    color: #222222;
+}
+
+.login-form-btn {
+    display: flex;
+    font-size: 14px;
+    background-color: #3552c5;
+    justify-content: center;
+    color: white;
+    width: 390px;
+    border: none;
+    height: 35px;
+    border-radius: 5px;
+    margin-top: 16px;
+}
+
+#login-title {
+    display: flex;
+    justify-content: center;
+    color: #222222;
+}
+
+#form-google-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    width: 390px;
+    border: solid 1px #3552c5;
+    background-color: white;
+    margin-top: 10px;
+    height: 35px;
+}

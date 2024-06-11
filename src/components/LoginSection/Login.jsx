@@ -4,7 +4,7 @@ import "../LoginSection/Login.css";
 const Login = () => {
   return (
     <div id="login-section">
-      <span style={{ fontWeight: 500 }}>Hi Sign Up Now </span>
+      <span style={{ fontWeight: 500, color: "#222222" }}>Hi Sign Up Now </span>
       <br />
       <section id="info-login">
         Follow your favorite artists and create unlimited playlists.
