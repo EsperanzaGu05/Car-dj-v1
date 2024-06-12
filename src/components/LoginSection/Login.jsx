@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../Button/Button";
+import LoginForm from "./LoginForm";
 import "../LoginSection/Login.css";
+
 const Login = () => {
+  const [isLoginFormVisible, setLoginFormVisible] = useState(false);
+
+  const handleLoginClick = () => {
+    setLoginFormVisible(true);
+  };
+
+  const handleCloseForm = () => {
+    setLoginFormVisible(false);
+  };
   return (
     <div id="login-section">
       <span style={{ fontWeight: 500, color: "#222222" }}>Hi Sign Up Now </span>
@@ -11,7 +22,8 @@ const Login = () => {
       </section>
       <section id="login-section-button">
         <Button message="Sign Up" />
-        <Button message="Login" />
+        <Button onClick={handleLoginClick} message="Login" />
+        {isLoginFormVisible && <LoginForm onClose={handleCloseForm} />}
       </section>
     </div>
   );
