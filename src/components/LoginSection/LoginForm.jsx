@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./LoginForm.css";
+// import ForgotPassword from "../LoginSection/ForgotPassword";
 
-const LoginForm = ({ onClose }) => {
+const LoginForm = ({ onClose, onForgotPassword }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -18,6 +19,7 @@ const LoginForm = ({ onClose }) => {
             <input
               type="email"
               name="email"
+              pattern=".+@.+\.com"
               className="login-form-box"
               required
             />
@@ -62,7 +64,10 @@ const LoginForm = ({ onClose }) => {
               </button>
             </div>
           </label>
-          <a className="forgot-password-link">Forgot Password? </a>
+          <a onClick={onForgotPassword} className="forgot-password-link">
+            Forgot Password
+          </a>
+
           <br></br>
           <input type="submit" value="LOGIN" className="login-form-btn" />
           <p
