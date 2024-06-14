@@ -12,3 +12,135 @@
     padding-bottom: 10px;
     color: #888888;
 }
+
+#login-form-whole {
+    position: fixed;
+    display: flex;
+    z-index: 1;
+    left: 0%;
+    top: 0%;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #f9f8f8;
+}
+
+#login-form {
+    background-color: #fff;
+    width: 370px;
+    height: 400px;
+    padding: 16px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+}
+
+.forgot-password-link {
+    font-size: 12px;
+}
+
+.login-form-box {
+    font-size: 14px;
+    width: 360px;
+    border: none;
+    height: 30px;
+    border-radius: 5px;
+    border: 2px solid #f9f8f8;
+    margin: 8px 0px;
+}
+
+.login-form-label {
+    color: #222222;
+}
+
+.login-form-btn {
+    display: flex;
+    font-size: 14px;
+    background-color: #3552c5;
+    justify-content: center;
+    color: white;
+    width: 360px;
+    border: none;
+    height: 35px;
+    border-radius: 5px;
+    margin-top: 16px;
+}
+
+#login-title {
+    display: flex;
+    justify-content: center;
+    color: #222222;
+    margin: 10px;
+}
+
+#form-google-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    width: 360px;
+    border: solid 1px #3552c5;
+    background-color: white;
+    margin-top: 10px;
+    height: 35px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#password-input {
+    display: flex;
+    align-items: center;
+    width: 366.91px;
+    border-radius: 5px;
+    border: 2px solid #f9f8f8;
+}
+
+#show-password {
+    width: 38px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0;
+
+}
+
+#login-forgotpassword-whole {
+    position: fixed;
+    display: flex;
+    z-index: 1;
+    left: 0%;
+    top: 0%;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #f9f8f8;
+}
+
+#forgot-password {
+    background-color: #fff;
+    color: #222222;
+    width: 370px;
+    height: 300px;
+    padding: 16px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+}
