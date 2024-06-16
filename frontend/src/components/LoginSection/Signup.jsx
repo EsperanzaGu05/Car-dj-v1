@@ -1,19 +1,37 @@
 import React, { useState } from "react";
 import "./LoginForm.css";
-// import ForgotPassword from "../LoginSection/ForgotPassword";
 
-const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
+const SignupForm = ({ onClose }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [pwerror, setPwerror] = useState("");
+  const handlePasswordChange = (e) => {
+    setPassword(e);
+    const passwordRegex = new RegExp("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\s0-9]).{8,}$");
+    if(!passwordRegex.test(e)){
+      setPwerror("Password should have letter, capital letter, digit and special character and minimum 8 in length")
+    }else{
+      setPwerror("");
+    }
+  }
 
   return (
     <div id="login-form-whole">
-      <div id="login-form">
+      <div id="signup-form">
         <span className="close" onClick={onClose}>
           &times;
         </span>
-        <h3 id="login-title">Login</h3>
+        <h3 id="login-title">Register</h3>
         <form>
+          <label className="login-form-label">
+            Name
+            <input
+              type="text"
+              name="name"
+              className="login-form-box"
+              required
+            />
+          </label>
           <label className="login-form-label">
             Email
             <input
@@ -31,9 +49,10 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => handlePasswordChange(e.target.value)}
                 name="password"
                 className="login-form-box"
+                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\d\s]).{8,}$"
                 style={{
                   width: "330px",
                   padding: "0px",
@@ -63,24 +82,11 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
                 />
               </button>
             </div>
+            {pwerror && <span class="password-error">{pwerror}</span>}
           </label>
-          <a onClick={onForgotPassword} className="forgot-password-link">
-            Forgot Password
-          </a>
 
           <br></br>
-          <input type="submit" value="LOGIN" className="login-form-btn" />
-          <p
-            style={{
-              color: "black",
-              fontSize: "12px",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <span style={{ marginRight: "8px" }}>Not a member?</span>
-            <a onClick={onSignup}> Sign up now</a>
-          </p>
+          <input type="submit" value="SIGNUP" className="form-btn" />
           <span
             style={{
               color: "black",
@@ -93,7 +99,7 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
             OR
           </span>
           <button id="form-google-button">
-            Sign in with
+            Sign up with
             <img
               src="./src/assets/icongoogle.png"
               width="30px"
@@ -107,4 +113,4 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
   );
 };
 
-export default LoginForm;
+export default SignupForm;
