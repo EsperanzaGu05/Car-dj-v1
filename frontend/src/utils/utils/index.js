@@ -1,5 +1,5 @@
 // import { SPOTIFY_URL } from "./constants";
-const token = 'BQCtTMwjeTFWdtS6mDNdRAJ097MJ4WdgJxNEimKLGdPQuBrNiXwN73Ha9TdMcgpJl8q1_bm6Owk4hnDqrv99NtdbLBC9CJN4_S7rrwX32KzZwFhcKVQ'
+const token = 'BQBpCAAtvQ_dNed9a-1whh5ZZ23NUDPKGbqbI2KM_8ZoAdbypOwTib6XiopbrBxOJueWVRsuAQl_f2TcJhPeoyoc6wL7cn8yJ44aZnzAIfunGAaJbBo'
 
 export const getNewRealeases = async (limit = 40, offset = 0) => {
     try {

@@ -2,7 +2,7 @@ import React from "react";
 // import { getArtists } from "../../utils";
 import "../HomeContent/MainContent.css";
 
-const TrackInfo = ({ release }) => {
+const AlbumInfo = ({ release }) => {
   return (
     <div className="card-track">
       <div
@@ -27,4 +27,4 @@ const TrackInfo = ({ release }) => {
   );
 };
 
-export default TrackInfo;
+export default AlbumInfo;
