@@ -1,13 +1,37 @@
 import React, { useState } from "react";
-import "./LoginForm.css";
+import Popup from "./Popups";
 
 const ForgotPassword = ({ onClose }) => {
+  const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    try {
+      const response = await fetch("http://localhost:5000/api/forgot-password/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage("A link to reset your password has been sent to your email address.");
+      } else {
+        setMessage(data.message || "Failed to send reset password email.");
+      }
+      setIsSubmitted(true);
+      setShowPopup(true);
+    } catch (error) {
+      setMessage("An error occurred. Please try again later.");
+      setShowPopup(true);
+    }
   };
+
   return (
     <div id="login-forgotpassword-whole">
       <div id="forgot-password">
@@ -18,7 +42,7 @@ const ForgotPassword = ({ onClose }) => {
         <h3 id="login-title">Reset Password</h3>
         {isSubmitted ? (
           <p style={{ color: "#222222", fontSize: "14px" }}>
-            A link to reset your password has been sent to your email address.
+            {message}
           </p>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -32,7 +56,8 @@ const ForgotPassword = ({ onClose }) => {
               <input
                 type="email"
                 name="email"
-                pattern=".+@.+\.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="login-form-box"
                 required
               />
@@ -40,6 +65,7 @@ const ForgotPassword = ({ onClose }) => {
             <input type="submit" value="Submit" className="login-form-btn" />
           </form>
         )}
+        {showPopup && <Popup message={message} onClose={() => setShowPopup(false)} />}
       </div>
     </div>
   );
