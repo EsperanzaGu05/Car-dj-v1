@@ -3,6 +3,8 @@ import collections from "../Database/collections.js";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 
+let isVerifying = {};
+
 export const register_request = async (details) => {
   const db = getDB();
   console.log("Register request details:", details);
@@ -55,54 +57,54 @@ export const register_request = async (details) => {
 export const register_complete = async (id, secret) => {
   const db = getDB();
   try {
+    if (isVerifying[id]) {
+      console.log(`Verification already in progress for ID: ${id}`);
+      return { status: 400, message: 'Verification already in progress.' };
+    }
+
+    isVerifying[id] = true;
+
     console.log(`Finding temporary user with ID: ${id} and secret: ${secret}`);
     const tempUser = await db.collection(collections.TEMP).findOne({ _id: new ObjectId(id), secret });
     console.log("Temporary user found:", tempUser);
 
     if (!tempUser) {
       console.log("Invalid token or token has expired");
+      isVerifying[id] = false;
       throw { status: 400, message: 'Invalid token or token has expired.' };
     }
 
     const { name, email, password } = tempUser;
+    const existingUser = await db.collection(collections.USER).findOne({ email: email.replace('_register', '') });
+    if (existingUser) {
+      console.log("User already exists in USER collection");
+      isVerifying[id] = false;
+      return { status: 200, message: 'Email confirmed, you can now log in.' };
+    }
+
     console.log("Inserting user into USER collection...");
-    await db.collection(collections.USER).insertOne({ name, email: email.replace('_register', ''), password });
+    await db.collection(collections.USER).insertOne({
+      name,
+      email: email.replace('_register', ''),
+      password,
+      subscription: {
+        startDate: null,
+        endDate: null,
+        type: 'none',
+      }
+    });
     console.log("User inserted into USER collection");
 
     console.log("Deleting temporary user...");
     await db.collection(collections.TEMP).deleteOne({ _id: new ObjectId(id) });
     console.log("Temporary user deleted");
 
+    isVerifying[id] = false;
+
     return { status: 200, message: 'Email confirmed, you can now log in.' };
   } catch (err) {
     console.error("Error in register_complete:", err);
+    isVerifying[id] = false;
     throw err;
   }
-};
-
-
-
-
-export const register_direct = (details) => {
-  return new Promise(async (resolve, reject) => {
-    const db = getDB();
-    try {
-      console.log("Creating index for USER collection...");
-      await db.collection(collections.USER).createIndex({ email: 1 }, { unique: true });
-      console.log("Index created for email in USER collection");
-
-      console.log("Hashing password...");
-      details.password = await bcrypt.hash(details.password, 10);
-      console.log("Password hashed");
-
-      console.log("Inserting user...");
-      const response = await db.collection(collections.USER).insertOne(details);
-      console.log("User inserted:", response);
-
-      resolve(response);
-    } catch (err) {
-      console.error("Error in register_direct:", err);
-      reject(err);
-    }
-  });
 };

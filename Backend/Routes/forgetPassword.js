@@ -30,7 +30,7 @@ router.post('/request', async (req, res) => {
     const emailTemplatePath = path.resolve(`${path.dirname("")}/mail/static/resetPassword.html`);
     const html = await fs.promises.readFile(emailTemplatePath, "utf-8");
 
-    const preparedHtml = html.replace("[LINK]", `${process.env.SITE_URL}/api/reset-password/${token}`);
+    const preparedHtml = html.replace("[LINK]", `${process.env.Front}/reset-password/${token}`);
 
     sendMail(
       {

@@ -10,6 +10,8 @@ import registerRoute from './Routes/Register.js';
 import authRoute from './Routes/googleauth.js';
 import forgotPasswordRoute from './Routes/forgetPassword.js';
 import resetPasswordRoute from './Routes/resetPassword.js';
+import loginRoute from './Routes/Login.js'; 
+import accountRoute from './Routes/account.js'; // Import the account route
 import { ConnectDB } from './Database/connection.js';
 
 dotenv.config();
@@ -22,10 +24,13 @@ const __dirname = path.dirname(__filename);
 
 app.use(cors({
   credentials: true,
-  origin: 'http://localhost:5173' 
+  origin: 'http://localhost:5173'
 }));
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
+
+// Serve static files from the 'Frontend/src/assets' directory
+app.use('/assets', express.static(path.join(__dirname, 'Frontend/src/assets')));
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -42,14 +47,17 @@ app.use('/api/register', registerRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/forgot-password', forgotPasswordRoute);
 app.use('/api/reset-password', resetPasswordRoute);
+app.use('/api/login', loginRoute);
+app.use('/api/account', accountRoute); // Add account route
 
 app.get('/api', (req, res) => {
   res.send('Car DJ Api');
 });
 
 // Serve the frontend application
+app.use(express.static(path.join(__dirname, '../Frontend/dist')));
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/dist/')); // Update this to the correct path
+  res.sendFile(path.resolve(__dirname, '../Frontend/dist/index.html'));
 });
 
 // Error handling middleware

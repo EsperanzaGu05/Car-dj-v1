@@ -82,7 +82,7 @@ router.post("/", async (req, res) => {
         html = html.replace("[EMAIL]", loweredEmail);
         html = html.replace(
           "[LINK]",
-          `${process.env.SITE_URL}/api/register/pending/${response._id}/${secret}`
+          `${process.env.Front}/api/register/pending/${response._id}/${secret}`
         );
 
         console.log("Prepared email HTML");
@@ -133,40 +133,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/register-complete", async (req, res) => {
-  console.log("Received registration completion request");
-
+router.post("/pending", async (req, res) => {
   const { id, secret } = req.body;
-
-  if (id?.length === 24 && secret) {
-    try {
-      const response = await register_complete(id, secret);
-
-      if (response) {
-        console.log(`User registration completed for ID: ${id}`);
-        return res.status(200).json({
-          status: 200,
-          message: "Register Completed",
-        });
-      }
-    } catch (err) {
-      console.error("Error completing registration:", err);
-      return res.status(err?.status || 500).json({
-        status: err?.status || 500,
-        message: err,
-      });
-    }
-  } else {
-    console.log("Invalid verification details");
-    return res.status(422).json({
-      status: 422,
-      message: "Wrong Verification Details",
-    });
-  }
-});
-
-router.get("/pending/:id/:secret", async (req, res) => {
-  const { id, secret } = req.params;
 
   console.log(`Received email verification request for ID: ${id} with secret: ${secret}`);
 
@@ -174,12 +142,12 @@ router.get("/pending/:id/:secret", async (req, res) => {
     try {
       const response = await register_complete(id, secret);
 
-      if (response) {
+      if (response.status === 200) {
         console.log(`User registration completed for ID: ${id}`);
-        return res.status(200).json({
-          status: 200,
-          message: "Your account has been verified. You can now log in."
-        });
+        return res.status(200).json(response);
+      } else {
+        console.log(`Error completing registration: ${response.message}`);
+        return res.status(response.status).json(response);
       }
     } catch (err) {
       console.error("Error completing registration:", err);

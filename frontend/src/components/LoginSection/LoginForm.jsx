@@ -1,10 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 import "./LoginForm.css";
-// import ForgotPassword from "../LoginSection/ForgotPassword";
 
 const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useContext(AuthContext);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      // Log the response data to the console
+      console.log('Server response:', data);
+
+      if (response.ok) {
+        // Handle successful login, e.g., save the token and update auth state
+        if (data.token && data.name && data.email) {
+          login(data.token, data.name, data.email);
+          onClose(); // Close the login form
+        } else {
+          setError("Invalid server response");
+        }
+      } else {
+        // Set the error message from the response
+        setError(data.message);
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again later.");
+    }
+  };
 
   return (
     <div id="login-form-whole">
@@ -13,20 +50,21 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
           &times;
         </span>
         <h3 id="login-title">Login</h3>
-        <form>
+        <form onSubmit={handleSubmit}>
           <label className="login-form-label">
             Email
             <input
               type="email"
               name="email"
-              pattern=".+@.+\.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="login-form-box"
               required
             />
           </label>
 
           <label className="login-form-label">
-            Password{" "}
+            Password
             <div id="password-input">
               <input
                 type={showPassword ? "text" : "password"}
@@ -68,7 +106,12 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
             Forgot Password
           </a>
 
-          <br></br>
+          {error && (
+            <p className="error-message">
+              {error}
+            </p>
+          )}
+
           <input type="submit" value="LOGIN" className="login-form-btn" />
           <p
             style={{
