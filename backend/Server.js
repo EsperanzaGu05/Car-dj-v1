@@ -8,6 +8,7 @@ import session from 'express-session';
 import passport from 'passport';
 import registerRoute from './Routes/Register.js';
 import authRoute from './Routes/googleauth.js';
+import loginRoute from './Routes/Login.js';
 import forgotPasswordRoute from './Routes/forgetPassword.js';
 import resetPasswordRoute from './Routes/resetPassword.js';
 import { ConnectDB } from './Database/connection.js';
@@ -40,6 +41,7 @@ app.use(passport.session());
 // Use routes
 app.use('/api/register', registerRoute);
 app.use('/api/auth', authRoute);
+app.use('/api/login', loginRoute);
 app.use('/api/forgot-password', forgotPasswordRoute);
 app.use('/api/reset-password', resetPasswordRoute);
 
