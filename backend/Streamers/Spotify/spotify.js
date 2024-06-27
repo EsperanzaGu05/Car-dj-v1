@@ -5,17 +5,12 @@ import { response } from 'express';
 
 dotenv.config();
 
-var clientId = "6f9b20a121f844a9a0447037369c5bdb";
-var clientSecret = "1a03b56c1091421d9da8dc158154d96b";
-var token;
-
 const SpotifyConn = async (callback) => {
     const data = qs.stringify({
         grant_type: "client_credentials"
       });
     let response;
     try{
-        console.log('Basic ' + (new Buffer.from(clientId + clientSecret).toString('base64')));
         response = await axios
         .post('https://accounts.spotify.com/api/token',data,
         {
