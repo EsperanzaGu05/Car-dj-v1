@@ -1,11 +1,20 @@
+
 import React, { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import LoggedInAsideBar from './AsidebarLoggedIn';
 import Login from '../LoginSection/Login';  
 import FeatureButton from '../Button/FeatureButton'; 
+
+
+
 import "../AsideBar/AsideBar.css";
 
 import iconSrc from "../../assets/icon.png"; 
+import noteSrc from "../../assets/note.png"; 
+import microphoneSrc from "../../assets/microphone.png";
+import listSrc from "../../assets/list.png";
+
+import iconSrc from "../../assets/icon.png"; // Adjust the path based on your directory structure
 import noteSrc from "../../assets/note.png"; 
 import microphoneSrc from "../../assets/microphone.png";
 import listSrc from "../../assets/list.png";
