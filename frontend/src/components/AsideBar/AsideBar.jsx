@@ -14,10 +14,7 @@ import noteSrc from "../../assets/note.png";
 import microphoneSrc from "../../assets/microphone.png";
 import listSrc from "../../assets/list.png";
 
-import iconSrc from "../../assets/icon.png"; // Adjust the path based on your directory structure
-import noteSrc from "../../assets/note.png"; 
-import microphoneSrc from "../../assets/microphone.png";
-import listSrc from "../../assets/list.png";
+
 
 const AsideBar = () => {
   const { auth } = useContext(AuthContext);
