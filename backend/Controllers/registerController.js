@@ -83,6 +83,7 @@ export const register_complete = async (id, secret) => {
     }
 
     console.log("Inserting user into USER collection...");
+
     await db.collection(collections.USER).insertOne({
       name,
       email: email.replace('_register', ''),
@@ -93,6 +94,9 @@ export const register_complete = async (id, secret) => {
         type: 'none',
       }
     });
+
+  
+
     console.log("User inserted into USER collection");
 
     console.log("Deleting temporary user...");
