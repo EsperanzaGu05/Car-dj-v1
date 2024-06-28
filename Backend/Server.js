@@ -6,12 +6,13 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import session from 'express-session';
 import passport from 'passport';
-import registerRoute from './Routes/Register.js';
-import authRoute from './Routes/googleauth.js';
-import forgotPasswordRoute from './Routes/forgetPassword.js';
-import resetPasswordRoute from './Routes/resetPassword.js';
-import loginRoute from './Routes/Login.js'; 
-import accountRoute from './Routes/account.js'; // Import the account route
+import registerRoute from './routes/register.js';
+import authRoute from './Routes/googleauth.js'; // Google Auth Route
+import forgotPasswordRoute from './routes/forgetPassword.js';
+import resetPasswordRoute from './routes/resetPassword.js';
+import loginRoute from './routes/login.js';
+import accountRoute from './routes/account.js'; // Import the account route
+import './Controllers/passport.js';
 import { ConnectDB } from './Database/connection.js';
 
 dotenv.config();
@@ -38,7 +39,17 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: true }));
+// Session configuration
+app.use(session({ 
+  secret: process.env.SESSION_SECRET || 'your_secret_key', 
+  resave: false, 
+  saveUninitialized: true,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 

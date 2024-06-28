@@ -55,7 +55,13 @@ const Login = () => {
       setError('An error occurred. Please try again.');
     }
   };
-
+  const handleGoogleSignIn = async () => {
+    try {
+      window.location.href = "http://localhost:5000/api/auth/google";
+    } catch (error) {
+      setError("An error occurred with Google Sign-In. Please try again later.");
+    }
+  };
   return (
     <div id="login-section">
       <span style={{ fontWeight: 500, color: "#222222" }}>Hi Sign Up Now </span>
@@ -82,6 +88,7 @@ const Login = () => {
         {isForgotPasswordVisible && (
           <ForgotPassword onClose={handleCloseForm} />
         )}
+        
       </section>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>

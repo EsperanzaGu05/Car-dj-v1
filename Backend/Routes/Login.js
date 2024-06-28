@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
     console.log(`User ${email} logged in successfully`);
     return res.status(200).json({
       token,
-      name: user.name, // Assuming the user object has a name property
+      name: user.name, 
       email: user.email
     });
   } catch (error) {

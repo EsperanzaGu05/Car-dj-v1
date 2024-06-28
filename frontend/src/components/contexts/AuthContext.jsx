@@ -11,9 +11,6 @@ export const AuthProvider = ({ children }) => {
     const email = localStorage.getItem('email');
     if (token && name && email) {
       setAuth({ token, name, email });
-      console.log('AuthContext login - token:', token);
-      console.log('AuthContext login - name:', name);
-      console.log('AuthContext login - email:', email);
     }
   }, []);
 
@@ -22,9 +19,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     setAuth({ token, name, email });
-    console.log('AuthContext login - token:', token);
-    console.log('AuthContext login - name:', name);
-    console.log('AuthContext login - email:', email);
   };
 
   const logout = () => {
@@ -32,7 +26,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('name');
     localStorage.removeItem('email');
     setAuth(null);
-    console.log('AuthContext logout');
   };
 
   return (
