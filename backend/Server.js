@@ -6,10 +6,13 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import session from 'express-session';
 import passport from 'passport';
-import registerRoute from './Routes/Register.js';
-import authRoute from './Routes/googleauth.js';
-import forgotPasswordRoute from './Routes/forgetPassword.js';
-import resetPasswordRoute from './Routes/resetPassword.js';
+import registerRoute from './routes/register.js';
+import authRoute from './Routes/googleauth.js'; // Google Auth Route
+import forgotPasswordRoute from './routes/forgetPassword.js';
+import resetPasswordRoute from './routes/resetPassword.js';
+import loginRoute from './routes/login.js';
+import accountRoute from './routes/account.js'; // Import the account route
+import './Controllers/passport.js';
 import { ConnectDB } from './Database/connection.js';
 import spotifyDataRoute from './Streamers/Spotify/data.js';
 
@@ -28,13 +31,26 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 
+// Serve static files from the 'Frontend/src/assets' directory
+app.use('/assets', express.static(path.join(__dirname, 'Frontend/src/assets')));
+
 // Logging middleware
 app.use((req, res, next) => {
   console.log(`Incoming request: ${req.method} ${req.url}`);
   next();
 });
 
-app.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: true }));
+// Session configuration
+app.use(session({ 
+  secret: process.env.SESSION_SECRET || 'your_secret_key', 
+  resave: false, 
+  saveUninitialized: true,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -43,7 +59,12 @@ app.use('/api/register', registerRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/forgot-password', forgotPasswordRoute);
 app.use('/api/reset-password', resetPasswordRoute);
+
+app.use('/api/login', loginRoute);
+app.use('/api/account', accountRoute); // Add account route
+
 app.use('/api/spotify', spotifyDataRoute);
+
 
 app.get('/api', (req, res) => {
   res.send('Car DJ Api');

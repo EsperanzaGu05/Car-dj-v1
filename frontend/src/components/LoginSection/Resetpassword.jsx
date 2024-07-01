@@ -54,7 +54,7 @@ const ResetPassword = () => {
         setShowPopup(true);
         setTimeout(() => {
           setShowPopup(false);
-          navigate("/login");
+          navigate("/");
         }, 3000);
       } else {
         setMessage(data.message || "Failed to update password.");

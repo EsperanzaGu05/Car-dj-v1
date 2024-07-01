@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 
-const SignupForm = ({ onClose }) => {
+const SignupForm = ({ onClose, onLoginSuccess }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -10,6 +11,24 @@ const SignupForm = ({ onClose }) => {
   const [pwerror, setPwerror] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const message = urlParams.get('message');
+
+    if (status === 'success') {
+      setSuccessMessage(decodeURIComponent(message));
+      setTimeout(() => {
+        setSuccessMessage("");
+        onClose();
+      }, 5000);
+    } else if (status === 'error') {
+      setErrorMessage(decodeURIComponent(message));
+    }
+  }, [onClose]);
 
   const handlePasswordChange = (e) => {
     setPassword(e);
@@ -27,9 +46,11 @@ const SignupForm = ({ onClose }) => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (password !== rePassword) {
       setErrorMessage("Passwords do not match.");
+      setIsLoading(false);
       return;
     }
 
@@ -73,11 +94,16 @@ const SignupForm = ({ onClose }) => {
       }
     } catch (error) {
       setErrorMessage("An error occurred during registration.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    setIsLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+    window.location.href = "http://localhost:5000/api/auth/google/signup";
   };
 
   return (
@@ -147,6 +173,7 @@ const SignupForm = ({ onClose }) => {
                   src={showPassword ? "./src/assets/hide.png" : "./src/assets/view.png"}
                   width="18px"
                   height="18px"
+                  alt="Toggle password visibility"
                 />
               </button>
             </div>
@@ -169,7 +196,12 @@ const SignupForm = ({ onClose }) => {
             </span>
           )}
           <br />
-          <input type="submit" value="SIGNUP" className="form-btn" />
+          <input 
+            type="submit" 
+            value={isLoading ? "PROCESSING..." : "SIGNUP"} 
+            className="form-btn" 
+            disabled={isLoading}
+          />
           <span
             style={{
               color: "black",
@@ -185,13 +217,15 @@ const SignupForm = ({ onClose }) => {
             type="button"
             id="form-google-button"
             onClick={handleGoogleSignup}
+            disabled={isLoading}
           >
-            Sign up with
+            {isLoading ? "Processing..." : "Sign up with Google"}
             <img
               src="./src/assets/icongoogle.png"
               width="30px"
               height="30px"
               style={{ paddingLeft: "10px" }}
+              alt="Google icon"
             />
           </button>
         </form>
