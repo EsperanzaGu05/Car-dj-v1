@@ -14,6 +14,7 @@ import loginRoute from './routes/login.js';
 import accountRoute from './routes/account.js'; // Import the account route
 import './Controllers/passport.js';
 import { ConnectDB } from './Database/connection.js';
+import spotifyDataRoute from './Streamers/Spotify/data.js';
 
 dotenv.config();
 
@@ -58,8 +59,12 @@ app.use('/api/register', registerRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/forgot-password', forgotPasswordRoute);
 app.use('/api/reset-password', resetPasswordRoute);
+
 app.use('/api/login', loginRoute);
 app.use('/api/account', accountRoute); // Add account route
+
+app.use('/api/spotify', spotifyDataRoute);
+
 
 app.get('/api', (req, res) => {
   res.send('Car DJ Api');
