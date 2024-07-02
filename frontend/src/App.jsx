@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import AsideBar from "./components/AsideBar/AsideBar";
@@ -8,20 +7,10 @@ import Verify from "./components/LoginSection/verify";
 import ResetPassword from "./components/LoginSection/Resetpassword";
 import Login from "./components/LoginSection/Login";
 import { AuthProvider } from "./components/contexts/AuthContext";
-
-
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import "./App.css";
 import "./components/LoginSection/Login.css";
-import AsideBar from "./components/AsideBar/AsideBar";
-import SearchBar from "./components/SearchBar/SearchBar";
-import Verify from "./components/LoginSection/verify";
 import ForgotPassword from "./components/LoginSection/ForgotPassword";
-import ResetPassword from "./components/LoginSection/Resetpassword";
 import MainContent from "./components/HomeContent/MainContent";
 import { getNewRealeases } from "./utils/utils/index";
-
 
 function App() {
   const [trackReleases, setTrackReleases] = useState();
@@ -58,41 +47,26 @@ function App() {
       <Router>
         <div id="main-container">
           <AsideBar />
-          
+          <div className="main-content-area">
             <SearchBar />
-            
-              <Routes>
-                
-                <Route path="/verify" element={<Verify />} />
-                <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
-                <Route path="/reset-password/:token" element={<ResetPassword />} />
-                <Route path="/login" element={<Login />} />
-              </Routes>
-            
+            <MainContent
+              trackReleases={trackReleases}
+              albumReleases={albumReleases}
+            />
           </div>
-        
+
+          <Routes>
+            <Route path="/verify" element={<Verify />} />
+            <Route
+              path="/api/register/pending/:id/:secret"
+              element={<Verify />}
+            />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </div>
       </Router>
     </AuthProvider>
-
-    <Router>
-      <div id="main-container">
-        <AsideBar />
-        <div className="main-content-area">
-          <SearchBar />
-          <MainContent
-            trackReleases={trackReleases}
-            albumReleases={albumReleases}
-          />
-        </div>
-      </div>
-      <Routes>
-        <Route path="/verify" element={<Verify />} />
-        <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        {/* Other routes */}
-      </Routes>
-      <footer>Copyright 2024 Car DJ</footer>
-    </Router>
   );
 }
 

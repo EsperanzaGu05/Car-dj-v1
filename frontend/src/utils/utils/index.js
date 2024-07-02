@@ -1,10 +1,9 @@
 // import { SPOTIFY_URL } from "./constants";
-
-export const getNewRealeases = async (limit = 40, offset = 0) => {
+export const getNewRealeases = async () => {
     try {
         const URL = 'http://localhost:5000/api/spotify/new-releases';
         const response = await fetch(URL, {
-
+            method: "GET",
         });
         const data = await response.json();
         return data;
