@@ -26,7 +26,7 @@ const Verify = () => {
           setShowPopup(true);
           setTimeout(() => {
             setShowPopup(false);
-            navigate("/login");  // Assuming you have a login route
+            navigate("/");  // Assuming you have a login route
           }, 3000);
         } else {
           setMessage(data.message || "Verification failed.");
