@@ -6,7 +6,7 @@ html {
 
 #main-container {
   display: flex;
-  min-height: 100vh;
+  height: 97vh;
   font-family: Poppins;
 }
 
@@ -20,8 +20,10 @@ html {
 
 footer {
   color: #222222;
+  font-size: small;
   background-color: #f5f5f5;
-  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 .success-alert {
