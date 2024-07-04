@@ -1,84 +1,100 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 import "../AsideBar/AccountSideBar.css";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import TextField from "@mui/material/TextField";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 
 const AccountSidebar = ({ onClose }) => {
   const { auth } = useContext(AuthContext);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-  const [message, setMessage] = useState("");
-  const [showPasswordSection, setShowPasswordSection] = useState(false); // State to toggle password section visibility
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState('');
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
+      if (!auth || !auth.token) {
+        console.log('No auth token found');
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/account", {
-          method: "GET",
+        console.log('Fetching user details with token:', auth.token);
+        const response = await fetch('http://localhost:5000/api/account', {
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${auth.token}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${auth.token}`,
           },
         });
-        const data = await response.json();
-        if (response.ok) {
-          setName(data.name);
-          setEmail(data.email);
-        } else {
-          setMessage(data.message);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const data = await response.json();
+        console.log('Received user data:', data);
+        setName(data.name || auth.name);
+        setEmail(data.email || auth.email);
       } catch (error) {
-        setMessage("Failed to fetch user details");
+        console.error('Error fetching user details:', error);
+        setMessage(`Failed to fetch user details: ${error.message}`);
+        // Fallback to using data from auth context
+        setName(auth.name || '');
+        setEmail(auth.email || '');
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchUserDetails();
-  }, [auth.token]);
+  }, [auth]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setMessage('');
     try {
-      const response = await fetch("http://localhost:5000/api/account", {
-        method: "PUT",
+      const response = await fetch('http://localhost:5000/api/account', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.token}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`,
         },
         body: JSON.stringify({ name, password }),
       });
       const data = await response.json();
       if (response.ok) {
-        setMessage("User updated successfully");
+        setMessage('User updated successfully');
       } else {
         setMessage(data.message);
       }
     } catch (error) {
-      setMessage("Failed to update user details");
+      setMessage('Failed to update user details');
     }
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const toggleShowPassword = () => setShowPassword(!showPassword);
+  const togglePasswordSection = () => setShowPasswordSection(!showPasswordSection);
 
-  const togglePasswordSection = () => {
-    setShowPasswordSection(!showPasswordSection);
-  };
+  if (isLoading) {
+    return <div>Loading user details...</div>;
+  }
 
   return (
     <div className="account-sidebar">
-      <button className="close-btn" onClick={onClose}>
-        ×
-      </button>
-
+      <button className="close-btn" onClick={onClose}>×</button>
       <h2>Account Details</h2>
-      <div className="profile-circle">{name.charAt(0).toUpperCase()}</div>
+      <div className="profile-circle">
+        {name.charAt(0).toUpperCase()}
+      </div>
       <form onSubmit={handleUpdate}>
         <div className="form-group">
           <label>Name</label>
@@ -91,23 +107,22 @@ const AccountSidebar = ({ onClose }) => {
         </div>
         <div className="form-group">
           <label>Email</label>
-          <input type="email" value={email} disabled />
+          <input
+            type="email"
+            value={email}
+            disabled
+          />
         </div>
         <div className="form-group">
-          <h3
-            onClick={togglePasswordSection}
-            className="toggle-password-section"
-          >
-            {showPasswordSection
-              ? "Hide Password Section"
-              : "If you want to update password, click here"}
+          <h3 onClick={togglePasswordSection} className="toggle-password-section">
+            {showPasswordSection ? 'Hide Password Section' : 'If you want to update password, click here'}
           </h3>
         </div>
         {showPasswordSection && (
           <div className="form-group">
             <label>New Password</label>
             <TextField
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               InputProps={{
