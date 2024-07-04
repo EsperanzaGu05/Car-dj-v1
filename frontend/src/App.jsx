@@ -10,59 +10,56 @@ import { AuthProvider } from "./components/contexts/AuthContext";
 import "./components/LoginSection/Login.css";
 import ForgotPassword from "./components/LoginSection/ForgotPassword";
 import MainContent from "./components/HomeContent/MainContent";
-import { getNewRealeases } from "./utils/utils/index";
+import { getNewRealeases, getAlbums, getArtists } from "./utils/utils/index";
+import ContentAlbums from "./components/Content/ContentAlbums.jsx";
+import Content from "./components/Content/ContentArtists.jsx";
+import Layout from "./shared/Layout/Layout.jsx";
+import Home from "./Pages/Home/Home.jsx";
+import Artists from "./Pages/Home/Artists.jsx";
+import Albums from "./Pages/Home/Albums.jsx";
 
 function App() {
-  const [trackReleases, setTrackReleases] = useState();
-  const [albumReleases, setAlbumReleases] = useState();
-
-  const fetchRelease = async () => {
-    let trackReleases = [];
-    let albumReleases = [];
-
-    try {
-      // Initial request to get the total number of items
-      const initialData = await getNewRealeases();
-      if (initialData && initialData.albums && initialData.albums.items) {
-        trackReleases = initialData.albums.items.filter(
-          (item) => item.album_type === "single"
-        );
-        albumReleases = initialData.albums.items.filter(
-          (item) => item.album_type === "album"
-        );
-        console.log(trackReleases);
-      }
-      setTrackReleases(trackReleases);
-      setAlbumReleases(albumReleases);
-    } catch (error) {
-      console.error("Error fetching releases:", error);
-    }
-  };
-  useEffect(() => {
-    fetchRelease();
-  }, []);
-
   return (
     <AuthProvider>
       <Router>
         <div id="main-container">
-          <AsideBar />
-          <div className="main-content-area">
-            <SearchBar />
-            <MainContent
-              trackReleases={trackReleases}
-              albumReleases={albumReleases}
-            />
-          </div>
-
           <Routes>
-            <Route path="/verify" element={<Verify />} />
+            <Route
+              path="/"
+              element={
+                <Layout id="home">
+                  <Home />
+                </Layout>
+              }
+            />
+            <Route
+              path="/artists"
+              element={
+                <Layout id="artist">
+                  <Artists />
+                </Layout>
+              }
+            />
+            <Route
+              path="/albums"
+              element={
+                <Layout id="albums">
+                  <Albums />
+                </Layout>
+              }
+            />
+            <Route
+              path="/playlist"
+              element={<Layout id="playlist">Playlist</Layout>}
+            />
+
+            {/* <Route path="/verify" element={<Verify />} />
             <Route
               path="/api/register/pending/:id/:secret"
               element={<Verify />}
             />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login />} /> */}
           </Routes>
         </div>
       </Router>

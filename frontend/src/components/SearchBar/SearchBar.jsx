@@ -2,9 +2,9 @@ import React from "react";
 import Icon from "../Images/Icon";
 import "../SearchBar/SearchBar.css";
 
-const SearchBar = () => {
+const SearchBar = ({ className }) => {
   return (
-    <div id="search-bar">
+    <div className={className}>
       <form id="search-section">
         <Icon
           src="./src/assets/magnifying-glass.png"
