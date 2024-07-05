@@ -56,25 +56,4 @@ router.get('/google/callback', (req, res, next) => {
   })(req, res, next);
 });
 
-router.post("/login/google", (req, res, next) => {
-  passport.authenticate('google-token', { session: false }, (err, user, info) => {
-    if (err) {
-      console.error("Error during Google token authentication:", err);
-      return res.status(500).json({ message: "Error authenticating with Google" });
-    }
-    if (!user) {
-      return res.status(401).json({ message: "Google authentication failed" });
-    }
-
-    const token = generateToken(user._id);
-
-    res.json({
-      token,
-      name: user.name,
-      email: user.email,
-      isNewUser: info && info.message === 'New user created'
-    });
-  })(req, res, next);
-});
-
 export default router;

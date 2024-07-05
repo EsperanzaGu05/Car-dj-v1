@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FcGoogle } from 'react-icons/fc';  // Import the Google icon
 import "./LoginForm.css";
 
 const SignupForm = ({ onClose, onLoginSuccess }) => {
@@ -213,20 +214,28 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
           >
             OR
           </span>
-          <button
+          <button 
             type="button"
-            id="form-google-button"
-            onClick={handleGoogleSignup}
+            id="form-google-button" 
+            onClick={handleGoogleSignup} 
             disabled={isLoading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              padding: '10px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: '#fff',
+              cursor: 'pointer',
+              color: 'black',
+            }}
           >
-            {isLoading ? "Processing..." : "Sign up with Google"}
-            <img
-              src="./src/assets/icongoogle.png"
-              width="30px"
-              height="30px"
-              style={{ paddingLeft: "10px" }}
-              alt="Google icon"
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <FcGoogle size={24} />
+              <span>{isLoading ? "Processing..." : "Sign up"}</span>
+            </div>
           </button>
         </form>
       </div>
