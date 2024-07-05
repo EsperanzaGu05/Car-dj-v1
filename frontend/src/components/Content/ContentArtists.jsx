@@ -14,7 +14,7 @@ const ContentArtists = ({ artists }) => {
             ))}
           </div>
         ) : (
-          <p>No artist information available</p>
+          <span class="loader">Loading...</span>
         )}
       </div>
     </div>

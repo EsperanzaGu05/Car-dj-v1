@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./Home.css";
 import { getArtists } from "../../utils/utils";
 import ContentArtists from "../../components/Content/ContentArtists";
 

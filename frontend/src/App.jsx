@@ -17,6 +17,7 @@ import Layout from "./shared/Layout/Layout.jsx";
 import Home from "./Pages/Home/Home.jsx";
 import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
+import Playlists from "./Pages/Home/Playlists.jsx";
 
 function App() {
   return (
@@ -50,7 +51,11 @@ function App() {
             />
             <Route
               path="/playlist"
-              element={<Layout id="playlist">Playlist</Layout>}
+              element={
+                <Layout id="playlist">
+                  <Playlists />
+                </Layout>
+              }
             />
 
             {/* <Route path="/verify" element={<Verify />} />

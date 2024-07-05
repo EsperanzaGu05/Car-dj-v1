@@ -1,9 +1,9 @@
 import React from "react";
 import "../Content/Content.css";
 
-const AlbumInfo = ({ album }) => {
+const PlaylistInfo = ({ playlist }) => {
   return (
-    <div className="card-album">
+    <div className="card-playlist">
       <div
         style={{
           paddingBottom: "10px",
@@ -12,18 +12,18 @@ const AlbumInfo = ({ album }) => {
         }}
       >
         <img
-          src={album.images[0].url}
-          width={"180px"}
-          height={"180px"}
-          alt={`${album.name}`}
+          src={playlist.images[0].url}
+          width={"150px"}
+          height={"150px"}
+          alt={`${playlist.name}`}
         />
       </div>
-      <span>{album.name}</span>
+      <span>{playlist.name}</span>
       <span style={{ color: "#222222", opacity: 0.5 }}>
-        {album.artists[0].name}
+        {playlist.tracks.total} songs
       </span>
     </div>
   );
 };
 
-export default AlbumInfo;
+export default PlaylistInfo;
