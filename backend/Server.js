@@ -84,6 +84,22 @@ app.use((err, req, res, next) => {
   }
   res.status(500).send({ status: 500, message: 'Internal Server Error', error: err.message }); // Return detailed error message
 });
+app.get('/search', (req, res) => {
+  const { query } = req.query; // Get search query from the request
+  SpotifyConn(async (error, instance) => {
+      if (instance) {
+          try {
+              const response = await instance.get(`/search?q=${encodeURIComponent(query)}&type=track,album,artist&limit=10`);
+              return res.status(200).json({ ...response.data });
+          } catch (error) {
+              console.error('Error fetching search results:', error);
+              return res.status(500).json({ message: 'Internal Server Error' });
+          }
+      } else {
+          return res.status(error?.status).json(error);
+      }
+  });
+});
 
 app.listen(port, () => {
   console.log(`Server Started on Port: ${port}`);

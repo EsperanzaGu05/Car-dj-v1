@@ -1,21 +1,27 @@
 import jwt from 'jsonwebtoken';
 
 const authMiddleware = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
-  if (!token) {
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  const authHeader = req.headers['authorization'];
+  console.log('Auth Header:', authHeader);
+
+  const token = authHeader && authHeader.split(' ')[1];
+  console.log('Extracted Token:', token);
+
+  if (token == null) {
+    console.log('No token provided');
+    return res.status(401).json({ message: 'No token provided' });
   }
-  
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.error('Token verification failed:', err);
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+    console.log('Decoded token:', decoded);
+    req.userId = decoded.userId || decoded.id; // Check for both userId and id
+    console.log('Token verified, user ID:', req.userId);
     next();
-  } catch (error) {
-    res.status(400).json({ message: 'Invalid token.' });
-  }
+  });
 };
-
-
-
 
 export default authMiddleware;

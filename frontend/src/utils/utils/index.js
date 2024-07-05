@@ -1,9 +1,23 @@
 // import { SPOTIFY_URL } from "./constants";
+<<<<<<< HEAD
 export const getNewRealeases = async () => {
     try {
         const URL = 'http://localhost:5000/api/spotify/new-releases';
         const response = await fetch(URL, {
             method: "GET",
+=======
+const token = 'BQBpCAAtvQ_dNed9a-1whh5ZZ23NUDPKGbqbI2KM_8ZoAdbypOwTib6XiopbrBxOJueWVRsuAQl_f2TcJhPeoyoc6wL7cn8yJ44aZnzAIfunGAaJbBo'
+
+export const getNewRealeases = async (limit = 40, offset = 0) => {
+    try {
+        const URL = `https://api.spotify.com/v1/browse/new-releases?limit=${limit}&offset=${offset}`;
+        const response = await fetch(URL, {
+            method: "GET",
+            headers: {
+                Authorization:
+                    `Bearer  ${token}`,
+            },
+>>>>>>> eb1faec4dd693945ae90e52e9113b102c38926b9
         });
         const data = await response.json();
         return data;

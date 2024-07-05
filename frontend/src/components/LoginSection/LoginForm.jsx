@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import { FcGoogle } from 'react-icons/fc';  // Import the Google icon
 import "./LoginForm.css";
 
 const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
@@ -19,7 +20,7 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
       login(token, name, email);
       onClose();
     }
-  }, []);
+  }, [login, onClose]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,11 +33,11 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-
+  
       console.log('Server response:', data);
-
+  
       if (response.ok) {
         if (data.token && data.name && data.email) {
           login(data.token, data.name, data.email);
@@ -51,10 +52,10 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
       setError("An error occurred. Please try again later.");
     }
   };
-
+  
   const handleGoogleSignIn = async () => {
     try {
-      window.location.href = "http://localhost:5000/api/auth/google";
+      window.location.href = "http://localhost:5000/api/auth/google/login";
     } catch (error) {
       setError("An error occurred with Google Sign-In. Please try again later.");
     }
@@ -139,15 +140,27 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
           }}>
             OR
           </span>
-          <button id="form-google-button" onClick={handleGoogleSignIn} type="button">
-            Sign in with
-            <img
-              src="./src/assets/icongoogle.png"
-              width="30px"
-              height="30px"
-              style={{ paddingLeft: "10px" }}
-              alt="Google icon"
-            />
+          <button 
+            id="form-google-button" 
+            onClick={handleGoogleSignIn} 
+            type="button"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              padding: '10px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: '#fff',
+              cursor: 'pointer',
+              color: 'black',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <FcGoogle size={24} />
+              <span>Sign in</span>
+            </div>
           </button>
         </form>
       </div>
