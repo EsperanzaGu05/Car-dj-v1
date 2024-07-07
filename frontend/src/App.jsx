@@ -10,12 +10,17 @@ import { AuthProvider } from "./components/contexts/AuthContext";
 import "./components/LoginSection/Login.css";
 import ForgotPassword from "./components/LoginSection/ForgotPassword";
 import MainContent from "./components/HomeContent/MainContent";
+import PlayerApp from "./components/HomeContent/Player";
 import { getNewRealeases } from "./utils/utils/index";
 
 function App() {
   const [trackReleases, setTrackReleases] = useState();
   const [albumReleases, setAlbumReleases] = useState();
-
+  const playlist = [
+    { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', name:"song 1" },
+    { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', name:"song 2" },
+    { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', name:"song 3" },
+];
   const fetchRelease = async () => {
     let trackReleases = [];
     let albumReleases = [];
@@ -53,6 +58,7 @@ function App() {
               trackReleases={trackReleases}
               albumReleases={albumReleases}
             />
+            <PlayerApp playlist={playlist}></PlayerApp>
           </div>
 
           <Routes>
