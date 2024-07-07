@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
@@ -7,6 +7,27 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
+    const token = localStorage.getItem("token");
+    const name = localStorage.getItem("name");
+    const email = localStorage.getItem("email");
+    if (token && name && email) {
+      setAuth({ token, name, email });
+    }
+  }, []);
+
+  const login = (token, name, email) => {
+    localStorage.setItem("token", token);   
+    localStorage.setItem("name", name);
+    localStorage.setItem("email", email);
+    setAuth({ token, name, email });
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    localStorage.removeItem("email");
+
     const loadAuthState = () => {
       const storedAuth = localStorage.getItem('auth');
       if (storedAuth) {
@@ -25,12 +46,14 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('auth');
+
     setAuth(null);
   };
 
   return (
-    <AuthContext.Provider value={{ auth, login, logout, loading }}>
-      {children}
+
+    <AuthContext.Provider value={{ auth, login, logout,loading }}>
+      <section>{children}</section>
     </AuthContext.Provider>
   );
 };
