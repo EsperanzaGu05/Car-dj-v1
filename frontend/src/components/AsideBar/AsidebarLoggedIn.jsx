@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
-import AccountSidebar from './AccountSideBar';
-import '../AsideBar/AsideBar.css';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
+import AccountSidebar from "./AccountSideBar";
+import "../AsideBar/AsideBar.css";
 
 const LoggedInAsideBar = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -19,23 +19,27 @@ const LoggedInAsideBar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/'); // Navigate to the desired route after logout
+    navigate("/"); // Navigate to the desired route after logout
   };
 
   return (
-    <div id="login-section">
-      <span style={{ fontWeight: 500, color: 'black' }}>
-        Welcome Back, {auth?.name || 'User'}
-      </span>
+    <div className="login-section-user">
+      <span className="span-text">Welcome Back, {auth?.name || "User"}</span>
       <br />
-      <section id="info-login">
+      <section className="info-login">
         Manage your account and explore new features.
       </section>
-      <section id="login-section-button">
-        <button onClick={handleLogout} className="login-form-btn">Logout</button>
-        <button onClick={handleAccountClick} className="login-form-btn">Account</button>
+      <section className="login-section-button">
+        <button onClick={handleLogout} className="login-button">
+          Logout
+        </button>
+        <button onClick={handleAccountClick} className="login-button">
+          Account
+        </button>
       </section>
-      {isAccountSidebarOpen && <AccountSidebar onClose={() => setAccountSidebarOpen(false)} />}
+      {isAccountSidebarOpen && (
+        <AccountSidebar onClose={() => setAccountSidebarOpen(false)} />
+      )}
     </div>
   );
 };

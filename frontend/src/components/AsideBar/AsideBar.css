@@ -49,16 +49,27 @@ aside {
     margin-left: 10px;
 }
 
+.login-section-user {
+    justify-content: center;
+    width: 70%;
+    background-color: white;
+    border-radius: 5px;
+    padding: 15px;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
 .login-section-button {
     display: flex;
     justify-content: center;
-    gap: 10px;
+
+    align-items: center;
 }
 
-#signup-button:hover,
+/* #signup-button:hover,
 #login-button:hover {
-    background-color: #0056b3;
-}
+    background-color: #7eafe2;
+} */
 
 .success-alert {
     background-color: #dff0d8;
@@ -76,8 +87,6 @@ aside {
     border-radius: 4px;
     text-align: center;
 }
-
-
 
 .error-alert {
     background-color: #f8d7da;
