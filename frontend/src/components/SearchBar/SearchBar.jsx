@@ -1,19 +1,24 @@
-import React from "react";
-import Icon from "../Images/Icon";
-import "../SearchBar/SearchBar.css";
+import React, { useState } from "react";
+import "./SearchBar.css"; // Importing CSS for styling
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
+  const [query, setQuery] = useState('');
+
+  const handleSearch = () => {
+    if (query.trim()) {
+      onSearch(query);
+    }
+  };
+
   return (
-    <div id="search-bar">
-      <form id="search-section">
-        <Icon
-          src="./src/assets/magnifying-glass.png"
-          width="15px"
-          height="15px"
-        />
-        <input type="text" placeholder="Search..." id="input-serch" />
-        <Icon src="./src/assets/microphone1.png" width="18px" height="18px" />
-      </form>
+    <div>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search for songs, artists, albums..."
+      />
+      <button onClick={handleSearch}>Search</button>
     </div>
   );
 };

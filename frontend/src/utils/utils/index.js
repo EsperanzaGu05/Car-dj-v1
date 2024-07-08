@@ -12,6 +12,18 @@ export const getNewRealeases = async () => {
     }
 };
 
+export const searchSpotify = async (query) => {
+    try {
+      const URL = `http://localhost:5000/api/spotify/search?q=${encodeURIComponent(query)}`;
+      const response = await fetch(URL, {
+        method: "GET",
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 // export const getArtists = async () => {
 //     try {
 //         const URL = 'https://api.spotify.com/v1/artists?ids=06HL4z0CvFAxyc27GXpf02,3TVXtAsR1Inumwj472S9r4,4oUHIQIBe0LHzYfvXNW4QM,2YZyLoL8N0Wb9xBt1NhZWg,6qqNVTkY8uBg9cP3Jd7DAH,40ZNYROS4zLfyyBSs2PGe2,1RyvyyTE3xzB2ZywiAwp0i,0Y5tJX1MQlPlqiwlOH1tJY,0iEtIxbK0KxaSlF7G42ZOp,246dkjvS1zLTtiykXe5h60,1Xyo4u8uXC1ZmMpatF05PJ,4q3ewBCX7sLwd24euuV69X,1URnnhqYAYcrqrcwql10ft,7dGJo4pcD2V6oG8kP0tJRR,7tYKF4w9nC0nq9CsPZTHyP,718COspgdWOnwOFpJHRZHS,74KM79TiuVKeVCqs8QtB0B,1VPmR4DJC1PlOtd0IADAO0,66CXWjxzNUsdJxJ2JdwvnR,12GqGscKJx3aE4t07u7eVZ,5pKCCKE2ajJHZ9KAiaK11H,4MCBfE4596Uoi2O4DtmEMz,2hlmm7s2ICUX0LVIhVFlZQ,5f7VJjfbwm532GiveGC0ZK,00FQb4jTyendYWaN8pK0wa'

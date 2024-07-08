@@ -15,6 +15,7 @@ import accountRoute from './routes/account.js'; // Import the account route
 import './Controllers/passport.js';
 import { ConnectDB } from './Database/connection.js';
 import spotifyDataRoute from './Streamers/Spotify/data.js';
+import searchRoutes from './Routes/searchRoutes.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ const port = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 app.use(cors({
   credentials: true,
@@ -64,7 +66,7 @@ app.use('/api/login', loginRoute);
 app.use('/api/account', accountRoute); // Add account route
 
 app.use('/api/spotify', spotifyDataRoute);
-
+app.use('/api/search', searchRoutes);
 
 app.get('/api', (req, res) => {
   res.send('Car DJ Api');
