@@ -27,3 +27,7 @@
     height: 100px;
 
 }
+
+.layout-container__player {
+    grid-area: 6 / 1 / 6 / 6;
+}

@@ -19,6 +19,12 @@ import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
 
+const playlist = [
+  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', name:"song 1" },
+  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', name:"song 2" },
+  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', name:"song 3" },
+];
+
 function AppContent() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -58,7 +64,7 @@ function AppContent() {
         <Route
           path="/"
           element={
-            <Layout id="home">
+            <Layout id="home" playlist={playlist}>
               <Home />
             </Layout>
           }
@@ -66,7 +72,7 @@ function AppContent() {
         <Route
           path="/artists"
           element={
-            <Layout id="artist">
+            <Layout id="artist" playlist={playlist}>
               <Artists />
             </Layout>
           }
@@ -74,7 +80,7 @@ function AppContent() {
         <Route
           path="/albums"
           element={
-            <Layout id="albums">
+            <Layout id="albums" playlist={playlist}>
               <Albums />
             </Layout>
           }
@@ -82,7 +88,7 @@ function AppContent() {
         <Route
           path="/playlist"
           element={
-            <Layout id="playlist">
+            <Layout id="playlist" playlist={playlist}>
               <Playlists />
             </Layout>
           }
