@@ -3,7 +3,7 @@ import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import '../HomeContent/Player.css';
 
-const PlayerApp = ({playlist}) => {
+const PlayerApp = ({className, playlist}) => {
     const [currentTrack, setTrackIndex] = React.useState(0)
     const handleClickNext = () => {
         console.log('click next')
@@ -19,6 +19,7 @@ const PlayerApp = ({playlist}) => {
           );
     }
     return (
+      <div className={className}>
         <div className="flex-container">
           <div className="left-section">{playlist[currentTrack].name}</div>
           <div className="mid-section">
@@ -36,6 +37,7 @@ const PlayerApp = ({playlist}) => {
           <div className="right-section">
           <p></p>
           </div>
+        </div>
         </div>
       );
 };
