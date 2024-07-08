@@ -10,14 +10,6 @@ html {
   font-family: Poppins;
 }
 
-.main-content-area {
-  flex: 1;
-  display: flex;
-  width: auto;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
 footer {
   color: #222222;
   font-size: small;
