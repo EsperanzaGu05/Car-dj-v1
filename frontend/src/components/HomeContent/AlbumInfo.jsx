@@ -19,11 +19,7 @@ const AlbumInfo = ({ release }) => {
           alt={`${release.name}`}
         />
       </div>
-<<<<<<< HEAD
-      <span style={{ overflow: "hidden" }}>{release.name}</span>
-=======
       <span>{release.name}</span>
->>>>>>> eb1faec4dd693945ae90e52e9113b102c38926b9
       <span style={{ color: "#222222", opacity: 0.5 }}>
         {release.artists[0].name}
       </span>

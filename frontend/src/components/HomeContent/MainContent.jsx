@@ -36,8 +36,4 @@ const MainContent = ({ trackReleases, albumReleases }) => {
   );
 };
 
-<<<<<<< HEAD
 export default MainContent;
-=======
-export default MainContent;
->>>>>>> eb1faec4dd693945ae90e52e9113b102c38926b9

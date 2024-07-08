@@ -14,7 +14,7 @@ const ContentArtists = ({ artists }) => {
             ))}
           </div>
         ) : (
-          <span class="loader">Loading...</span>
+          <span className="loader">Loading...</span>
         )}
       </div>
     </div>
