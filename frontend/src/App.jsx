@@ -88,6 +88,14 @@ function AppContent() {
           }
         />
         <Route
+          path="/artists/:id"
+          element={
+            <Layout playlist={playlist}>
+              <ArtistsDetailes />
+            </Layout>
+          }
+        />
+        <Route
           path="/albums"
           element={
             <Layout id="albums" playlist={playlist}>
@@ -103,14 +111,7 @@ function AppContent() {
             </Layout>
           }
         />
-        <Route
-          path="/artistsDetailes"
-          element={
-            <Layout id="playlist" playlist={playlist}>
-              <ArtistsDetailes />
-            </Layout>
-          }
-        />
+
         <Route path="/verify" element={<Verify />} />
         <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />

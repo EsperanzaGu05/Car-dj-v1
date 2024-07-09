@@ -6,7 +6,7 @@ import "../Content/Content.css";
 const ArtistInfo = ({ artist }) => {
   return (
     <div className="card-artist">
-      <Link to="/artistsDetailes" className="redirect-detailes">
+      <Link to={`/artists/${artist.id}`} className="redirect-detailes">
         <div
           style={{
             paddingBottom: "10px",

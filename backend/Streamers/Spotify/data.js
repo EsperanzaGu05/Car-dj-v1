@@ -39,6 +39,7 @@ app.get('/new-releases', (req, res) => {
 // Getting artists from spotify for set of ids
 app.get('/artists', (req, res) => {
     const { ids } = req.query;
+
     SpotifyConn(async (error, instance) => {
         if (instance) {
             if (ids) {

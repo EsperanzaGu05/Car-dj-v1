@@ -8,7 +8,7 @@ const Artists = () => {
   const fetchArtist = async () => {
     const fetchedArtist = await getArtists();
     setArtist(fetchedArtist);
-    console.log(artists);
+    console.log(fetchedArtist);
   };
 
   useEffect(() => {
