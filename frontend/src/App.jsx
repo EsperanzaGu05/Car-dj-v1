@@ -18,11 +18,21 @@ import Home from "./Pages/Home/Home.jsx";
 import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
+import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
 
 const playlist = [
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', name:"song 1" },
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', name:"song 2" },
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', name:"song 3" },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+    name: "song 1",
+  },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    name: "song 2",
+  },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    name: "song 3",
+  },
 ];
 
 function AppContent() {
@@ -90,6 +100,14 @@ function AppContent() {
           element={
             <Layout id="playlist" playlist={playlist}>
               <Playlists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/artistsDetailes"
+          element={
+            <Layout id="playlist" playlist={playlist}>
+              <ArtistsDetailes />
             </Layout>
           }
         />
