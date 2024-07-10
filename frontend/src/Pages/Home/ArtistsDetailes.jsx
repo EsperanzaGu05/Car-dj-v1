@@ -4,17 +4,20 @@ import {
   getArtists,
   getArtistAlbums,
   getArtistTopTracks,
+  getArtistRelated,
 } from "../../utils/utils";
 import "../../components/Content/ArtistDetails.css";
 import "../../components/Content/Content.css";
 import ArtistInfoDetailes from "../../components/ArtistDetails/ArtistInfoDetails";
 import AlbumInfo from "../../components/Content/AlbumInfo";
 import { millisToMinutesAndSeconds } from "../../utils/functions";
+import ArtistInfo from "../../components/Content/ArtistInfo";
 
 const ArtistsDetailes = () => {
   const { id } = useParams();
   const [artistDetails, setArtistDetails] = useState(null);
   const [artistAlbums, setArtistAlbums] = useState(null);
+  const [artistRelated, setArtistRelated] = useState(null);
   const [artistTopTracks, setArtistTopTracks] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,12 +27,15 @@ const ArtistsDetailes = () => {
       const fetchedArtistDetails = await getArtists(id);
       const fetchedArtistAlbums = await getArtistAlbums(id);
       const fetchedArtistTopTracks = await getArtistTopTracks(id);
+      const fetchedArtistRelated = await getArtistRelated(id);
       setArtistDetails(fetchedArtistDetails);
       setArtistAlbums(fetchedArtistAlbums);
       setArtistTopTracks(fetchedArtistTopTracks);
+      setArtistRelated(fetchedArtistRelated);
       console.log(fetchedArtistDetails);
       console.log(fetchedArtistAlbums.items);
       console.log(fetchedArtistTopTracks);
+      console.log(fetchedArtistRelated);
     } catch (error) {
       setError("Error fetching artist details.");
       console.error(error);
@@ -59,6 +65,7 @@ const ArtistsDetailes = () => {
   const artist = artistDetails.artists[0];
   const albumsArtist = artistAlbums.items;
   const topTracksArtist = artistTopTracks.tracks;
+  const relatedArtists = artistRelated;
 
   return (
     <div>
@@ -92,6 +99,18 @@ const ArtistsDetailes = () => {
           <div className="all-albums">
             {albumsArtist.map((album) => (
               <AlbumInfo key={album.id} album={album} />
+            ))}
+          </div>
+        ) : (
+          <span className="loader">Loading...</span>
+        )}
+      </div>
+      <h2>Related Artists</h2>
+      <div className="content-related-artists">
+        {relatedArtists ? (
+          <div className="all-artists">
+            {relatedArtists.artists.map((artist) => (
+              <ArtistInfo key={artist.id} artist={artist} />
             ))}
           </div>
         ) : (
