@@ -64,6 +64,23 @@ app.get('/artists', (req, res) => {
     })
 });
 
+app.get(`/artists/:id/albums`, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`artists/${id}/albums`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
 app.get('/albums', (req, res) => {
     const { ids } = req.query;
     SpotifyConn(async (error, instance) => {

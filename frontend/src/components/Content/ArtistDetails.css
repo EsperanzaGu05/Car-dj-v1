@@ -1,0 +1,12 @@
+.artist-detailes {
+    display: flex;
+    padding: 30px;
+}
+
+.artist-detailes-info {
+    display: flex;
+    align-content: stretch;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 20px;
+}

@@ -18,7 +18,8 @@ h2 {
     display: flex;
 }
 
-#all-tracks {
+.all-tracks,
+.all-albums {
     padding-left: 20px;
     display: flex;
     width: 1150px;
