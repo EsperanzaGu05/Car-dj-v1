@@ -18,7 +18,7 @@ const AlbumInfo = ({ album }) => {
           alt={`${album.name}`}
         />
       </div>
-      <span>{album.name}</span>
+      <span className="albumName-albumCard">{album.name}</span>
       <span style={{ color: "#222222", opacity: 0.5 }}>
         {album.artists[0].name}
       </span>

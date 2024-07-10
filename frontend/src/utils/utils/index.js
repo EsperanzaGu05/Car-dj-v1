@@ -32,9 +32,25 @@ export const getArtists = async (id = '') => {
     }
 };
 
-export const getArtistsAlbums = async (id = '') => {
+export const getArtistAlbums = async (id = '') => {
     try {
         let URL = `http://localhost:5000/api/spotify/artists/${id}/albums`;
+
+        const response = await fetch(URL, {
+            method: "GET",
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching artists:', error);
+        throw error;
+    }
+};
+
+export const getArtistTopTracks = async (id = '') => {
+    try {
+        let URL = `http://localhost:5000/api/spotify/artists/${id}/top-tracks`;
 
         const response = await fetch(URL, {
             method: "GET",
