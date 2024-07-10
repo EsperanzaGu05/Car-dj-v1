@@ -1,10 +1,9 @@
 import React from "react";
+import "../Content/Content.css";
 
-import "../HomeContent/MainContent.css";
-
-const AlbumInfo = ({ release }) => {
+const AlbumInfo = ({ album }) => {
   return (
-    <div className="card-track">
+    <div className="card-album">
       <div
         style={{
           paddingBottom: "10px",
@@ -13,15 +12,15 @@ const AlbumInfo = ({ release }) => {
         }}
       >
         <img
-          src={release.images[0].url}
-          width={"200px"}
-          height={"200px"}
-          alt={`${release.name}`}
+          src={album.images[0].url}
+          width={"180px"}
+          height={"180px"}
+          alt={`${album.name}`}
         />
       </div>
-      <span>{release.name}</span>
+      <span>{album.name}</span>
       <span style={{ color: "#222222", opacity: 0.5 }}>
-        {release.artists[0].name}
+        {album.artists[0].name}
       </span>
     </div>
   );

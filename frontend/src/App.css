@@ -6,34 +6,17 @@ html {
 
 #main-container {
   display: flex;
-<<<<<<< HEAD
   height: 100vh;
-=======
-  min-height: 100vh;
->>>>>>> eb1faec4dd693945ae90e52e9113b102c38926b9
   font-family: Poppins;
-}
-
-.main-content-area {
-  flex: 1;
-  display: flex;
-  width: auto;
-  flex-direction: column;
-  box-sizing: border-box;
 }
 
 footer {
   color: #222222;
-<<<<<<< HEAD
   font-size: small;
   background-color: #f5f5f5;
   display: flex;
   justify-content: center;
   font-size: small;
-=======
-  background-color: #f5f5f5;
-  align-items: center;
->>>>>>> eb1faec4dd693945ae90e52e9113b102c38926b9
 }
 
 .success-alert {

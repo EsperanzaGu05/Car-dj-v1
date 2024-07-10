@@ -1,8 +1,7 @@
 import React from "react";
-
 import "../HomeContent/MainContent.css";
 
-const AlbumInfo = ({ release }) => {
+const ArtistInfo = ({ artist }) => {
   return (
     <div className="card-track">
       <div
@@ -13,18 +12,18 @@ const AlbumInfo = ({ release }) => {
         }}
       >
         <img
-          src={release.images[0].url}
+          src={artist.images[0]?.url}
           width={"200px"}
           height={"200px"}
-          alt={`${release.name}`}
+          alt={artist.name}
         />
       </div>
-      <span>{release.name}</span>
+      <span>{artist.name}</span>
       <span style={{ color: "#222222", opacity: 0.5 }}>
-        {release.artists[0].name}
+        Artist
       </span>
     </div>
   );
 };
 
-export default AlbumInfo;
+export default ArtistInfo;
