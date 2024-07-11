@@ -152,13 +152,13 @@ router.get('/playlists', (req, res) => {
 router.get('/search', (req, res) => {
     console.log("Search endpoint hit:", req.query);
     const { q, type } = req.query;
-
+    
     if (!q) {
         return res.status(400).json({ error: "Query parameter 'q' is required" });
     }
 
     const searchTypes = type || 'track,artist,album';
-
+    
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {

@@ -41,13 +41,12 @@ aside {
 .login-section {
     display: flex;
     justify-content: center;
-    width: 75%;
+    width: 70%;
     background-color: white;
     border-radius: 5px;
     padding: 15px;
     font-size: 14px;
     margin-left: 10px;
-    flex-direction: column;
 }
 
 .login-section-button {
@@ -114,7 +113,6 @@ aside {
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
-
 /* AsideBar.css */
 .my-playlist-button {
     display: flex;
@@ -128,12 +126,13 @@ aside {
     text-align: center;
     font-size: 16px;
     transition: background-color 0.3s;
-}
-
-.my-playlist-button img {
+  }
+  
+  .my-playlist-button img {
     margin-right: 8px;
-}
-
-.my-playlist-button:hover {
+  }
+  
+  .my-playlist-button:hover {
     background-color: #0056b3;
-}
+  }
+  

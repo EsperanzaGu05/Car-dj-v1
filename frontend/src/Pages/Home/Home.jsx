@@ -11,6 +11,8 @@ const Home = () => {
     let albumReleases = [];
 
     try {
+      // Initial request to get the total number of items
+      // ACTIVAR LOADER
       const initialData = await getNewRealeases();
       if (initialData && initialData.albums && initialData.albums.items) {
         trackReleases = initialData.albums.items.filter(
@@ -23,6 +25,7 @@ const Home = () => {
       }
       setTrackReleases(trackReleases);
       setAlbumReleases(albumReleases);
+      // QUITAR LOADER
     } catch (error) {
       console.error("Error fetching releases:", error);
     }

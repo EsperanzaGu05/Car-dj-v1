@@ -9,12 +9,9 @@ h2 {
     scrollbar-color: rgba(255, 255, 255, 0.87) rgba(255, 255, 255, 0.87);
 }
 
-.search-content {
-    padding-left: 20px;
-}
-
 .content-tracks {
     background-color: white;
+    color: aqua;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
