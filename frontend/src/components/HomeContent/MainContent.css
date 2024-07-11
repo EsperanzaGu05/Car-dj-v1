@@ -18,11 +18,21 @@ h2 {
     display: flex;
 }
 
-#all-tracks {
+.all-tracks,
+.all-albums {
     padding-left: 20px;
     display: flex;
     width: 1150px;
-    height: 350px;
+    height: 300px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+
+.all-artists {
+    padding-left: 20px;
+    display: flex;
+    width: 1150px;
+    height: 300px;
     overflow-x: scroll;
     overflow-y: hidden;
 }
@@ -41,20 +51,6 @@ h2 {
     margin: 10px;
 }
 
-.card-artist {
-    border: solid 1px #f5f5f6;
-    background-color: #f5f5f6;
-    width: 190px;
-    height: 225px;
-    cursor: pointer;
-    color: #222;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    margin: 10px;
-}
-
 #all-artists {
     padding-left: 20px;
     display: grid;
@@ -63,47 +59,4 @@ h2 {
     overflow-y: scroll;
     scroll-behavior: smooth;
     scrollbar-color: rgba(255, 255, 255, 0.87) rgba(255, 255, 255, 0.87);
-}
-
-
-
-
-#all-albums {
-    padding-left: 20px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    overflow-y: scroll;
-    scroll-behavior: smooth;
-    scrollbar-color: rgba(255, 255, 255, 0.87) rgba(255, 255, 255, 0.87);
-}
-
-.card-artist {
-    border: solid 1px #f5f5f6;
-    background-color: #f5f5f6;
-    width: 190px;
-    height: 225px;
-    cursor: pointer;
-    color: #222;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    margin: 10px;
-}
-
-.card-album {
-
-    border: solid 1px #f5f5f6;
-    background-color: #f5f5f6;
-    width: 230px;
-    height: 230px;
-    cursor: pointer;
-    color: #222;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    margin: 10px 20px 20px 10px;
-    font-size: 14px;
 }
