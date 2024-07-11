@@ -21,7 +21,21 @@ import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
 import SearchResult from "./components/SearchBar/SearchResults.jsx"; // New import
+import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
 
+const playlist = [
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+    name: "song 1",
+  },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    name: "song 2",
+  },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    name: "song 3",
+  },
 
 const playlist = [
   { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', name: "song 1" },
@@ -79,12 +93,30 @@ function AppContent() {
   }, [login, navigate, location]);
 
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home message={message} setMessage={setMessage} />} />
-        <Route path="/artists" element={<Artists />} />
-        <Route path="/albums" element={<Albums />} />
-        <Route path="/playlist" element={<Playlists />} />
+     <div id="main-container">
+      <Routes>
+        <Route path="/" element={
+            <Layout id="home" playlist={playlist}>
+              <Home />
+            </Layout>}/>
+        <Route path="/artists" element={
+            <Layout id="artist" playlist={playlist}>
+              <Artists />
+            </Layout> } />
+        <Route path="/artists/:id" element={
+            <Layout playlist={playlist}>
+              <ArtistsDetailes />
+            </Layout> } />
+        <Route path="/albums"
+          element={
+            <Layout id="albums" playlist={playlist}>
+              <Albums />
+            </Layout> } />
+        <Route path="/playlist"
+          element={
+            <Layout id="playlist" playlist={playlist}>
+              <Playlists />
+            </Layout> } />
         <Route path="/search" element={<SearchResult />} /> {/* New route for search results */}
         <Route path="/login"/>
       </Route>
@@ -95,6 +127,7 @@ function AppContent() {
       <Route path="/google/callback" element={<GoogleLoginCallback />} />
      
     </Routes>
+</div>
   );
 }
 
