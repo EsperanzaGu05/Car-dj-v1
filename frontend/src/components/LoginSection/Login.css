@@ -1,13 +1,8 @@
-.info-login {
-    width: auto;
+#info-login {
+    width: 140px;
     padding-top: 10px;
     padding-bottom: 10px;
     color: #888888;
-}
-
-.span-text {
-    font-weight: 500;
-    color: "#222222"
 }
 
 #login-form-whole {

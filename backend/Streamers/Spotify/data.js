@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { SpotifyConn } from "./spotify.js";
+import router from "../../routes/register.js";
+import e from "express";
 
 const app = express();
 
@@ -95,4 +97,29 @@ app.get('/playlists', (req, res) => {
     })
 });
 
-export default app;
+router.get('/search', (req, res) => {
+    console.log("Search endpoint hit:", req.query);
+    const { q, type } = req.query;
+    
+    if (!q) {
+        return res.status(400).json({ error: "Query parameter 'q' is required" });
+    }
+
+    const searchTypes = type || 'track,artist,album';
+    
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                const data = await instance.get(`/search?q=${encodeURIComponent(q)}&type=${searchTypes}&limit=20`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.error(error);
+                return res.status(500).json({ error: "An error occurred while searching" });
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    });
+});
+
+export default router;
