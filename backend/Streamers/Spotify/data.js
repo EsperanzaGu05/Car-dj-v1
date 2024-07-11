@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { SpotifyConn } from "./spotify.js";
 
-import e from "express";
+
 
 const router = express.Router();
 
