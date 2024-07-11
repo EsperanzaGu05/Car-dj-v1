@@ -1,8 +1,23 @@
 import React from "react";
-// import { getArtists } from "../../utils";
 import "../HomeContent/MainContent.css";
 
 const TrackInfo = ({ release }) => {
+  if (!release) {
+    return <div>No release information available</div>;
+  }
+
+  // Determine if it's a track or an album/playlist
+  const isTrack = release.type === 'track';
+  
+  const imageUrl = isTrack 
+    ? release.album?.images[0]?.url 
+    : release.images?.[0]?.url;
+  
+  const name = release.name || 'Unknown';
+  const artistName = isTrack 
+    ? release.artists?.[0]?.name 
+    : release.artists?.[0]?.name || 'Unknown Artist';
+
   return (
     <div className="card-track">
       <div
@@ -12,16 +27,18 @@ const TrackInfo = ({ release }) => {
           justifyContent: "center",
         }}
       >
-        <img
-          src={release.images[0].url}
-          width={"200px"}
-          height={"200px"}
-          alt={`${release.name}`}
-        />
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            width={"200px"}
+            height={"200px"}
+            alt={`${name}`}
+          />
+        )}
       </div>
-      <span>{release.name}</span>
+      <span>{name}</span>
       <span style={{ color: "#222222", opacity: 0.5 }}>
-        {release.artists[0].name}
+        {artistName}
       </span>
     </div>
   );

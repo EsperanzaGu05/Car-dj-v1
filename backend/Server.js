@@ -15,6 +15,7 @@ import accountRoute from './routes/account.js'; // Import the account route
 import './Controllers/passport.js';
 import { ConnectDB } from './Database/connection.js';
 import spotifyDataRoute from './Streamers/Spotify/data.js';
+import apiRoutes from "./Streamers/Spotify/data.js";
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use('/api/login', loginRoute);
 app.use('/api/account', accountRoute); // Add account route
 
 app.use('/api/spotify', spotifyDataRoute);
+app.use('/api', apiRoutes);
 
 
 app.get('/api', (req, res) => {
