@@ -12,7 +12,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { AuthContext } from '../contexts/AuthContext'; // Adjust this import based on your project structure
+import { AuthContext } from '../contexts/AuthContext';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -75,7 +75,9 @@ const TrackInfo = ({ release }) => {
         },
         body: JSON.stringify({ 
           songId: release.id, 
-          songName: release.name 
+          songName: release.name,
+          artist: artistName,
+          imageUrl: imageUrl
         })
       });
       const data = await response.json();

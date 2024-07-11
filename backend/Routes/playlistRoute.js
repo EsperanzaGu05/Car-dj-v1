@@ -17,7 +17,7 @@ const verifyToken = (req, res, next) => {
       return res.status(401).json({ message: 'Failed to authenticate token' });
     }
     console.log('Decoded token:', decoded);
-    req.userId = decoded.userId; // Ensure it extracts userId
+    req.userId = decoded.userId;
     next();
   });
 };
@@ -40,8 +40,6 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
-
-// Get all playlists for a user
 router.get('/', verifyToken, async (req, res) => {
   const userId = req.userId;
   const db = getDB();
@@ -54,7 +52,6 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-// Get a specific playlist
 router.get('/:playlistId', verifyToken, async (req, res) => {
   const { playlistId } = req.params;
   const userId = req.userId;
@@ -69,10 +66,9 @@ router.get('/:playlistId', verifyToken, async (req, res) => {
   }
 });
 
-// Add a song to a playlist
 router.post('/:playlistId/songs', verifyToken, async (req, res) => {
   const { playlistId } = req.params;
-  const { songId, songName } = req.body;
+  const { songId, songName, artist, imageUrl } = req.body;
   const userId = req.userId;
   const db = getDB();
 
@@ -87,7 +83,7 @@ router.post('/:playlistId/songs', verifyToken, async (req, res) => {
 
     await db.collection(collections.PLAYLIST).updateOne(
       { _id: new ObjectId(playlistId) },
-      { $addToSet: { songs: { trackId: songId, name: songName } } }
+      { $addToSet: { songs: { trackId: songId, name: songName, artist, imageUrl } } }
     );
     res.status(200).json({ message: 'Song added to playlist' });
   } catch (error) {
@@ -95,7 +91,6 @@ router.post('/:playlistId/songs', verifyToken, async (req, res) => {
   }
 });
 
-// Remove a playlist
 router.delete('/:playlistId', verifyToken, async (req, res) => {
   const { playlistId } = req.params;
   const userId = req.userId;
@@ -117,7 +112,6 @@ router.delete('/:playlistId', verifyToken, async (req, res) => {
   }
 });
 
-// Remove a song from a playlist
 router.delete('/:playlistId/songs/:songId', verifyToken, async (req, res) => {
   const { playlistId, songId } = req.params;
   const userId = req.userId;

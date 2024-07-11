@@ -36,8 +36,6 @@ const LoggedInAsideBar = () => {
   const [playlistNameError, setPlaylistNameError] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
-  const [isRenameDialogOpen, setRenameDialogOpen] = useState(false);
-  const [newName, setNewName] = useState('');
   const [isSongRemoveDialogOpen, setSongRemoveDialogOpen] = useState(false);
   const [songToRemove, setSongToRemove] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -129,6 +127,8 @@ const LoggedInAsideBar = () => {
       if (response.ok) {
         setNewPlaylistName('');
         fetchPlaylists();
+        setSnackbarMessage('Playlist created successfully');
+        setSnackbarOpen(true);
       } else {
         setError(data.message || 'Failed to create playlist');
       }
@@ -160,6 +160,8 @@ const LoggedInAsideBar = () => {
 
       if (response.ok) {
         fetchPlaylists();
+        setSnackbarMessage('Playlist removed successfully');
+        setSnackbarOpen(true);
       } else {
         const data = await response.json();
         setError(data.message || 'Failed to remove playlist');
@@ -169,37 +171,6 @@ const LoggedInAsideBar = () => {
     }
 
     handleMenuClose();
-  };
-
-  const handleRenameClick = () => {
-    setRenameDialogOpen(true);
-    setNewName(selectedPlaylist.name);
-    handleMenuClose();
-  };
-
-  const handleRenamePlaylist = async () => {
-    if (!selectedPlaylist || !newName.trim()) return;
-
-    try {
-      const response = await fetch(`http://localhost:5000/api/user/playlists/${selectedPlaylist._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${auth.token}`
-        },
-        body: JSON.stringify({ name: newName.trim() })
-      });
-
-      if (response.ok) {
-        fetchPlaylists();
-        setRenameDialogOpen(false);
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Failed to rename playlist');
-      }
-    } catch (error) {
-      setError('Error renaming playlist');
-    }
   };
 
   const handlePlaylistItemClick = async (playlist) => {
@@ -309,30 +280,8 @@ const LoggedInAsideBar = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleRenameClick}>Rename</MenuItem>
         <MenuItem onClick={handleRemovePlaylist}>Delete</MenuItem>
       </Menu>
-
-      <Dialog open={isRenameDialogOpen} onClose={() => setRenameDialogOpen(false)}>
-        <DialogTitle>Rename Playlist</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="rename"
-            label="New Playlist Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRenameDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleRenamePlaylist} disabled={!newName.trim()}>Rename</Button>
-        </DialogActions>
-      </Dialog>
 
       <Dialog open={isSongsDialogOpen} onClose={() => setSongsDialogOpen(false)}>
         <DialogTitle>Songs in {selectedPlaylist?.name}</DialogTitle>
@@ -352,13 +301,19 @@ const LoggedInAsideBar = () => {
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar src={song.imageUrl} alt={song.name}>
-                      {song.name.charAt(0)}
+                    <Avatar 
+                      src={song.imageUrl} 
+                      alt={song.name}
+                      sx={{ width: 40, height: 40 }}
+                    >
+                      {!song.imageUrl && song.name.charAt(0)}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText 
                     primary={song.name} 
                     secondary={song.artist}
+                    primaryTypographyProps={{ noWrap: true }}
+                    secondaryTypographyProps={{ noWrap: true }}
                   />
                 </ListItem>
               ))}
