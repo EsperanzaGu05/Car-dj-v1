@@ -21,16 +21,32 @@
     transition: background-color 200ms ease-in-out;
 }
 
+.albumSongsItems {
+    display: grid;
+    grid-template-rows: 50px;
+    grid-template-columns: 50px 2fr 50px;
+    justify-items: start;
+    align-items: center;
+    padding-left: 10px;
+    transition: background-color 200ms ease-in-out;
+}
+
 .artistTopTrackList {
     padding: 20px;
 }
 
-.artistTopTrackItems:hover {
+.albumSongsList {
+    padding: 20px;
+}
+
+.artistTopTrackItems:hover,
+.albumSongsItems:hover {
     background-color: #e2e2e2;
     transition: background-color 200ms ease-in-out;
 }
 
-.artistTopTrackItems:active {
+.artistTopTrackItems:active,
+.albumSongsItems:active {
     background-color: #e2e2e2;
 }
 

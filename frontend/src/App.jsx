@@ -19,6 +19,7 @@ import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
 import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
+import AlbumsDetails from "./Pages/Home/AlbumsDetails.jsx";
 
 const playlist = [
   {
@@ -90,7 +91,7 @@ function AppContent() {
         <Route
           path="/artists/:id"
           element={
-            <Layout playlist={playlist}>
+            <Layout id="artist" playlist={playlist}>
               <ArtistsDetailes />
             </Layout>
           }
@@ -100,6 +101,14 @@ function AppContent() {
           element={
             <Layout id="albums" playlist={playlist}>
               <Albums />
+            </Layout>
+          }
+        />
+        <Route
+          path="/albums/:id"
+          element={
+            <Layout id="albums" playlist={playlist}>
+              <AlbumsDetails />
             </Layout>
           }
         />
