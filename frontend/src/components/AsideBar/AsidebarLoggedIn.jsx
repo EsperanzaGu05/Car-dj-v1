@@ -113,6 +113,13 @@ const LoggedInAsideBar = () => {
       return;
     }
 
+    // Check if a playlist with the same name already exists
+    const playlistExists = playlists.some(playlist => playlist.name.toLowerCase() === newPlaylistName.trim().toLowerCase());
+    if (playlistExists) {
+      setPlaylistNameError('A playlist with this name already exists');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:5000/api/user/playlists', {
         method: 'POST',
