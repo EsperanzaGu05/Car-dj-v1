@@ -2,6 +2,7 @@ body,
 html {
   margin: 0;
   width: auto;
+  font-family: Poppins;
 }
 
 #main-container {

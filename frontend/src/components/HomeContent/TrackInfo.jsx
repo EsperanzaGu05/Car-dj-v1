@@ -150,9 +150,9 @@ const TrackInfo = ({ release }) => {
         style={{
           position: "absolute",
           top: 5,
-          right: 5,
-          color: "#1976d2",
-          backgroundColor: "rgba(255, 255, 255, 0.7)",
+          right: -80,
+          color: "white",
+          backgroundColor: "transparent",
         }}
       >
         <MoreVertIcon />

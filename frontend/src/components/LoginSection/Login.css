@@ -1,7 +1,12 @@
-#info-login {
-    width: 140px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+.login-section-text {
+    font-weight: 500;
+    color: "#222222"
+}
+
+.info-login {
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
     color: #888888;
 }
 
