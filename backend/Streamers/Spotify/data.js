@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { SpotifyConn } from "./spotify.js";
-import router from "../../routes/register.js";
-import e from "express";
+
+
 
 const router = express.Router();
 
@@ -40,6 +40,7 @@ router.get('/new-releases', (req, res) => {
 
 router.get('/artists', (req, res) => {
     const { ids } = req.query;
+
     SpotifyConn(async (error, instance) => {
         if (instance) {
             if (ids) {
@@ -64,7 +65,60 @@ router.get('/artists', (req, res) => {
     })
 });
 
+
+router.get(`/artists/:id/albums`, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`artists/${id}/albums`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
+router.get(`/artists/:id/top-tracks`, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`artists/${id}/top-tracks`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
+router.get(`/artists/:id/related-artists`, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`artists/${id}/related-artists`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
 router.get('/albums', (req, res) => {
+
     const { ids } = req.query;
     SpotifyConn(async (error, instance) => {
         if (instance) {

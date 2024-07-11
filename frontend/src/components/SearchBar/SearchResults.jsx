@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import TrackInfo from "../HomeContent/TrackInfo";
 import AlbumInfo from "../HomeContent/AlbumInfo";
 import ArtistInfo from "../HomeContent/ArtistInfo";
-import { searchSpotify } from "../../utils/utils"; // Adjust this path as needed
-import "../HomeContent/MainContent.css"; // Adjust this path as needed
+import { searchSpotify } from "../../utils/utils";
+import "../HomeContent/MainContent.css";
 
 const SearchResult = () => {
   const [searchResults, setSearchResults] = useState({ tracks: [], albums: [], artists: [] });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const searchQuery = new URLSearchParams(location.search).get("q");
 
   useEffect(() => {
@@ -37,6 +38,10 @@ const SearchResult = () => {
 
     fetchSearchResults();
   }, [searchQuery]);
+
+  const handleArtistClick = (artistId) => {
+    navigate(`/artists/${artistId}`);
+  };
 
   if (isLoading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -81,7 +86,9 @@ const SearchResult = () => {
           {searchResults.artists.length > 0 ? (
             <div id="all-tracks">
               {searchResults.artists.map((artist) => (
-                <ArtistInfo key={artist.id} artist={artist} />
+                <div key={artist.id} onClick={() => handleArtistClick(artist.id)}>
+                  <ArtistInfo artist={artist} />
+                </div>
               ))}
             </div>
           ) : (
