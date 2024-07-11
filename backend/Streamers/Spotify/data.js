@@ -5,9 +5,9 @@ import { SpotifyConn } from "./spotify.js";
 import router from "../../routes/register.js";
 import e from "express";
 
-const app = express();
+const router = express.Router();
 
-app.get('/track', (req, res) => {
+router.get('/track', (req, res) => {
     const { id } = req.query;
     SpotifyConn(async (error, instance) => {
         if (instance) {
@@ -23,7 +23,7 @@ app.get('/track', (req, res) => {
     })
 });
 
-app.get('/new-releases', (req, res) => {
+router.get('/new-releases', (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
@@ -38,8 +38,7 @@ app.get('/new-releases', (req, res) => {
     })
 });
 
-// Getting artists from spotify for set of ids
-app.get('/artists', (req, res) => {
+router.get('/artists', (req, res) => {
     const { ids } = req.query;
     SpotifyConn(async (error, instance) => {
         if (instance) {
@@ -65,7 +64,7 @@ app.get('/artists', (req, res) => {
     })
 });
 
-app.get('/albums', (req, res) => {
+router.get('/albums', (req, res) => {
     const { ids } = req.query;
     SpotifyConn(async (error, instance) => {
         if (instance) {
@@ -81,8 +80,7 @@ app.get('/albums', (req, res) => {
     })
 });
 
-
-app.get('/playlists', (req, res) => {
+router.get('/playlists', (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {

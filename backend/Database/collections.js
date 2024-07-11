@@ -1,8 +1,7 @@
 const collections = {
   USER: 'users',
   TEMP: 'temp_users',
-  Playlists: 'Playlists'
-  
+  PLAYLIST: 'playlists',
 };
 
 export default collections;
