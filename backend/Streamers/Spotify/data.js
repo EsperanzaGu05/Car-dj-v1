@@ -66,7 +66,7 @@ router.get('/artists', (req, res) => {
 });
 
 
-app.get(`/artists/:id/albums`, (req, res) => {
+router.get(`/artists/:id/albums`, (req, res) => {
     const { id } = req.params;
 
     SpotifyConn(async (error, instance) => {
@@ -83,7 +83,7 @@ app.get(`/artists/:id/albums`, (req, res) => {
     })
 });
 
-app.get(`/artists/:id/top-tracks`, (req, res) => {
+router.get(`/artists/:id/top-tracks`, (req, res) => {
     const { id } = req.params;
 
     SpotifyConn(async (error, instance) => {
@@ -100,7 +100,7 @@ app.get(`/artists/:id/top-tracks`, (req, res) => {
     })
 });
 
-app.get(`/artists/:id/related-artists`, (req, res) => {
+router.get(`/artists/:id/related-artists`, (req, res) => {
     const { id } = req.params;
 
     SpotifyConn(async (error, instance) => {
@@ -117,7 +117,7 @@ app.get(`/artists/:id/related-artists`, (req, res) => {
     })
 });
 
-app.get('/albums', (req, res) => {
+router.get('/albums', (req, res) => {
 
     const { ids } = req.query;
     SpotifyConn(async (error, instance) => {
@@ -152,13 +152,13 @@ router.get('/playlists', (req, res) => {
 router.get('/search', (req, res) => {
     console.log("Search endpoint hit:", req.query);
     const { q, type } = req.query;
-    
+
     if (!q) {
         return res.status(400).json({ error: "Query parameter 'q' is required" });
     }
 
     const searchTypes = type || 'track,artist,album';
-    
+
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {

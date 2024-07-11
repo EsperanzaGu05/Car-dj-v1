@@ -7,7 +7,11 @@ import { searchSpotify } from "../../utils/utils"; // Adjust this path as needed
 import "../HomeContent/MainContent.css"; // Adjust this path as needed
 
 const SearchResult = () => {
-  const [searchResults, setSearchResults] = useState({ tracks: [], albums: [], artists: [] });
+  const [searchResults, setSearchResults] = useState({
+    tracks: [],
+    albums: [],
+    artists: [],
+  });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
@@ -21,7 +25,7 @@ const SearchResult = () => {
       setError(null);
       try {
         const data = await searchSpotify(searchQuery);
-        console.log('Search results:', data); // For debugging
+        console.log("Search results:", data); // For debugging
         setSearchResults({
           tracks: data.tracks?.items || [],
           albums: data.albums?.items || [],
@@ -42,53 +46,54 @@ const SearchResult = () => {
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="content-home">
-      <h2>Search Results for: {searchQuery}</h2>
+    <div style={{ paddingLeft: "20px" }}>
+      <h3>Search Results for: {searchQuery}</h3>
+      <div className="search-content">
+        <section>
+          <h2>Songs</h2>
+          <div className="content-tracks">
+            {searchResults.tracks.length > 0 ? (
+              <div className="all-tracks">
+                {searchResults.tracks.map((track) => (
+                  <TrackInfo key={track.id} release={track} />
+                ))}
+              </div>
+            ) : (
+              <p>No songs found</p>
+            )}
+          </div>
+        </section>
 
-      <section>
-        <h3>Songs</h3>
-        <div className="content-tracks">
-          {searchResults.tracks.length > 0 ? (
-            <div id="all-tracks">
-              {searchResults.tracks.map((track) => (
-                <TrackInfo key={track.id} release={track} />
-              ))}
-            </div>
-          ) : (
-            <p>No songs found</p>
-          )}
-        </div>
-      </section>
+        <section>
+          <h2>Albums</h2>
+          <div className="content-tracks">
+            {searchResults.albums.length > 0 ? (
+              <div className="all-albums">
+                {searchResults.albums.map((album) => (
+                  <AlbumInfo key={album.id} release={album} />
+                ))}
+              </div>
+            ) : (
+              <p>No albums found</p>
+            )}
+          </div>
+        </section>
 
-      <section>
-        <h3>Albums</h3>
-        <div className="content-tracks">
-          {searchResults.albums.length > 0 ? (
-            <div id="all-tracks">
-              {searchResults.albums.map((album) => (
-                <TrackInfo key={album.id} release={album} />
-              ))}
-            </div>
-          ) : (
-            <p>No albums found</p>
-          )}
-        </div>
-      </section>
-
-      <section>
-        <h3>Artists</h3>
-        <div className="content-tracks">
-          {searchResults.artists.length > 0 ? (
-            <div id="all-tracks">
-              {searchResults.artists.map((artist) => (
-                <ArtistInfo key={artist.id} artist={artist} />
-              ))}
-            </div>
-          ) : (
-            <p>No artists found</p>
-          )}
-        </div>
-      </section>
+        <section>
+          <h2>Artists</h2>
+          <div className="content-tracks">
+            {searchResults.artists.length > 0 ? (
+              <div className="all-artists">
+                {searchResults.artists.map((artist) => (
+                  <ArtistInfo key={artist.id} artist={artist} />
+                ))}
+              </div>
+            ) : (
+              <p>No artists found</p>
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
