@@ -5,7 +5,7 @@ import {
   Routes,
   useNavigate,
   useLocation,
-  Outlet
+  Outlet,
 } from "react-router-dom";
 import "./App.css";
 import AsideBar from "./components/AsideBar/AsideBar";
@@ -20,24 +20,48 @@ import Home from "./Pages/Home/Home.jsx";
 import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
-import SearchResult from "./components/SearchBar/SearchResults.jsx";
+import Layout from "./shared/Layout/Layout.jsx";
+import SearchResult from "./components/SearchBar/SearchResults.jsx"; // New import
 import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
 
 const playlist = [
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', name: "song 1" },
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', name: "song 2" },
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', name: "song 3" },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+    name: "song 1",
+  },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    name: "song 2",
+  },
+  {
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    name: "song 3",
+  },
 ];
 
-function Layout() {
+// function Layout() {
+//   const navigate = useNavigate();
+
+//   const handleSearch = (query) => {
+//     navigate(`/search?q=${encodeURIComponent(query)}`);
+//   };
+
+//   return (
+//     <div id="main-container">
+//       <AsideBar />
+//       <div className="main-content-area">
+//         <SearchBar onSearch={handleSearch} />
+//         <Outlet />
+//       </div>
+//     </div>
+//   );
+// }
+
+function AppContent() {
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useContext(AuthContext);
   const [message, setMessage] = useState(null);
-
-  const handleSearch = (query) => {
-    navigate(`/search?q=${encodeURIComponent(query)}`);
-  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -66,34 +90,64 @@ function Layout() {
 
   return (
     <div id="main-container">
-      <AsideBar />
-      <div className="main-content-area">
-        <SearchBar onSearch={handleSearch} />
-        
-        <Outlet context={{setMessage }} />
-      </div>
-    </div>
-  );
-}
-
-function AppContent() {
-  return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/artists" element={<Artists />} />
-        <Route path="/artists/:id" element={<ArtistsDetailes />} />
-        <Route path="/albums" element={<Albums />} />
-        <Route path="/playlist" element={<Playlists />} />
-        <Route path="/search" element={<SearchResult />} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout id="home" playlist={playlist}>
+              <Home />
+            </Layout>
+          }
+        />
+        <Route
+          path="/artists"
+          element={
+            <Layout id="artist" playlist={playlist}>
+              <Artists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/artists/:id"
+          element={
+            <Layout playlist={playlist}>
+              <ArtistsDetailes />
+            </Layout>
+          }
+        />
+        <Route
+          path="/albums"
+          element={
+            <Layout id="albums" playlist={playlist}>
+              <Albums />
+            </Layout>
+          }
+        />
+        <Route
+          path="/playlist"
+          element={
+            <Layout id="playlist" playlist={playlist}>
+              <Playlists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <Layout playlist={playlist}>
+              <SearchResult />
+            </Layout>
+          }
+        />
+        {/* New route for search results */}
         <Route path="/login" />
-      </Route>
-      <Route path="/verify" element={<Verify />} />
-      <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="/google/login" />
-      <Route path="/google/callback" element={<GoogleLoginCallback />} />
-    </Routes>
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/google/login" element={<Login />} />
+        <Route path="/google/callback" element={<GoogleLoginCallback />} />
+      </Routes>
+    </div>
   );
 }
 
