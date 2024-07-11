@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { SpotifyConn } from "./spotify.js";
+import router from "../../routes/register.js";
+import e from "express";
 
 const router = express.Router();
 
