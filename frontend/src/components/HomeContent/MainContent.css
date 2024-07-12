@@ -28,6 +28,7 @@ h2 {
     height: 300px;
     overflow-x: scroll;
     overflow-y: hidden;
+    padding-left: 20px;
 }
 
 .all-artists {
