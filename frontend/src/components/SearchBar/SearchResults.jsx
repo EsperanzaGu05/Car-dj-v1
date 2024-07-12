@@ -47,10 +47,10 @@ const SearchResult = () => {
 
   return (
     <div style={{ paddingLeft: "20px" }}>
-      <h3>Search Results for: {searchQuery}</h3>
+      <h3 style={{ paddingLeft: "10px" }}>Search Results for: {searchQuery}</h3>
       <div className="search-content">
         <section>
-          <h2>Songs</h2>
+          <h2 style={{ margin: "10px" }}>Songs</h2>
           <div className="content-tracks">
             {searchResults.tracks.length > 0 ? (
               <div className="all-tracks">
@@ -65,7 +65,7 @@ const SearchResult = () => {
         </section>
 
         <section>
-          <h2>Albums</h2>
+          <h2 style={{ margin: "10px" }}>Albums</h2>
           <div className="content-tracks">
             {searchResults.albums.length > 0 ? (
               <div className="all-albums">
@@ -79,7 +79,7 @@ const SearchResult = () => {
           </div>
         </section>
 
-        <section>
+        <section style={{ margin: "10px" }}>
           <h2>Artists</h2>
           <div className="content-tracks">
             {searchResults.artists.length > 0 ? (
