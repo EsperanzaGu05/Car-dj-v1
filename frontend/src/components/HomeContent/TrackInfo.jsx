@@ -13,6 +13,10 @@ import ListItemText from "@mui/material/ListItemText";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { AuthContext } from "../contexts/AuthContext";
+import { useDispatch } from "react-redux";
+import playlistSlice from "../Player/playlistSlice";
+import playButtonSrc from "../../assets/play-button.svg";
+import {getAlbumTracks} from '../../utils/utils/index';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -28,6 +32,19 @@ const TrackInfo = ({ release }) => {
     message: "",
     severity: "success",
   });
+  const { setCurrentPlaylist, setCurrentTrack} = playlistSlice.actions;
+  const dispatch = useDispatch();
+  const updatePlayerStatus = async (track) => {    
+    try {
+      const trackData = await getAlbumTracks(track.id);
+      console.log(trackData.items[0].preview_url)
+      dispatch(setCurrentPlaylist(trackData.items));
+      dispatch(setCurrentTrack(0));
+      // QUITAR LOADER
+    } catch (error) {
+      console.error("Error fetching album tracks:", error);
+    }
+  };
 
   useEffect(() => {
     if (isPlaylistDialogOpen) {
@@ -142,6 +159,9 @@ const TrackInfo = ({ release }) => {
 
   return (
     <div className="card-track" style={{ position: "relative" }}>
+      <div className="play-button">
+        <img src={playButtonSrc} alt="" onClick={() => updatePlayerStatus(release)}/>
+      </div>
       <IconButton
         aria-label="more"
         aria-controls="track-menu"

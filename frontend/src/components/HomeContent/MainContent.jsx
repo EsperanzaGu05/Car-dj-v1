@@ -52,8 +52,8 @@ const MainContent = ({ trackReleases, albumReleases }) => {
         </div>
       </div>
       
-      {/* Always render PlayerApp, regardless of playlist content */}
-      <PlayerApp playlist={currentPlaylist} />
+      {/* Always render PlayerApp, regardless of playlist content 
+      <PlayerApp playlist={currentPlaylist} />*/}
     </div>
   );
 };

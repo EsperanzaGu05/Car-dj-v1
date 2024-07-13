@@ -8,11 +8,11 @@
 }
 
 .layout-container__aside {
-    grid-area: 1 / 1 / 6 / 2;
+    grid-area: 1 / 1 / 2 / 2;
 }
 
 .layout-container__content {
-    grid-area: 2 / 2 / 6 / 6;
+    grid-area: 2 / 2 / 2 / 6;
     overflow: auto;
     scroll-behavior: smooth;
     scrollbar-color: rgba(255, 255, 255, 0.87) rgba(255, 255, 255, 0.87);

@@ -108,6 +108,22 @@ export const getAlbums = async () => {
     }
 };
 
+export const getAlbumTracks = async (id = '') => {
+    try {
+        let URL = `http://localhost:5000/api/spotify/albums/${id}/tracks`;
+
+        const response = await fetch(URL, {
+            method: "GET",
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching artists:', error);
+        throw error;
+    }
+};
+
 // New function for search
 export const searchSpotify = async (query) => {
     try {
