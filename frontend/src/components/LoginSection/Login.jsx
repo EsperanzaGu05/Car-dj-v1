@@ -5,7 +5,6 @@ import LoginForm from "./LoginForm";
 import ForgotPassword from "./ForgotPassword";
 import { AuthContext } from "../contexts/AuthContext";
 import "../LoginSection/Login.css";
-import "../AsideBar/AsideBar.css";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -66,9 +65,8 @@ const Login = () => {
     }
   };
   return (
-    <div>
-      <span className="span-text">Hi Sign Up Now </span>
-      <br />
+    <div className="login-section">
+      <span className="login-section-text">Hi Sign Up Now </span>
       <section className="info-login">
         Follow your favorite artists and create unlimited playlists.
       </section>

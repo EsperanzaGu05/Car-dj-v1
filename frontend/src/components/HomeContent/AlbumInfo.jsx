@@ -1,5 +1,5 @@
 import React from "react";
-// import { getArtists } from "../../utils";
+
 import "../HomeContent/MainContent.css";
 import { useDispatch } from "react-redux";
 import playlistSlice from "../Player/playlistSlice";
@@ -40,7 +40,9 @@ const AlbumInfo = ({ release }) => {
           alt={`${release.name}`}
         />
       </div>
-      <span>{release.name}</span>
+      <div style={{ height: "25px", overflow: "hidden" }}>
+        <span>{release.name}</span>
+      </div>
       <span style={{ color: "#222222", opacity: 0.5 }}>
         {release.artists[0].name}
       </span>

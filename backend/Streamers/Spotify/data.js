@@ -3,9 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { SpotifyConn } from "./spotify.js";
 
-const app = express();
+import e from "express";
 
-app.get('/track', (req, res) => {
+const router = express.Router();
+
+router.get('/track', (req, res) => {
     const { id } = req.query;
     SpotifyConn(async (error, instance) => {
         if (instance) {
@@ -21,7 +23,7 @@ app.get('/track', (req, res) => {
     })
 });
 
-app.get('/new-releases', (req, res) => {
+router.get('/new-releases', (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
@@ -36,9 +38,9 @@ app.get('/new-releases', (req, res) => {
     })
 });
 
-// Getting artists from spotify for set of ids
-app.get('/artists', (req, res) => {
+router.get('/artists', (req, res) => {
     const { ids } = req.query;
+
     SpotifyConn(async (error, instance) => {
         if (instance) {
             if (ids) {
@@ -63,7 +65,60 @@ app.get('/artists', (req, res) => {
     })
 });
 
-app.get('/albums', (req, res) => {
+
+router.get(`/artists/:id/albums`, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`artists/${id}/albums`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
+router.get(`/artists/:id/top-tracks`, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`artists/${id}/top-tracks`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
+router.get(`/artists/:id/related-artists`, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`artists/${id}/related-artists`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
+router.get('/albums', (req, res) => {
+
     const { ids } = req.query;
     SpotifyConn(async (error, instance) => {
         if (instance) {
@@ -79,8 +134,7 @@ app.get('/albums', (req, res) => {
     })
 });
 
-
-app.get('/playlists', (req, res) => {
+router.get('/playlists', (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
@@ -95,7 +149,7 @@ app.get('/playlists', (req, res) => {
     })
 });
 
-app.get(`/albums/:id/tracks`, (req, res) => {
+router.get(`/albums/:id/tracks`, (req, res) => {
     const { id } = req.params;
 
     SpotifyConn(async (error, instance) => {
@@ -109,7 +163,32 @@ app.get(`/albums/:id/tracks`, (req, res) => {
         } else {
             return res.status(error?.status).json(error);
         }
-    })
+    });
 });
 
-export default app;
+router.get('/search', (req, res) => {
+    console.log("Search endpoint hit:", req.query);
+    const { q, type } = req.query;
+    
+    if (!q) {
+        return res.status(400).json({ error: "Query parameter 'q' is required" });
+    }
+
+    const searchTypes = type || 'track,artist,album';
+    
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                const data = await instance.get(`/search?q=${encodeURIComponent(q)}&type=${searchTypes}&limit=20`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.error(error);
+                return res.status(500).json({ error: "An error occurred while searching" });
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    });
+});
+
+export default router;

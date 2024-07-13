@@ -1,13 +1,13 @@
-.info-login {
-    width: auto;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    color: #888888;
-}
-
-.span-text {
+.login-section-text {
     font-weight: 500;
     color: "#222222"
+}
+
+.info-login {
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: #888888;
 }
 
 #login-form-whole {

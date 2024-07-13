@@ -16,6 +16,7 @@ const playlistSlice = createSlice({
             state.playlist = action.payload
         },
         setCurrentTrack: (state, action) => {
+            console.log('action: ',action);
             state.trackid = action.payload
         }
     }

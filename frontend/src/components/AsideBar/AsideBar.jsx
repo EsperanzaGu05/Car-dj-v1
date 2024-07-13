@@ -65,7 +65,7 @@ const AsideBar = ({ fetchArtist, fetchAlbum, className, id }) => {
       {auth ? (
         <LoggedInAsideBar />
       ) : (
-        <section className="login-section">
+        <section>
           <Login />
         </section>
       )}

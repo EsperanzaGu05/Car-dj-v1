@@ -3,7 +3,7 @@ h2 {
     margin: 15px 0px 0px 30px
 }
 
-#content {
+.content {
     background-color: white;
     color: black;
     width: 100%;
@@ -13,19 +13,10 @@ h2 {
     display: flex;
 }
 
-#all-artists {
-    padding-left: 20px;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    overflow-y: scroll;
-    scroll-behavior: smooth;
-    scrollbar-color: rgba(255, 255, 255, 0.87) rgba(255, 255, 255, 0.87);
-}
 
 #all-albums,
 #all-playlists {
-    padding-left: 20px;
+    /* padding-left: 20px; */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
@@ -34,19 +25,6 @@ h2 {
     scrollbar-color: rgba(255, 255, 255, 0.87) rgba(255, 255, 255, 0.87);
 }
 
-.card-artist {
-    border: solid 1px #f5f5f6;
-    background-color: #f5f5f6;
-    width: 190px;
-    height: 225px;
-    cursor: pointer;
-    color: #222;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    margin: 10px;
-}
 
 .card-album {
 
@@ -64,6 +42,21 @@ h2 {
     font-size: 14px;
 }
 
+.card-artist {
+    border: solid 1px #f5f5f6;
+    background-color: #f5f5f6;
+    width: 190px;
+    height: 220px;
+    cursor: pointer;
+    color: #222;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 10px;
+    font-size: 14px;
+}
+
 .card-playlist {
     border: solid 1px #f5f5f6;
     background-color: #f5f5f6;
@@ -77,6 +70,10 @@ h2 {
     justify-content: flex-start;
     margin: 10px 20px 20px 10px;
     font-size: 14px;
+}
+
+.albumName-albumCard {
+    overflow: hidden;
 }
 
 .loader {
@@ -101,6 +98,26 @@ h2 {
     overflow: hidden;
     box-sizing: border-box;
     animation: animloader 1s ease-in infinite;
+}
+
+a:link {
+    text-decoration: none;
+    color: #222;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #222;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #222;
+}
+
+a:active {
+    text-decoration: none;
+    color: #222;
 }
 
 @keyframes animloader {
