@@ -1,37 +1,42 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import { useSelector, useDispatch } from "react-redux";
+import playlistSlice from "../Player/playlistSlice";
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import '../HomeContent/Player.css';
 
-const PlayerApp = ({className, playlist}) => {
-    const [currentTrack, setTrackIndex] = React.useState(0)
+const PlayerApp = ({className}) => {
+  let playlist = useSelector((state)=> state.playlist.playlist);
+  let trackId = useSelector((state)=> state.playlist.trackid);
+  const setCurrentTrack = playlistSlice.actions.setCurrentTrack;
+
     const handleClickNext = () => {
-        console.log('click next')
-          setTrackIndex((currentTrack) =>
-              currentTrack < playlist.length - 1 ? currentTrack + 1 : 0
-          );
-      };
+      console.log('click next');
+      trackId < playlist.length - 1 ? trackId + 1 : 0;
+      dispatch(setCurrentTrack(trackId));
+    };
     
     const handleEnd = () => {
-      console.log('end')
-      setTrackIndex((currentTrack) =>
-              currentTrack < playlist.length - 1 ? currentTrack + 1 : 0
-          );
-    }
+      console.log('end');
+      trackId < playlist.length - 1 ? trackId + 1 : 0;
+      dispatch(setCurrentTrack(trackId));
+    } 
+    
+    const dispatch = useDispatch();
+
     return (
       <div className={className}>
         <div className="flex-container">
-          <div className="left-section">{playlist[currentTrack].name}</div>
+          <div className="left-section">{playlist[trackId].name}</div>
           <div className="mid-section">
             <AudioPlayer
               autoPlayAfterSrcChange={true}
               volume="0.5"
-              src={playlist[currentTrack].src}
+              src={playlist[trackId].preview_url}
               showSkipControls
               onClickNext={handleClickNext}
               onEnded={handleEnd}
               onError={()=> {console.log('play error')}}
-              // Try other props!
             />
           </div>
           <div className="right-section">
