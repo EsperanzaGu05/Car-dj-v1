@@ -151,11 +151,10 @@ router.get('/playlists', (req, res) => {
 
 router.get(`/albums/:id/tracks`, (req, res) => {
     const { id } = req.params;
-
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get(`albums/${id}/tracks&market=ES`);
+                let data = await instance.get(`albums/${id}/tracks?market=ES`);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.log(error);

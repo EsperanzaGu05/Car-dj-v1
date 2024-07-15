@@ -111,7 +111,6 @@ export const getAlbums = async () => {
 export const getAlbumTracks = async (id = '') => {
     try {
         let URL = `http://localhost:5000/api/spotify/albums/${id}/tracks`;
-
         const response = await fetch(URL, {
             method: "GET",
         });
@@ -119,7 +118,7 @@ export const getAlbumTracks = async (id = '') => {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Error fetching artists:', error);
+        console.error('Error fetching tracks of the album:', error);
         throw error;
     }
 };
