@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import "../HomeContent/MainContent.css";
 import TrackInfo from "./TrackInfo";
 import AlbumInfo from "./AlbumInfo";
+import PlayerApp from "./Player";
 
 const MainContent = ({ trackReleases, albumReleases }) => {
+  const [currentPlaylist, setCurrentPlaylist] = useState([]);
+
+  const updatePlaylist = (track) => {
+    console.log("Updating playlist with track:", track);
+    setCurrentPlaylist([
+      {
+        name: track.name,
+        src: track.preview_url, // Make sure this matches the actual property name in your data
+      },
+    ]);
+  };
+
+  console.log("Rendering MainContent");
+  console.log("trackReleases:", trackReleases);
+  console.log("albumReleases:", albumReleases);
+
   return (
     <div className="content-home">
       <h2>New Songs</h2>
@@ -11,11 +28,15 @@ const MainContent = ({ trackReleases, albumReleases }) => {
         {(trackReleases && trackReleases.length) > 0 ? (
           <div className="all-tracks">
             {trackReleases.map((release) => (
-              <TrackInfo key={release.id} release={release} />
+              <TrackInfo
+                key={release.id}
+                release={release}
+                onPlay={() => updatePlaylist(release)}
+              />
             ))}
           </div>
         ) : (
-          <p></p>
+          <p>No tracks available</p>
         )}
       </div>
       <div>
@@ -28,10 +49,13 @@ const MainContent = ({ trackReleases, albumReleases }) => {
               ))}
             </div>
           ) : (
-            <p></p>
+            <p>No albums available</p>
           )}
         </div>
       </div>
+
+      {/* Always render PlayerApp, regardless of playlist content 
+        <PlayerApp playlist={currentPlaylist} />*/}
     </div>
   );
 };

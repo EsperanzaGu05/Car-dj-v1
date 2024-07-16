@@ -65,7 +65,7 @@ const AsideBar = ({ fetchArtist, fetchAlbum, className, id }) => {
       {auth ? (
         <LoggedInAsideBar />
       ) : (
-        <section className="login-section">
+        <section>
           <Login />
         </section>
       )}
@@ -92,7 +92,7 @@ const AsideBar = ({ fetchArtist, fetchAlbum, className, id }) => {
       <div>
         <footer
           style={{
-            height: "230px",
+            height: "150px",
             display: "flex",
             flexDirection: "column-reverse",
             justifyContent: "flex-start",

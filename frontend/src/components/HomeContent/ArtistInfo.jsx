@@ -1,8 +1,7 @@
 import React from "react";
+import "../HomeContent/MainContent.css";
 import { Link } from "react-router-dom";
-// import { getArtists } from "../../utils";
-import "../Content/Content.css";
-
+import "../../components/Content/Content.css";
 const ArtistInfo = ({ artist }) => {
   return (
     <div className="card-artist">
@@ -18,13 +17,13 @@ const ArtistInfo = ({ artist }) => {
             style={{
               borderRadius: "50%",
             }}
-            src={artist.images[0].url}
+            src={artist.images[0]?.url}
             width={"150px"}
             height={"150px"}
-            alt={`${artist.name}`}
+            alt={artist.name}
           />
         </div>
-        <span>{artist.name}</span>
+        <span className="label-style">{artist.name}</span>
         <br></br>
         <span style={{ color: "#222222", opacity: 0.5 }}>
           {artist.genres[0]}

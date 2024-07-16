@@ -3,20 +3,25 @@
     display: flex;
     align-items: stretch;
     background-color: white;
-  }
-.left-section{
+}
+
+.left-section {
     flex-grow: 1;
-    width:fit-content;
+    width: fit-content;
     margin: 5px 20px 10px 20px;
     text-align: center;
     align-content: space-evenly;
 }
-.mid-section{
-    flex-grow:4;
+
+.mid-section {
+    flex-grow: 4;
+    padding-right: 20px;
 }
 
-.mid-section div{box-shadow: none;}
+.mid-section div {
+    box-shadow: none;
+}
 
-.right-section{
+.right-section {
     max-width: 25%;
 }

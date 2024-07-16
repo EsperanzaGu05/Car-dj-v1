@@ -20,21 +20,8 @@ import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
 import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
 import AlbumsDetails from "./Pages/Home/AlbumsDetails.jsx";
-
-const playlist = [
-  {
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
-    name: "song 1",
-  },
-  {
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-    name: "song 2",
-  },
-  {
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-    name: "song 3",
-  },
-];
+import SearchResult from "./components/SearchBar/SearchResults.jsx";
+import PlaylistDetailes from "./Pages/Home/PlaylistDetailes.jsx";
 
 function AppContent() {
   const { login } = useContext(AuthContext);
@@ -75,7 +62,7 @@ function AppContent() {
         <Route
           path="/"
           element={
-            <Layout id="home" playlist={playlist}>
+            <Layout id="home">
               <Home />
             </Layout>
           }
@@ -83,7 +70,7 @@ function AppContent() {
         <Route
           path="/artists"
           element={
-            <Layout id="artist" playlist={playlist}>
+            <Layout id="artist">
               <Artists />
             </Layout>
           }
@@ -91,7 +78,7 @@ function AppContent() {
         <Route
           path="/artists/:id"
           element={
-            <Layout id="artist" playlist={playlist}>
+            <Layout id="artist">
               <ArtistsDetailes />
             </Layout>
           }
@@ -99,7 +86,7 @@ function AppContent() {
         <Route
           path="/albums"
           element={
-            <Layout id="albums" playlist={playlist}>
+            <Layout id="albums">
               <Albums />
             </Layout>
           }
@@ -107,7 +94,7 @@ function AppContent() {
         <Route
           path="/albums/:id"
           element={
-            <Layout id="albums" playlist={playlist}>
+            <Layout id="albums">
               <AlbumsDetails />
             </Layout>
           }
@@ -115,8 +102,24 @@ function AppContent() {
         <Route
           path="/playlist"
           element={
-            <Layout id="playlist" playlist={playlist}>
+            <Layout id="playlist">
               <Playlists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/playlist/:id"
+          element={
+            <Layout id="playlist">
+              <PlaylistDetailes />
+            </Layout>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <Layout>
+              <SearchResult />
             </Layout>
           }
         />

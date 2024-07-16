@@ -20,10 +20,14 @@ const AlbumInfo = ({ album }) => {
             alt={`${album.name}`}
           />
         </div>
-        <span className="albumName-albumCard">{album.name}</span>
-        <span style={{ color: "#222222", opacity: 0.5 }}>
-          {album.artists[0].name}
-        </span>
+        <div
+          style={{ height: "50px", display: "flex", flexDirection: "column" }}
+        >
+          <span className="albumName-albumCard">{album.name}</span>
+          <span style={{ color: "#222222", opacity: 0.5 }}>
+            {album.artists[0].name}
+          </span>
+        </div>
       </Link>
     </div>
   );

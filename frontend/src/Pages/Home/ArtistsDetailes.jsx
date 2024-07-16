@@ -11,7 +11,7 @@ import "../../components/Content/Content.css";
 import ArtistInfoDetailes from "../../components/ArtistDetails/ArtistInfoDetails";
 import AlbumInfo from "../../components/Content/AlbumInfo";
 import { millisToMinutesAndSeconds } from "../../utils/functions";
-import ArtistInfo from "../../components/Content/ArtistInfo";
+import ArtistInfo from "../../components/HomeContent/ArtistInfo";
 
 const ArtistsDetailes = () => {
   const { id } = useParams();
@@ -52,7 +52,7 @@ const ArtistsDetailes = () => {
 
   if (loading) {
     return (
-      <div style={{ top: "10%", left: "10%" }} className="loader">
+      <div style={{ top: "20px", left: "20px" }} className="loader">
         Loading...
       </div>
     );

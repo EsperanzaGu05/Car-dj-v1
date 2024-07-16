@@ -6,7 +6,7 @@ const ContentAlbums = ({ albums }) => {
   return (
     <div>
       <h2>Top Albums</h2>
-      <div id="content">
+      <div className="content">
         {albums ? (
           <div id="all-albums">
             {albums.albums.map((album) => (
