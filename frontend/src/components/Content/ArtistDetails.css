@@ -24,7 +24,7 @@
 .albumSongsItems {
     display: grid;
     grid-template-rows: 50px;
-    grid-template-columns: 100px 50px 1.5fr 1fr 0.3fr 50px;
+    grid-template-columns: 50px 1.5fr 1fr 0.3fr 50px;
     justify-items: start;
     align-items: center;
     padding-left: 10px;
@@ -46,10 +46,19 @@
     transition: background-color 200ms ease-in-out;
 }
 
-.artistTopTrackItems:active,
-.albumSongsItems:active {
-    background-color: #e2e2e2;
+.albumSongsItems.selected {
+    background-color: #f0f0f0;
+    /* Example background color for selected song */
 }
+
+.artistTopTrackItems:active {
+    background-color: #7f1f1f;
+}
+
+/* .albumSongsItems:active { */
+
+
+
 
 .content-related-artists {
     background-color: white;

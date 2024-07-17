@@ -139,7 +139,7 @@ router.get('/albums', (req, res) => {
                 }
             }
             else {
-                let data = await instance.get("albums?ids=7aJuG4TFXa2hmE4z1yxc3n,1NAmidJlEaVgA3MpcPFYGq,5EYKrEDnKhhcNxGedaRQeK,3RQQmkQEvNCY4prGKE6oc5,4iqbFIdGOTzXeDtt9owjQn,18NOKLkZETa4sWwLMIm0UZ,6s84u2TUpR3wdUv4NgKA2j,6i7mF7whyRJuLJ4ogbH2wh,07w0rG5TETcyihsEIZR3qG,5quMTd5zeI9yW5UDua8wS4,168CdR21lfn0TTyw1Pkdcm,78bpIziExqiI9qztvNFlQu,3zu0hJJew2qXZNlselIQk8,5tSQtQGkrCJx3hoQxmLgfM,7txGsnDSqVMoRl6RQ9XyZP&market=ES");
+                let data = await instance.get("albums?ids=7aJuG4TFXa2hmE4z1yxc3n,1NAmidJlEaVgA3MpcPFYGq,5EYKrEDnKhhcNxGedaRQeK,3RQQmkQEvNCY4prGKE6oc5,4iqbFIdGOTzXeDtt9owjQn,18NOKLkZETa4sWwLMIm0UZ,6s84u2TUpR3wdUv4NgKA2j,6i7mF7whyRJuLJ4ogbH2wh,07w0rG5TETcyihsEIZR3qG,5quMTd5zeI9yW5UDua8wS4,168CdR21lfn0TTyw1Pkdcm,78bpIziExqiI9qztvNFlQu,3zu0hJJew2qXZNlselIQk8,5tSQtQGkrCJx3hoQxmLgfM,7txGsnDSqVMoRl6RQ9XyZP&market=CA");
                 return res.status(200).json({ ...data?.data });
             }
 
@@ -182,7 +182,7 @@ router.get(`/albums/:id/tracks`, (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get(`albums/${id}/tracks?market=ES`);
+                let data = await instance.get(`albums/${id}/tracks?market=IT`);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.log(error);
