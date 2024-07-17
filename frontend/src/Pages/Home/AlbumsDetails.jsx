@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { getAlbums } from "../../utils/utils";
+import { getAlbums, getTracks } from "../../utils/utils";
 import { useParams } from "react-router-dom";
 import { millisToMinutesAndSeconds } from "../../utils/functions";
 import IconButton from "@mui/material/IconButton";
@@ -7,22 +7,34 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { AuthContext } from "../../components/contexts/AuthContext";
+import { useDispatch } from "react-redux";
+import Store from "../../components/Player/playlistSlice";
+const { setCurrentPlaylist, setCurrentTrack } = Store.actions;
+
+import playButtonSrc from "../../assets/play-button.svg";
 
 const AlbumsDetails = () => {
   const { id } = useParams();
-  const [albumDetails, setAlbumDetails] = useState(null);
+  const [albumTracks, setAlbumTracks] = useState({});
   const [loading, setLoading] = useState(true);
   const { auth } = useContext(AuthContext);
   const [error, setError] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
+  const dispatch = useDispatch();
+
   const fetchAlbumDetails = async () => {
     try {
       const fetchedAlbum = await getAlbums(id);
+      const currentTracks = fetchedAlbum.albums[0].tracks.items;
+      setAlbumTracks({
+        name: fetchedAlbum.albums[0].name,
+        artist: fetchedAlbum.albums[0].artists[0].name,
+        image: fetchedAlbum.albums[0].images[0].url,
+        currentTracks,
+      });
 
-      setAlbumDetails(fetchedAlbum);
-
-      console.log(fetchedAlbum);
+      dispatch(setCurrentPlaylist(currentTracks));
     } catch (error) {
       setError("Error fetching album details.");
       console.error(error);
@@ -37,6 +49,7 @@ const AlbumsDetails = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
   const handleAddToPlaylist = async (playlistId) => {
     if (!auth) {
       showSnackbar("You need an account to add songs to a playlist", "error");
@@ -104,28 +117,46 @@ const AlbumsDetails = () => {
     return <div>{error}</div>;
   }
 
-  const album = albumDetails.albums;
+  const updatePlaylist = (track) => {
+    dispatch(setCurrentTrack(track));
+  };
 
   return (
     <div style={{ padding: "20px" }}>
       <div style={{ display: "flex", alignItems: "center", padding: "15px" }}>
         <div>
-          <img src={album[0].images[0].url} width={"200px"} height={"200px"} />
+          <img
+            src={albumTracks.image}
+            width={"200px"}
+            height={"200px"}
+            alt="Playlist image"
+          />
         </div>
         <div>
-          <h2 style={{ marginLeft: "15px" }}>{album[0].name}</h2>
-          <span style={{ marginLeft: "15px" }}>{album[0].artists[0].name}</span>
+          <h2 style={{ marginLeft: "15px" }}>{albumTracks.name}</h2>
+          <span style={{ marginLeft: "15px" }}>{albumTracks.artist}</span>
+          <div style={{ padding: "10px" }}>
+            <img src={playButtonSrc} alt="" onClick={() => updatePlaylist(1)} />
+          </div>
         </div>
       </div>
-      {album ? (
+      {albumTracks.currentTracks ? (
         <div className="albumSongsList">
           <ol>
-            {album[0].tracks.items.map((album, index) => (
-              <li key={album.id} className="albumSongsItems">
+            {albumTracks.currentTracks.map((track, index) => (
+              <li key={track.id} className="albumSongsItems">
+                <div>
+                  <img
+                    style={{ width: "30px", height: "30px" }}
+                    src={playButtonSrc}
+                    alt=""
+                    onClick={() => updatePlaylist(index)}
+                  />
+                </div>
                 <span>{index + 1}. </span>
-                <span>{album.name}</span>
-                <span>{album.artists[0].name}</span>
-                <span>{millisToMinutesAndSeconds(album.duration_ms)}</span>
+                <span>{track.name}</span>
+                <span>{track.artists[0].name}</span>
+                <span>{millisToMinutesAndSeconds(track.duration_ms)}</span>
                 <span>
                   <IconButton
                     aria-label="more"

@@ -7,21 +7,28 @@ import e from "express";
 
 const router = express.Router();
 
-router.get('/track', (req, res) => {
+router.get('/tracks', (req, res) => {
     const { id } = req.query;
+
+    if (!id) {
+        return res.status(400).json({ error: 'Track ID is required' });
+    }
+
     SpotifyConn(async (error, instance) => {
-        if (instance) {
-            try {
-                let track = await instance.get(`/tracks/${id}?market=ES`);
-                return res.status(200).json({ ...track?.data });
-            } catch (error) {
-                console.log(error);
-            }
-        } else {
-            return res.status(error?.status).json(error);
+        if (error) {
+            return res.status(error?.status || 500).json(error);
         }
-    })
+
+        try {
+            let track = await instance.get(`/tracks/${id}`);
+            return res.status(200).json({ ...track?.data });
+        } catch (error) {
+            console.error('Error fetching track from Spotify:', error);
+            return res.status(500).json({ error: 'Failed to fetch track' });
+        }
+    });
 });
+
 
 router.get('/new-releases', (req, res) => {
     SpotifyConn(async (error, instance) => {
@@ -142,41 +149,32 @@ router.get('/albums', (req, res) => {
     })
 });
 
+router.get('/playlists', async (req, res) => {
+    const { id } = req.query;
 
 
-router.get('/playlists', (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get('/browse/featured-playlists?offset=0&limit=20');
+                let data;
+                if (id) {
+
+                    data = await instance.get(`/playlists/${id}`);
+                } else {
+                    console.log("Fetching featured playlists");
+                    data = await instance.get('/browse/featured-playlists?offset=0&limit=20');
+                }
+
+
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
-                console.log(error);
+
+                return res.status(500).json({ message: 'Error fetching playlists', error });
             }
         } else {
             return res.status(error?.status).json(error);
         }
-    })
-});
-
-router.get('/playlists/:id', (req, res) => {
-    const { id } = req.params;
-    SpotifyConn(async (error, instance) => {
-        if (instance) {
-            if (id) {
-                try {
-
-                    let data = await instance.get(`/playlists?ids=${id}`);
-                    return res.status(200).json({ ...data?.data });
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-            else {
-                return res.status(200).json({ ...data?.data });
-            }
-        }
-    })
+    });
 });
 
 router.get(`/albums/:id/tracks`, (req, res) => {

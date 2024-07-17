@@ -20,10 +20,14 @@ const PlaylistInfo = ({ playlist }) => {
             alt={`${playlist.name}`}
           />
         </div>
-        <span>{playlist.name}</span>
-        <span style={{ color: "#222222", opacity: 0.5 }}>
-          {playlist.tracks.total} songs
-        </span>
+        <div
+          style={{ height: "50px", display: "flex", flexDirection: "column" }}
+        >
+          <span>{playlist.name}</span>
+          <span style={{ color: "#222222", opacity: 0.5 }}>
+            {playlist.tracks.total} songs
+          </span>
+        </div>
       </Link>
     </div>
   );

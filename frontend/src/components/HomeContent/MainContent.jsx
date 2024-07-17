@@ -5,7 +5,7 @@ import AlbumInfo from "./AlbumInfo";
 import PlayerApp from "./Player";
 
 const MainContent = ({ trackReleases, albumReleases }) => {
-  const [currentPlaylist, setCurrentPlaylist] = useState([]);
+  // const [currentPlaylist, setCurrentPlaylist] = useState([]);
 
   const updatePlaylist = (track) => {
     console.log("Updating playlist with track:", track);

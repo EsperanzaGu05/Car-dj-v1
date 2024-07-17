@@ -100,9 +100,11 @@ export const getArtistRelated = async (id = '') => {
 
 export const getPlaylists = async (id = '') => {
     try {
-        let URL = 'http://localhost:5000/api/spotify/playlists'
+        let URL = 'http://localhost:5000/api/spotify/playlists';
+
+        // Append id to URL if provided
         if (id) {
-            URL += `?ids=${id}`;
+            URL += `?id=${id}`;
         }
         const response = await fetch(URL, {
             method: "GET",
@@ -120,6 +122,25 @@ export const getAlbumTracks = async (id = '') => {
         const response = await fetch(URL, {
             method: "GET",
         });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching tracks of the album:', error);
+        throw error;
+    }
+};
+
+export const getTracks = async (id = '') => {
+    try {
+        let URL = `http://localhost:5000/api/spotify/tracks?id=${id}`;
+        const response = await fetch(URL, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
         return data;
