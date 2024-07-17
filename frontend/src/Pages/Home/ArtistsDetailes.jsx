@@ -12,9 +12,6 @@ import ArtistInfoDetailes from "../../components/ArtistDetails/ArtistInfoDetails
 import AlbumInfo from "../../components/Content/AlbumInfo";
 import { millisToMinutesAndSeconds } from "../../utils/functions";
 import ArtistInfo from "../../components/HomeContent/ArtistInfo";
-
-// import { getAlbums, getTracks } from "../../utils/utils";
-
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
@@ -68,7 +65,7 @@ const ArtistsDetailes = () => {
       setArtistAlbums(fetchedArtistAlbums);
       setArtistTopTracks(fetchedArtistTopTracks);
       setArtistRelated(fetchedArtistRelated);
-      dispatch(setCurrentPlaylist(fetchedArtistTopTracks));
+      dispatch(setCurrentPlaylist(fetchedArtistTopTracks.tracks));
       console.log(fetchedArtistDetails);
       console.log(fetchedArtistAlbums.items);
       console.log(fetchedArtistTopTracks);
@@ -207,7 +204,6 @@ const ArtistsDetailes = () => {
   };
 
   const artist = artistDetails.artists[0];
-  console.log(artist);
   const albumsArtist = artistAlbums.items;
   const topTracksArtist = artistTopTracks.tracks;
   const relatedArtists = artistRelated;
@@ -244,7 +240,7 @@ const ArtistsDetailes = () => {
       <h2>Top Tracks</h2>
       <div className="artistTopTrackList">
         {topTracksArtist ? (
-          <ol>
+          <ol style={{ paddingLeft: "10px" }}>
             {topTracksArtist.map((topTrack, index) => (
               <li
                 key={topTrack.id}

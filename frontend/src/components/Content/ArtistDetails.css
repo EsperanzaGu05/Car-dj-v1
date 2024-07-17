@@ -19,6 +19,7 @@
     align-items: center;
     padding-left: 10px;
     transition: background-color 200ms ease-in-out;
+    cursor: default;
 }
 
 .albumSongsItems {
@@ -29,6 +30,7 @@
     align-items: center;
     padding-left: 10px;
     transition: background-color 200ms ease-in-out;
+    cursor: default;
 }
 
 .artistTopTrackList {
@@ -47,7 +49,7 @@
 }
 
 .albumSongsItems.selected,
-artistTopTrackItems.selected {
+.artistTopTrackItems.selected {
     background-color: #f0f0f0;
     /* Example background color for selected song */
 }
