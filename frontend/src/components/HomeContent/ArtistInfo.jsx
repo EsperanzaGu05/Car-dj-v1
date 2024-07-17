@@ -1,7 +1,6 @@
 import React from "react";
 import "../HomeContent/MainContent.css";
 import { Link } from "react-router-dom";
-
 const ArtistInfo = ({ artist }) => {
   return (
     <div className="card-artist">

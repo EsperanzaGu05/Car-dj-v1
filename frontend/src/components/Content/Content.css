@@ -1,6 +1,6 @@
 h2 {
     color: #222;
-    margin: 15px 0px 0px 30px;
+    margin: 15px 0px 0px 30px
 }
 
 .content {
@@ -13,61 +13,67 @@ h2 {
     display: flex;
 }
 
-.content-albums,
-.content-related-artists {
-    padding: 0 30px;
+
+#all-albums,
+#all-playlists {
+    /* padding-left: 20px; */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    scrollbar-color: rgba(255, 255, 255, 0.87) rgba(255, 255, 255, 0.87);
 }
 
-.all-albums,
-.all-artists {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
 
-.card-album,
-.card-artist {
-    width: 200px;
-    height: 280px;
+.card-album {
+
+    border: solid 1px #f5f5f6;
     background-color: #f5f5f6;
-    padding: 10px;
+    width: 230px;
+    height: 230px;
     cursor: pointer;
     color: #222;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 10px 20px 20px 10px;
     font-size: 14px;
-    display: flex;
-    flex-direction: column;
 }
 
-.card-album img,
-.card-artist img {
-    width: 100%;
+.card-artist {
+    border: solid 1px #f5f5f6;
+    background-color: #f5f5f6;
+    width: 190px;
+    height: 220px;
+    cursor: pointer;
+    color: #222;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 10px;
+    font-size: 14px;
+}
+
+.card-playlist {
+    border: solid 1px #f5f5f6;
+    background-color: #f5f5f6;
+    width: 230px;
     height: 200px;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.album-info,
-.artist-info {
+    cursor: pointer;
+    color: #222;
+    padding: 10px;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    margin: 10px 20px 20px 10px;
+    font-size: 14px;
 }
 
-.artistTopTrackList {
-    padding: 0 30px;
-}
-
-.artistTopTrackItems {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.artistTopTrackItems img {
-    margin-right: 10px;
-}
-
-.artistTopTrackItems span {
-    margin-right: 10px;
+.albumName-albumCard {
+    overflow: hidden;
 }
 
 .loader {
@@ -94,7 +100,22 @@ h2 {
     animation: animloader 1s ease-in infinite;
 }
 
-a:link, a:visited, a:hover, a:active {
+a:link {
+    text-decoration: none;
+    color: #222;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #222;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #222;
+}
+
+a:active {
     text-decoration: none;
     color: #222;
 }
@@ -103,6 +124,7 @@ a:link, a:visited, a:hover, a:active {
     0% {
         width: 0%;
     }
+
     100% {
         width: 100%;
     }

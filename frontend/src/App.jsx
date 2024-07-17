@@ -5,7 +5,7 @@ import {
   Routes,
   useNavigate,
   useLocation,
-  Outlet
+  Outlet,
 } from "react-router-dom";
 import "./App.css";
 import AsideBar from "./components/AsideBar/AsideBar";
@@ -20,24 +20,19 @@ import Home from "./Pages/Home/Home.jsx";
 import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
+import Layout from "./shared/Layout/Layout.jsx";
 import SearchResult from "./components/SearchBar/SearchResults.jsx";
 import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
+import { PlaylistProvider } from "./components/contexts/PlaylistContext"
+import SubscriptionSuccess from './components/SubscriptionSuccess.jsx';
+import PaymentSuccess from './components/AsideBar/PaymentSuccess.jsx';
+import { SubscriptionProvider } from './components/contexts/SubscriptionContext';
 
-const playlist = [
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', name: "song 1" },
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', name: "song 2" },
-  { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', name: "song 3" },
-];
-
-function Layout() {
+function AppContent() {
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useContext(AuthContext);
   const [message, setMessage] = useState(null);
-
-  const handleSearch = (query) => {
-    navigate(`/search?q=${encodeURIComponent(query)}`);
-  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -54,7 +49,7 @@ function Layout() {
     } else if (status === "error" && urlMessage) {
       console.error(decodeURIComponent(urlMessage));
       setMessage(decodeURIComponent(urlMessage));
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } else if (status === "success" && urlMessage) {
       console.log(decodeURIComponent(urlMessage));
       setMessage(decodeURIComponent(urlMessage));
@@ -66,43 +61,77 @@ function Layout() {
 
   return (
     <div id="main-container">
-      <AsideBar />
-      <div className="main-content-area">
-        <SearchBar onSearch={handleSearch} />
-        
-        <Outlet context={{setMessage }} />
-      </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout id="home" >
+              <Home/>
+            </Layout>
+          }
+        />
+        <Route
+          path="/artists"
+          element={
+            <Layout id="artist">
+              <Artists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/artists/:id"
+          element={
+            <Layout>
+              <ArtistsDetailes />
+            </Layout>
+          }
+        />
+        <Route
+          path="/albums"
+          element={
+            <Layout id="albums">
+              <Albums />
+            </Layout>
+          }
+        />
+        <Route
+          path="/playlist"
+          element={
+            <Layout id="playlist">
+              <Playlists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <Layout>
+              <SearchResult />
+            </Layout>
+          }
+        />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/google/login" element={<Login />} />
+        <Route path="/google/callback" element={<GoogleLoginCallback />} />
+        <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+      </Routes>
     </div>
-  );
-}
-
-function AppContent() {
-  return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/artists" element={<Artists />} />
-        <Route path="/artists/:id" element={<ArtistsDetailes />} />
-        <Route path="/albums" element={<Albums />} />
-        <Route path="/playlist" element={<Playlists />} />
-        <Route path="/search" element={<SearchResult />} />
-        <Route path="/login" />
-      </Route>
-      <Route path="/verify" element={<Verify />} />
-      <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="/google/login" />
-      <Route path="/google/callback" element={<GoogleLoginCallback />} />
-    </Routes>
   );
 }
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+       <SubscriptionProvider>
+      <PlaylistProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </PlaylistProvider>
+      </SubscriptionProvider>
     </AuthProvider>
   );
 }

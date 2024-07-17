@@ -17,6 +17,10 @@ import { ConnectDB } from './Database/connection.js';
 import spotifyDataRoute from './Streamers/Spotify/data.js';
 import apiRoutes from "./Streamers/Spotify/data.js";
 import playlistRoutes from './routes/playlistRoute.js';
+import paymentRoutes from './Routes/payment.js';
+
+
+
 
 dotenv.config();
 
@@ -68,6 +72,7 @@ app.use('/api/account', accountRoute); // Add account route
 app.use('/api/spotify', spotifyDataRoute);
 app.use('/api', apiRoutes);
 app.use('/api/user/playlists', playlistRoutes);
+app.use('/api', paymentRoutes);
 
 
 app.get('/api', (req, res) => {

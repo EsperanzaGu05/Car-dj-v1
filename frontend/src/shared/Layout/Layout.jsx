@@ -5,22 +5,18 @@ import SearchBar from "../../components/SearchBar/SearchBar";
 import PlayerApp from "../../components/HomeContent/Player";
 import { useNavigate } from "react-router-dom";
 
-const Layout = ({ children, id, playlist }) => {
+const Layout = ({ children, id }) => {
   const navigate = useNavigate();
 
   const handleSearch = (query) => {
     navigate(`/search?q=${encodeURIComponent(query)}`);
   };
-
   return (
     <section className="layout-container">
       <AsideBar className="layout-container__aside" id={id} />
       <SearchBar className="layout-container__search" onSearch={handleSearch} />
       <article className="layout-container__content">{children}</article>
-      <PlayerApp
-        className="layout-container__player"
-        playlist={playlist}
-      ></PlayerApp>
+      <PlayerApp className="layout-container__player"></PlayerApp>
     </section>
   );
 };
