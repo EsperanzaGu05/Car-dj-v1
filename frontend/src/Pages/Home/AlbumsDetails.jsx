@@ -56,6 +56,8 @@ const AlbumsDetails = () => {
       });
 
       dispatch(setCurrentPlaylist(currentTracks));
+      console.log(fetchedAlbum);
+      console.log(currentTracks);
     } catch (error) {
       setError("Error fetching album details.");
       console.error(error);
@@ -258,7 +260,7 @@ const AlbumsDetails = () => {
                       backdrop: {
                         style: {
                           backgroundColor: "rgba(0,0,0,0.03)",
-                          boxShadow: "0",
+                          boxShadow: "0px 0px 0px 0px",
                         },
                       },
                     }}

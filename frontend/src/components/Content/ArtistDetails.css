@@ -33,6 +33,17 @@
     cursor: default;
 }
 
+.playlistTrackItems {
+    display: grid;
+    grid-template-rows: 50px;
+    grid-template-columns: 50px 1.5fr 1fr 0.3fr 50px;
+    justify-items: start;
+    align-items: center;
+    padding-left: 10px;
+    transition: background-color 200ms ease-in-out;
+    cursor: default;
+}
+
 .artistTopTrackList {
     padding: 20px;
 }
@@ -42,14 +53,21 @@
 
 }
 
+.playlistSongsList {
+    padding: 20px;
+
+}
+
 .artistTopTrackItems:hover,
-.albumSongsItems:hover {
+.albumSongsItems:hover,
+.playlistTrackItems:hover {
     background-color: #e2e2e2;
     transition: background-color 200ms ease-in-out;
 }
 
 .albumSongsItems.selected,
-.artistTopTrackItems.selected {
+.artistTopTrackItems.selected,
+.playlistTrackItems.selected {
     background-color: #f0f0f0;
     /* Example background color for selected song */
 }

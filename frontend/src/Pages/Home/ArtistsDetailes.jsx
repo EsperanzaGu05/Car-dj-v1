@@ -108,9 +108,8 @@ const ArtistsDetailes = () => {
       showSnackbar("Error fetching playlists", "error");
     }
   };
-
+  console.log(artistTopTracks);
   const handleAddToPlaylist = async (playlistId) => {
-    console.log(artistTopTracks);
     if (!auth) {
       showSnackbar("You need an account to add songs to a playlist", "error");
       return;
@@ -207,6 +206,7 @@ const ArtistsDetailes = () => {
   const albumsArtist = artistAlbums.items;
   const topTracksArtist = artistTopTracks.tracks;
   const relatedArtists = artistRelated;
+  console.log(topTracksArtist);
 
   return (
     <div>
@@ -295,7 +295,7 @@ const ArtistsDetailes = () => {
                       backdrop: {
                         style: {
                           backgroundColor: "rgba(0,0,0,0.03)",
-                          boxShadow: "0",
+                          boxShadow: "0px 0px 0px 0px",
                         },
                       },
                     }}

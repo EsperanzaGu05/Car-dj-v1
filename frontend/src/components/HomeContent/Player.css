@@ -7,8 +7,8 @@
 
 .left-section {
     flex-grow: 1;
-    width: fit-content;
-    margin: 5px 20px 10px 20px;
+    width: 15%;
+    margin: 5px 10px 10px 10px;
     text-align: center;
     align-content: space-evenly;
 }

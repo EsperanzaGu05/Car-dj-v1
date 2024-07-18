@@ -40,7 +40,6 @@ const TrackInfo = ({ release }) => {
       console.log(trackData.items[0].preview_url);
       dispatch(setCurrentPlaylist(trackData.items));
       dispatch(setCurrentTrack(0));
-      // QUITAR LOADER
     } catch (error) {
       console.error("Error fetching album tracks:", error);
     }

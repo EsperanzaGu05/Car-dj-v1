@@ -52,7 +52,7 @@ const PlayerApp = ({ className }) => {
             showSkipControls
             onClickNext={handleClickNext}
             onClickPrevious={handlClickPrevious}
-            // onEnded={handleEnd}
+            onEnded={handleEnd}
             onError={(e) => {
               console.log("play error: ", e);
             }}
