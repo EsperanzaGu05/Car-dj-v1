@@ -201,7 +201,16 @@ const PlaylistDetails = () => {
         </div>
         <div>
           <h2 style={{ marginLeft: "15px" }}>{topPlaylist.name}</h2>
-          <span style={{ marginLeft: "15px" }}>{topPlaylist.description}</span>
+          <span
+            style={{
+              marginLeft: "15px",
+              display: "flex",
+              overflow: "hidden",
+              height: "25px",
+            }}
+          >
+            {topPlaylist.description}
+          </span>
           <div style={{ padding: "10px" }}>
             <img src={playButtonSrc} alt="" onClick={() => updatePlaylist(0)} />
           </div>
@@ -209,7 +218,7 @@ const PlaylistDetails = () => {
       </div>
       {topPlaylist.tracks.items ? (
         <div className="playlistSongsList">
-          <ol>
+          <ol style={{ paddingLeft: "0px" }}>
             {topPlaylist.tracks.items.map((song, index) => (
               <li
                 key={song.track.id}
