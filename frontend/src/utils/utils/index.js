@@ -150,6 +150,7 @@ export const getTracks = async (id = '') => {
     }
 };
 
+
 // New function for search
 export const searchSpotify = async (query) => {
     try {

@@ -193,16 +193,32 @@ router.get(`/albums/:id/tracks`, (req, res) => {
     });
 });
 
+router.get(`/albums/:id/tracks`, (req, res) => {
+    const { id } = req.params;
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(`albums/${id}/tracks?market=ES`);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    });
+});
+
 router.get('/search', (req, res) => {
     console.log("Search endpoint hit:", req.query);
     const { q, type } = req.query;
-
+    
     if (!q) {
         return res.status(400).json({ error: "Query parameter 'q' is required" });
     }
 
     const searchTypes = type || 'track,artist,album';
-
+    
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {

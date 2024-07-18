@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TrackInfo from "../HomeContent/TrackInfo";
 import AlbumInfo from "../HomeContent/AlbumInfo";
 import ArtistInfo from "../HomeContent/ArtistInfo";
-import { searchSpotify } from "../../utils/utils"; // Adjust this path as needed
-import "../HomeContent/MainContent.css"; // Adjust this path as needed
+import { searchSpotify } from "../../utils/utils";
+import "../HomeContent/MainContent.css"; // Ensure the path is correct
 
 const SearchResult = () => {
   const [searchResults, setSearchResults] = useState({
@@ -79,13 +79,18 @@ const SearchResult = () => {
           </div>
         </section>
 
-        <section>
-          <h2 style={{ margin: "10px" }}>Artists</h2>
+        <section style={{ margin: "10px" }}>
+          <h2>Artists</h2>
           <div className="content-tracks">
             {searchResults.artists.length > 0 ? (
               <div className="all-artists">
                 {searchResults.artists.map((artist) => (
-                  <ArtistInfo key={artist.id} artist={artist} />
+                  <div
+                    key={artist.id}
+                    onClick={() => handleArtistClick(artist.id)}
+                  >
+                    <ArtistInfo artist={artist} />
+                  </div>
                 ))}
               </div>
             ) : (

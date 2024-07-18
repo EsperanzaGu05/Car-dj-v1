@@ -40,6 +40,7 @@ const TrackInfo = ({ release }) => {
       console.log(trackData.items[0].preview_url);
       dispatch(setCurrentPlaylist(trackData.items));
       dispatch(setCurrentTrack(0));
+      // QUITAR LOADER
     } catch (error) {
       console.error("Error fetching album tracks:", error);
     }
@@ -206,43 +207,45 @@ const TrackInfo = ({ release }) => {
         )}
       </div>
       <div style={{ height: "25px", overflow: "hidden" }}>
-        <span>{name}</span>
-      </div>
-      <span style={{ color: "#222222", opacity: 0.5 }}>{artistName}</span>
+        <div style={{ height: "25px", overflow: "hidden" }}>
+          <span>{name}</span>
+        </div>
+        <span style={{ color: "#222222", opacity: 0.5 }}>{artistName}</span>
 
-      <Dialog
-        open={isPlaylistDialogOpen}
-        onClose={() => setPlaylistDialogOpen(false)}
-      >
-        <DialogTitle>Choose a Playlist</DialogTitle>
-        <DialogContent>
-          <List>
-            {playlists.map((playlist) => (
-              <ListItem
-                button
-                key={playlist._id}
-                onClick={() => handleAddToPlaylist(playlist._id)}
-              >
-                <ListItemText primary={playlist.name} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-      </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
+        <Dialog
+          open={isPlaylistDialogOpen}
+          onClose={() => setPlaylistDialogOpen(false)}
         >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+          <DialogTitle>Choose a Playlist</DialogTitle>
+          <DialogContent>
+            <List>
+              {playlists.map((playlist) => (
+                <ListItem
+                  button
+                  key={playlist._id}
+                  onClick={() => handleAddToPlaylist(playlist._id)}
+                >
+                  <ListItemText primary={playlist.name} />
+                </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+        </Dialog>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity={snackbar.severity}
+            sx={{ width: "100%" }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </div>
     </div>
   );
 };

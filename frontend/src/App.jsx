@@ -22,11 +22,16 @@ import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
 import AlbumsDetails from "./Pages/Home/AlbumsDetails.jsx";
 import SearchResult from "./components/SearchBar/SearchResults.jsx";
 import PlaylistDetailes from "./Pages/Home/PlaylistDetailes.jsx";
+import { PlaylistProvider } from "./components/contexts/PlaylistContext";
+import SubscriptionSuccess from "./components/SubscriptionSuccess.jsx";
+import PaymentSuccess from "./components/AsideBar/PaymentSuccess.jsx";
+import { SubscriptionProvider } from "./components/contexts/SubscriptionContext";
 
 function AppContent() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -34,23 +39,20 @@ function AppContent() {
     const token = urlParams.get("token");
     const name = urlParams.get("name");
     const email = urlParams.get("email");
-    const message = urlParams.get("message");
+    const urlMessage = urlParams.get("message");
 
     if (status === "success" && token && name && email) {
       login(token, name, email);
+      setMessage("Login successful!");
       navigate("/", { replace: true });
-    } else if (status === "error" && message) {
-      console.error(decodeURIComponent(message));
-      navigate("/login", {
-        replace: true,
-        state: { error: decodeURIComponent(message) },
-      });
-    } else if (status === "success" && message) {
-      console.log(decodeURIComponent(message));
-      navigate("/login", {
-        replace: true,
-        state: { message: decodeURIComponent(message) },
-      });
+    } else if (status === "error" && urlMessage) {
+      console.error(decodeURIComponent(urlMessage));
+      setMessage(decodeURIComponent(urlMessage));
+      navigate("/", { replace: true });
+    } else if (status === "success" && urlMessage) {
+      console.log(decodeURIComponent(urlMessage));
+      setMessage(decodeURIComponent(urlMessage));
+      navigate("/", { replace: true });
     }
 
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -123,13 +125,13 @@ function AppContent() {
             </Layout>
           }
         />
-
         <Route path="/verify" element={<Verify />} />
         <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/login" />
         <Route path="/google/login" element={<Login />} />
         <Route path="/google/callback" element={<GoogleLoginCallback />} />
+        <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
       </Routes>
     </div>
   );
@@ -138,9 +140,13 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <SubscriptionProvider>
+        <PlaylistProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </PlaylistProvider>
+      </SubscriptionProvider>
     </AuthProvider>
   );
 }

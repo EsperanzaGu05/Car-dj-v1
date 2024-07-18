@@ -4,7 +4,8 @@ const playlistSlice = createSlice({
     name: 'playerData',
     initialState: {
         playlist:
-            [],
+            [
+            ],
         trackid: null
     },
     reducers: {
@@ -12,6 +13,7 @@ const playlistSlice = createSlice({
             state.playlist = action.payload
         },
         setCurrentTrack: (state, action) => {
+            console.log('action: ', action);
             state.trackid = action.payload
         }
     }
