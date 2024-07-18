@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getArtists } from "../../utils/utils";
-import ContentArtists from "../../components/Content/ContentArtists";
+import ContentArtists from "../../components/HomeContent/ContentArtists";
 
 const Artists = () => {
   const [artists, setArtist] = useState();

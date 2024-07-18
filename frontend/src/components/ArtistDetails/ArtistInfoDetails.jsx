@@ -25,6 +25,9 @@ const ArtistInfoDetails = (artist) => {
         <span style={{ color: "#222222", opacity: 0.5 }}>
           {artist.artist.genres}
         </span>
+        <div style={{ padding: "10px" }}>
+          <img src={playButtonSrc} alt="" onClick={() => updatePlaylist(0)} />
+        </div>
       </div>
     </section>
   );

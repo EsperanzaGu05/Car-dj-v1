@@ -50,5 +50,23 @@ router.put('/', authMiddleware, async (req, res) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+router.get('/sub', authMiddleware, async (req, res) => {
+  const db = getDB();
+  try {
+    const user = await db.collection(collections.USER).findOne({ _id: new ObjectId(req.userId) });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log("User data:", user); // Log the entire user object
+    res.json({ 
+      name: user.name, 
+      email: user.email, 
+      subscription: user.subscription || {} // Return an empty object if subscription is null
+    });
+  } catch (error) {
+    console.error('Error fetching user data:', error); // Add this line
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 export default router;

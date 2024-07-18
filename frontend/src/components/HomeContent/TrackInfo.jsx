@@ -16,7 +16,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { useDispatch } from "react-redux";
 import playlistSlice from "../Player/playlistSlice";
 import playButtonSrc from "../../assets/play-button.svg";
-import {getAlbumTracks} from '../../utils/utils/index';
+import { getAlbumTracks } from "../../utils/utils/index";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -32,12 +32,12 @@ const TrackInfo = ({ release }) => {
     message: "",
     severity: "success",
   });
-  const { setCurrentPlaylist, setCurrentTrack} = playlistSlice.actions;
+  const { setCurrentPlaylist, setCurrentTrack } = playlistSlice.actions;
   const dispatch = useDispatch();
-  const updatePlayerStatus = async (track) => {    
+  const updatePlayerStatus = async (track) => {
     try {
       const trackData = await getAlbumTracks(track.id);
-      console.log(trackData.items[0].preview_url)
+      console.log(trackData.items[0].preview_url);
       dispatch(setCurrentPlaylist(trackData.items));
       dispatch(setCurrentTrack(0));
       // QUITAR LOADER
@@ -160,7 +160,11 @@ const TrackInfo = ({ release }) => {
   return (
     <div className="card-track" style={{ position: "relative" }}>
       <div className="play-button">
-        <img src={playButtonSrc} alt="" onClick={() => updatePlayerStatus(release)}/>
+        <img
+          src={playButtonSrc}
+          alt=""
+          onClick={() => updatePlayerStatus(release)}
+        />
       </div>
       <IconButton
         aria-label="more"
@@ -203,43 +207,45 @@ const TrackInfo = ({ release }) => {
         )}
       </div>
       <div style={{ height: "25px", overflow: "hidden" }}>
-        <span>{name}</span>
-      </div>
-      <span style={{ color: "#222222", opacity: 0.5 }}>{artistName}</span>
+        <div style={{ height: "25px", overflow: "hidden" }}>
+          <span>{name}</span>
+        </div>
+        <span style={{ color: "#222222", opacity: 0.5 }}>{artistName}</span>
 
-      <Dialog
-        open={isPlaylistDialogOpen}
-        onClose={() => setPlaylistDialogOpen(false)}
-      >
-        <DialogTitle>Choose a Playlist</DialogTitle>
-        <DialogContent>
-          <List>
-            {playlists.map((playlist) => (
-              <ListItem
-                button
-                key={playlist._id}
-                onClick={() => handleAddToPlaylist(playlist._id)}
-              >
-                <ListItemText primary={playlist.name} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-      </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
+        <Dialog
+          open={isPlaylistDialogOpen}
+          onClose={() => setPlaylistDialogOpen(false)}
         >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+          <DialogTitle>Choose a Playlist</DialogTitle>
+          <DialogContent>
+            <List>
+              {playlists.map((playlist) => (
+                <ListItem
+                  button
+                  key={playlist._id}
+                  onClick={() => handleAddToPlaylist(playlist._id)}
+                >
+                  <ListItemText primary={playlist.name} />
+                </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+        </Dialog>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity={snackbar.severity}
+            sx={{ width: "100%" }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      </div>
     </div>
   );
 };

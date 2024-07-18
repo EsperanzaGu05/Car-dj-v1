@@ -5,42 +5,27 @@ import {
   Routes,
   useNavigate,
   useLocation,
-  Outlet,
 } from "react-router-dom";
 import "./App.css";
-import AsideBar from "./components/AsideBar/AsideBar";
-import SearchBar from "./components/SearchBar/SearchBar";
 import Verify from "./components/LoginSection/verify";
 import ResetPassword from "./components/LoginSection/Resetpassword";
 import Login from "./components/LoginSection/Login";
 import { AuthProvider, AuthContext } from "./components/contexts/AuthContext";
 import "./components/LoginSection/Login.css";
 import GoogleLoginCallback from "./components/LoginSection/GoogleLoginCallback";
+import Layout from "./shared/Layout/Layout.jsx";
 import Home from "./Pages/Home/Home.jsx";
 import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
-import Layout from "./shared/Layout/Layout.jsx";
-import SearchResult from "./components/SearchBar/SearchResults.jsx"; // New import
 import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
-
-// function Layout() {
-//   const navigate = useNavigate();
-
-//   const handleSearch = (query) => {
-//     navigate(`/search?q=${encodeURIComponent(query)}`);
-//   };
-
-//   return (
-//     <div id="main-container">
-//       <AsideBar />
-//       <div className="main-content-area">
-//         <SearchBar onSearch={handleSearch} />
-//         <Outlet />
-//       </div>
-//     </div>
-//   );
-// }
+import AlbumsDetails from "./Pages/Home/AlbumsDetails.jsx";
+import SearchResult from "./components/SearchBar/SearchResults.jsx";
+import PlaylistDetailes from "./Pages/Home/PlaylistDetailes.jsx";
+import { PlaylistProvider } from "./components/contexts/PlaylistContext";
+import SubscriptionSuccess from "./components/SubscriptionSuccess.jsx";
+import PaymentSuccess from "./components/AsideBar/PaymentSuccess.jsx";
+import { SubscriptionProvider } from "./components/contexts/SubscriptionContext";
 
 function AppContent() {
   const { login } = useContext(AuthContext);
@@ -63,7 +48,7 @@ function AppContent() {
     } else if (status === "error" && urlMessage) {
       console.error(decodeURIComponent(urlMessage));
       setMessage(decodeURIComponent(urlMessage));
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } else if (status === "success" && urlMessage) {
       console.log(decodeURIComponent(urlMessage));
       setMessage(decodeURIComponent(urlMessage));
@@ -73,15 +58,14 @@ function AppContent() {
     window.history.replaceState({}, document.title, window.location.pathname);
   }, [login, navigate, location]);
 
-
   return (
     <div id="main-container">
       <Routes>
         <Route
           path="/"
           element={
-            <Layout id="home" >
-              <Home/>
+            <Layout id="home">
+              <Home />
             </Layout>
           }
         />
@@ -96,7 +80,7 @@ function AppContent() {
         <Route
           path="/artists/:id"
           element={
-            <Layout>
+            <Layout id="artist">
               <ArtistsDetailes />
             </Layout>
           }
@@ -110,10 +94,26 @@ function AppContent() {
           }
         />
         <Route
+          path="/albums/:id"
+          element={
+            <Layout id="albums">
+              <AlbumsDetails />
+            </Layout>
+          }
+        />
+        <Route
           path="/playlist"
           element={
             <Layout id="playlist">
               <Playlists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/playlist/:id"
+          element={
+            <Layout id="playlist">
+              <PlaylistDetailes />
             </Layout>
           }
         />
@@ -125,13 +125,13 @@ function AppContent() {
             </Layout>
           }
         />
-        {/* New route for search results */}
-        <Route path="/login" />
         <Route path="/verify" element={<Verify />} />
         <Route path="/api/register/pending/:id/:secret" element={<Verify />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/google/login" element={<Login />} />
         <Route path="/google/callback" element={<GoogleLoginCallback />} />
+        <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
       </Routes>
     </div>
   );
@@ -140,9 +140,13 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <SubscriptionProvider>
+        <PlaylistProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </PlaylistProvider>
+      </SubscriptionProvider>
     </AuthProvider>
   );
 }

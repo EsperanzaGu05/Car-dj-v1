@@ -32,6 +32,22 @@ export const getArtists = async (id = '') => {
     }
 };
 
+export const getAlbums = async (id = '') => {
+    try {
+        let URL = 'http://localhost:5000/api/spotify/albums'
+        if (id) {
+            URL += `?ids=${id}`;
+        }
+        const response = await fetch(URL, {
+            method: "GET",
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 
 export const getArtistAlbums = async (id = '') => {
     try {
@@ -82,22 +98,14 @@ export const getArtistRelated = async (id = '') => {
 };
 
 
-export const getPlaylists = async () => {
+export const getPlaylists = async (id = '') => {
     try {
-        const URL = 'http://localhost:5000/api/spotify/playlists'
-        const response = await fetch(URL, {
-            method: "GET",
-        });
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.log(error);
-    }
-};
+        let URL = 'http://localhost:5000/api/spotify/playlists';
 
-export const getAlbums = async () => {
-    try {
-        const URL = 'http://localhost:5000/api/spotify/albums'
+        // Append id to URL if provided
+        if (id) {
+            URL += `?id=${id}`;
+        }
         const response = await fetch(URL, {
             method: "GET",
         });
@@ -122,6 +130,26 @@ export const getAlbumTracks = async (id = '') => {
         throw error;
     }
 };
+
+export const getTracks = async (id = '') => {
+    try {
+        let URL = `http://localhost:5000/api/spotify/tracks?id=${id}`;
+        const response = await fetch(URL, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching tracks of the album:', error);
+        throw error;
+    }
+};
+
 
 // New function for search
 export const searchSpotify = async (query) => {

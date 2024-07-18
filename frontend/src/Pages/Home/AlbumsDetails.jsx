@@ -1,17 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
+import { getAlbums, getTracks } from "../../utils/utils";
 import { useParams } from "react-router-dom";
-import {
-  getArtists,
-  getArtistAlbums,
-  getArtistTopTracks,
-  getArtistRelated,
-} from "../../utils/utils";
-import "../../components/Content/ArtistDetails.css";
-import "../../components/Content/Content.css";
-import ArtistInfoDetailes from "../../components/ArtistDetails/ArtistInfoDetails";
-import AlbumInfo from "../../components/Content/AlbumInfo";
 import { millisToMinutesAndSeconds } from "../../utils/functions";
-import ArtistInfo from "../../components/HomeContent/ArtistInfo";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
@@ -28,20 +18,18 @@ import { AuthContext } from "../../components/contexts/AuthContext";
 import { useDispatch } from "react-redux";
 import Store from "../../components/Player/playlistSlice";
 const { setCurrentPlaylist, setCurrentTrack } = Store.actions;
+
 import playButtonSrc from "../../assets/play-button.svg";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const ArtistsDetailes = () => {
+const AlbumsDetails = () => {
   const { id } = useParams();
-  const { auth } = useContext(AuthContext);
-  const [artistDetails, setArtistDetails] = useState(null);
-  const [artistAlbums, setArtistAlbums] = useState(null);
-  const [artistRelated, setArtistRelated] = useState(null);
-  const [artistTopTracks, setArtistTopTracks] = useState({});
+  const [albumTracks, setAlbumTracks] = useState({});
   const [loading, setLoading] = useState(true);
+  const { auth } = useContext(AuthContext);
   const [error, setError] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
@@ -55,23 +43,23 @@ const ArtistsDetailes = () => {
   const [selectedSong, setSelectedSong] = useState(null);
   const dispatch = useDispatch();
 
-  const fetchArtistDetails = async () => {
+  const fetchAlbumDetails = async () => {
     try {
-      const fetchedArtistDetails = await getArtists(id);
-      const fetchedArtistAlbums = await getArtistAlbums(id);
-      const fetchedArtistTopTracks = await getArtistTopTracks(id);
-      const fetchedArtistRelated = await getArtistRelated(id);
-      setArtistDetails(fetchedArtistDetails);
-      setArtistAlbums(fetchedArtistAlbums);
-      setArtistTopTracks(fetchedArtistTopTracks);
-      setArtistRelated(fetchedArtistRelated);
-      dispatch(setCurrentPlaylist(fetchedArtistTopTracks.tracks));
-      console.log(fetchedArtistDetails);
-      console.log(fetchedArtistAlbums.items);
-      console.log(fetchedArtistTopTracks);
-      console.log(fetchedArtistRelated);
+      const fetchedAlbum = await getAlbums(id);
+      const currentTracks = fetchedAlbum.albums[0].tracks.items;
+      setAlbumTracks({
+        name: fetchedAlbum.albums[0].name,
+        artist: fetchedAlbum.albums[0].artists[0].name,
+        image: fetchedAlbum.albums[0].images[0].url,
+        id: fetchedAlbum.albums[0].id,
+        currentTracks,
+      });
+
+      dispatch(setCurrentPlaylist(currentTracks));
+      console.log(fetchedAlbum);
+      console.log(currentTracks);
     } catch (error) {
-      setError("Error fetching artist details.");
+      setError("Error fetching album details.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -82,7 +70,7 @@ const ArtistsDetailes = () => {
     if (isPlaylistDialogOpen) {
       fetchPlaylists();
     }
-  }, [id, isPlaylistDialogOpen]);
+  }, [isPlaylistDialogOpen]);
 
   const fetchPlaylists = async () => {
     if (!auth) {
@@ -108,8 +96,9 @@ const ArtistsDetailes = () => {
       showSnackbar("Error fetching playlists", "error");
     }
   };
-  console.log(artistTopTracks);
+
   const handleAddToPlaylist = async (playlistId) => {
+    console.log(albumTracks);
     if (!auth) {
       showSnackbar("You need an account to add songs to a playlist", "error");
       return;
@@ -127,8 +116,8 @@ const ArtistsDetailes = () => {
           body: JSON.stringify({
             songId: selectedTrack.id,
             songName: selectedTrack.name,
-            artist: selectedTrack.artists[0].name,
-            imageUrl: selectedTrack.album.images[0].url,
+            artist: albumTracks.artist,
+            imageUrl: albumTracks.image,
           }),
         }
       );
@@ -182,7 +171,7 @@ const ArtistsDetailes = () => {
 
   useEffect(() => {
     if (id) {
-      fetchArtistDetails();
+      fetchAlbumDetails();
       handleMenuClose();
     }
   }, [id]);
@@ -198,76 +187,54 @@ const ArtistsDetailes = () => {
   if (error) {
     return <div>{error}</div>;
   }
+
   const updatePlaylist = (track) => {
     dispatch(setCurrentTrack(track));
   };
 
-  const artist = artistDetails.artists[0];
-  const albumsArtist = artistAlbums.items;
-  const topTracksArtist = artistTopTracks.tracks;
-  const relatedArtists = artistRelated;
-  console.log(topTracksArtist);
-
   return (
-    <div>
-      <section className="artist-detailes">
-        <div className="thumbnail">
+    <div style={{ padding: "20px" }}>
+      <div style={{ display: "flex", alignItems: "center", padding: "15px" }}>
+        <div>
           <img
-            style={{
-              borderRadius: "5%",
-            }}
-            src={artist.images[2].url}
+            src={albumTracks.image}
             width={"200px"}
             height={"200px"}
-            alt={`${artist.name}`}
+            alt="Playlist image"
           />
         </div>
-        <div className="artist-detailes-info">
-          <span style={{ fontWeight: "600" }}>Artist</span>
-          <span
-            style={{ fontWeight: "600", color: "#3552c5", fontSize: "x-large" }}
-          >
-            {artist.name}
-          </span>
-          <span style={{ color: "#222222", opacity: 0.5 }}>
-            {artist.genres}
-          </span>
+        <div>
+          <h2 style={{ marginLeft: "15px" }}>{albumTracks.name}</h2>
+          <span style={{ marginLeft: "15px" }}>{albumTracks.artist}</span>
           <div style={{ padding: "10px" }}>
             <img src={playButtonSrc} alt="" onClick={() => updatePlaylist(0)} />
           </div>
         </div>
-      </section>
-      <h2>Top Tracks</h2>
-      <div className="artistTopTrackList">
-        {topTracksArtist ? (
-          <ol style={{ paddingLeft: "10px" }}>
-            {topTracksArtist.map((topTrack, index) => (
+      </div>
+      {albumTracks.currentTracks ? (
+        <div className="albumSongsList">
+          <ol style={{ padding: "0px" }}>
+            {albumTracks.currentTracks.map((track, index) => (
               <li
-                key={topTrack.id}
-                className={`artistTopTrackItems ${
-                  topTrack.id === selectedSong ? "selected" : ""
+                key={track.id}
+                className={`albumSongsItems ${
+                  track.id === selectedSong ? "selected" : ""
                 }`}
                 onClick={() => {
-                  handleSongClick(topTrack);
+                  handleSongClick(track);
                   updatePlaylist(index);
                 }}
               >
                 <span>{index + 1}. </span>
-                <img
-                  src={topTrack.album.images[0].url}
-                  width={"40px"}
-                  height={"40px"}
-                  alt={`${topTrack.name}`}
-                ></img>
-                <span>{topTrack.name} </span>
-                <span>{topTrack.artists[0].name}</span>
-                <span>{millisToMinutesAndSeconds(topTrack.duration_ms)}</span>
+                <span>{track.name}</span>
+                <span>{track.artists[0].name}</span>
+                <span>{millisToMinutesAndSeconds(track.duration_ms)}</span>
                 <span>
                   <IconButton
                     aria-label="more"
-                    aria-controls={`track-menu-${topTrack.id}`}
+                    aria-controls={`track-menu-${track.id}`}
                     aria-haspopup="true"
-                    onClick={(event) => handleMenuOpen(event, topTrack)}
+                    onClick={(event) => handleMenuOpen(event, track)}
                     style={{
                       color: "black",
                       backgroundColor: "transparent",
@@ -276,12 +243,10 @@ const ArtistsDetailes = () => {
                     <MoreVertIcon />
                   </IconButton>
                   <Menu
-                    id={`track-menu-${topTrack.id}`}
+                    id={`track-menu-${track.id}`}
                     anchorEl={anchorEl}
                     keepMounted
-                    open={Boolean(
-                      anchorEl && selectedTrack?.id === topTrack.id
-                    )}
+                    open={Boolean(anchorEl && selectedTrack?.id === track.id)}
                     onClose={handleMenuClose}
                   >
                     <MenuItem onClick={handleAddToPlaylistClick}>
@@ -333,36 +298,12 @@ const ArtistsDetailes = () => {
               </li>
             ))}
           </ol>
-        ) : (
-          <span className="loader">Loading...</span>
-        )}
-      </div>
-      <h2>Albums</h2>
-      <div className="content-albums">
-        {albumsArtist ? (
-          <div className="all-albums">
-            {albumsArtist.map((album) => (
-              <AlbumInfo key={album.id} album={album} />
-            ))}
-          </div>
-        ) : (
-          <span className="loader">Loading...</span>
-        )}
-      </div>
-      <h2>Related Artists</h2>
-      <div className="content-related-artists">
-        {relatedArtists ? (
-          <div className="all-artists">
-            {relatedArtists.artists.map((artist) => (
-              <ArtistInfo key={artist.id} artist={artist} />
-            ))}
-          </div>
-        ) : (
-          <span className="loader">Loading...</span>
-        )}
-      </div>
+        </div>
+      ) : (
+        <span className="loader">Loading...</span>
+      )}
     </div>
   );
 };
 
-export default ArtistsDetailes;
+export default AlbumsDetails;

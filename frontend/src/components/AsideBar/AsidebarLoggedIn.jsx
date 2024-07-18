@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import { useSubscription } from "../contexts/SubscriptionContext";
+import { usePlaylist } from "../contexts/PlaylistContext";
 import AccountSidebar from "./AccountSideBar";
 import "../AsideBar/AsideBar.css";
 import "../Button/Button.css";
@@ -21,18 +23,27 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import MuiAlert from "@mui/material/Alert";
 
-const LoggedInAsideBar = () => {
+const AsidebarLoggedIn = () => {
   const { auth, logout } = useContext(AuthContext);
+  const { daysLeft, subscriptionStatus, handleBuySubscription } = useSubscription();
+  const {
+    playlists,
+    songs,
+    error,
+    fetchPlaylists,
+    fetchSongs,
+    createPlaylist,
+    removePlaylist,
+    removeSong
+  } = usePlaylist();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAccountSidebarOpen, setAccountSidebarOpen] = useState(false);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState("");
-  const [playlists, setPlaylists] = useState([]);
-  const [songs, setSongs] = useState([]);
   const [isSongsDialogOpen, setSongsDialogOpen] = useState(false);
-  const [error, setError] = useState(null);
   const [playlistNameError, setPlaylistNameError] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
@@ -40,58 +51,33 @@ const LoggedInAsideBar = () => {
   const [songToRemove, setSongToRemove] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+  useEffect(() => {
+    if (location.state?.showSubscriptionSuccess) {
+      setSnackbarMessage("You've successfully subscribed!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      navigate(location.pathname, { replace: true });
+    } else if (location.state?.showSubscriptionError) {
+      setSnackbarMessage("Subscription activation failed. Please contact support.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
     if (isPlaylistDialogOpen) {
       fetchPlaylists();
     }
-  }, [isPlaylistDialogOpen]);
+  }, [isPlaylistDialogOpen, fetchPlaylists]);
 
-  const fetchPlaylists = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/user/playlists", {
-        headers: {
-          Authorization: `Bearer ${auth.token}`,
-        },
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setPlaylists(data);
-        setError(null);
-      } else {
-        setPlaylists([]);
-        setError(data.message || "Failed to fetch playlists");
-      }
-    } catch (error) {
-      setPlaylists([]);
-      setError("Error fetching playlists");
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
     }
-  };
-
-  const fetchSongs = async (playlistId) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/user/playlists/${playlistId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`,
-          },
-        }
-      );
-      const data = await response.json();
-
-      if (response.ok) {
-        setSongs(data.songs || []);
-        setError(null);
-      } else {
-        setSongs([]);
-        setError(data.message || "Failed to fetch songs");
-      }
-    } catch (error) {
-      setSongs([]);
-      setError("Error fetching songs");
-    }
+    setSnackbarOpen(false);
   };
 
   const handleAccountClick = () => {
@@ -109,14 +95,19 @@ const LoggedInAsideBar = () => {
 
   const handleCreatePlaylist = async () => {
     setPlaylistNameError("");
-    setError(null);
+
+    if (subscriptionStatus !== 'Subscribed') {
+      setSnackbarMessage("You need to subscribe in order to create a playlist.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
 
     if (!newPlaylistName.trim()) {
       setPlaylistNameError("Please enter a playlist name");
       return;
     }
 
-    // Check if a playlist with the same name already exists
     const playlistExists = playlists.some(
       (playlist) =>
         playlist.name.toLowerCase() === newPlaylistName.trim().toLowerCase()
@@ -126,27 +117,15 @@ const LoggedInAsideBar = () => {
       return;
     }
 
-    try {
-      const response = await fetch("http://localhost:5000/api/user/playlists", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-        body: JSON.stringify({ name: newPlaylistName.trim() }),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setNewPlaylistName("");
-        fetchPlaylists();
-        setSnackbarMessage("Playlist created successfully");
-        setSnackbarOpen(true);
-      } else {
-        setError(data.message || "Failed to create playlist");
-      }
-    } catch (error) {
-      setError("Error creating playlist");
+    const result = await createPlaylist(newPlaylistName);
+    if (result.success) {
+      setNewPlaylistName("");
+      setSnackbarMessage(result.message);
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      fetchPlaylists();
+    } else {
+      setPlaylistNameError(result.message);
     }
   };
 
@@ -163,27 +142,14 @@ const LoggedInAsideBar = () => {
   const handleRemovePlaylist = async () => {
     if (!selectedPlaylist) return;
 
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/user/playlists/${selectedPlaylist._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${auth.token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        fetchPlaylists();
-        setSnackbarMessage("Playlist removed successfully");
-        setSnackbarOpen(true);
-      } else {
-        const data = await response.json();
-        setError(data.message || "Failed to remove playlist");
-      }
-    } catch (error) {
-      setError("Error removing playlist");
+    const result = await removePlaylist(selectedPlaylist._id);
+    if (result.success) {
+      setSnackbarMessage(result.message);
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      fetchPlaylists();
+    } else {
+      setPlaylistNameError(result.message);
     }
 
     handleMenuClose();
@@ -203,31 +169,34 @@ const LoggedInAsideBar = () => {
   const confirmRemoveSong = async () => {
     if (!selectedPlaylist || !songToRemove) return;
 
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/user/playlists/${selectedPlaylist._id}/songs/${songToRemove.trackId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${auth.token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        await fetchSongs(selectedPlaylist._id);
-        setSnackbarMessage("Song removed from playlist");
-        setSnackbarOpen(true);
-      } else {
-        const data = await response.json();
-        setError(data.message || "Failed to remove song");
-      }
-    } catch (error) {
-      setError("Error removing song");
+    const result = await removeSong(selectedPlaylist._id, songToRemove.trackId);
+    if (result.success) {
+      setSnackbarMessage(result.message);
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      await fetchSongs(selectedPlaylist._id);
+    } else {
+      setPlaylistNameError(result.message);
     }
 
     setSongRemoveDialogOpen(false);
     setSongToRemove(null);
+  };
+
+  const handleSubscriptionButton = async () => {
+    if (subscriptionStatus === 'Subscribed') {
+      navigate('/manage-subscription');
+      return;
+    }
+
+    try {
+      const checkoutUrl = await handleBuySubscription();
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      setSnackbarMessage("An error occurred. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
   };
 
   if (!auth) {
@@ -276,7 +245,7 @@ const LoggedInAsideBar = () => {
             />
             <Button
               onClick={handleCreatePlaylist}
-              disabled={!newPlaylistName.trim()}
+              disabled={!newPlaylistName.trim() || subscriptionStatus !== 'Subscribed'}
             >
               Create New Playlist
             </Button>
@@ -284,18 +253,22 @@ const LoggedInAsideBar = () => {
             <List>
               {playlists.map((playlist) => (
                 <ListItem
-                  key={playlist._id}
                   button
+                  key={playlist._id}
                   onClick={() => handlePlaylistItemClick(playlist)}
                   secondaryAction={
                     <IconButton
                       edge="end"
+                      aria-label="more"
                       onClick={(event) => handleMenuOpen(event, playlist)}
                     >
                       <MoreVertIcon />
                     </IconButton>
                   }
                 >
+                  <ListItemAvatar>
+                    <Avatar src={listSrc} />
+                  </ListItemAvatar>
                   <ListItemText primary={playlist.name} />
                 </ListItem>
               ))}
@@ -306,24 +279,13 @@ const LoggedInAsideBar = () => {
           </DialogActions>
         </Dialog>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleRemovePlaylist}>Delete</MenuItem>
-        </Menu>
-
         <Dialog
           open={isSongsDialogOpen}
           onClose={() => setSongsDialogOpen(false)}
         >
-          <DialogTitle>Songs in {selectedPlaylist?.name}</DialogTitle>
+          <DialogTitle>{selectedPlaylist?.name}</DialogTitle>
           <DialogContent>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            {songs.length === 0 ? (
-              <p>No songs in playlist</p>
-            ) : (
+            {songs.length > 0 ? (
               <List>
                 {songs.map((song) => (
                   <ListItem
@@ -331,6 +293,7 @@ const LoggedInAsideBar = () => {
                     secondaryAction={
                       <IconButton
                         edge="end"
+                        aria-label="delete"
                         onClick={() => handleRemoveSong(song)}
                       >
                         <MoreVertIcon />
@@ -338,23 +301,19 @@ const LoggedInAsideBar = () => {
                     }
                   >
                     <ListItemAvatar>
-                      <Avatar
-                        src={song.imageUrl}
-                        alt={song.name}
-                        sx={{ width: 40, height: 40 }}
-                      >
-                        {!song.imageUrl && song.name.charAt(0)}
+                      <Avatar src={song.albumArt || song.imageUrl} alt={song.name}>
+                        {!song.albumArt && !song.imageUrl && song.name.charAt(0)}
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={song.name}
-                      secondary={song.artist}
-                      primaryTypographyProps={{ noWrap: true }}
-                      secondaryTypographyProps={{ noWrap: true }}
+                      primary={song.name || song.trackName}
+                      secondary={song.artist || song.artistName}
                     />
                   </ListItem>
                 ))}
               </List>
+            ) : (
+              <p>No songs in playlist</p>
             )}
           </DialogContent>
           <DialogActions>
@@ -366,37 +325,42 @@ const LoggedInAsideBar = () => {
           open={isSongRemoveDialogOpen}
           onClose={() => setSongRemoveDialogOpen(false)}
         >
-          <DialogTitle>Remove Song</DialogTitle>
+          <DialogTitle>Confirm Removal</DialogTitle>
           <DialogContent>
-            <p>
-              Are you sure you want to remove "{songToRemove?.name}" from the
-              playlist?
-            </p>
+            <p>Are you sure you want to remove this song?</p>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setSongRemoveDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={confirmRemoveSong} color="error">
-              Remove
+            <Button onClick={() => setSongRemoveDialogOpen(false)}>Cancel</Button>
+            <Button onClick={confirmRemoveSong} color="primary">
+              Confirm
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={3000}
-          onClose={() => setSnackbarOpen(false)}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
         >
-          <Alert
-            onClose={() => setSnackbarOpen(false)}
-            severity="success"
-            sx={{ width: "100%" }}
-          >
+          <MenuItem onClick={handleRemovePlaylist}>Delete Playlist</MenuItem>
+        </Menu>
+
+        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+          <MuiAlert onClose={handleCloseSnackbar} severity={snackbarSeverity} elevation={6} variant="filled">
             {snackbarMessage}
-          </Alert>
+          </MuiAlert>
         </Snackbar>
       </div>
+      <button
+        onClick={handleSubscriptionButton}
+        className="feature-button"
+        style={{ fontWeight: "400", fontFamily: "poppins" }}
+        disabled={subscriptionStatus === 'Subscribed'}
+      >
+        {subscriptionStatus === 'Subscribed' 
+          ? `Subscribed (${daysLeft ?? 0} days left)`
+          : "Buy Subscription"}
+      </button>
       <button
         onClick={handlePlaylistClick}
         className="feature-button"
@@ -417,4 +381,4 @@ const LoggedInAsideBar = () => {
   );
 };
 
-export default LoggedInAsideBar;
+export default AsidebarLoggedIn;

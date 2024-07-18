@@ -5,14 +5,16 @@ import AlbumInfo from "./AlbumInfo";
 import PlayerApp from "./Player";
 
 const MainContent = ({ trackReleases, albumReleases }) => {
-  const [currentPlaylist, setCurrentPlaylist] = useState([]);
+  // const [currentPlaylist, setCurrentPlaylist] = useState([]);
 
   const updatePlaylist = (track) => {
     console.log("Updating playlist with track:", track);
-    setCurrentPlaylist([{ 
-      name: track.name,
-      src: track.preview_url // Make sure this matches the actual property name in your data
-    }]);
+    setCurrentPlaylist([
+      {
+        name: track.name,
+        src: track.preview_url, // Make sure this matches the actual property name in your data
+      },
+    ]);
   };
 
   console.log("Rendering MainContent");
@@ -26,9 +28,9 @@ const MainContent = ({ trackReleases, albumReleases }) => {
         {(trackReleases && trackReleases.length) > 0 ? (
           <div className="all-tracks">
             {trackReleases.map((release) => (
-              <TrackInfo 
-                key={release.id} 
-                release={release} 
+              <TrackInfo
+                key={release.id}
+                release={release}
                 onPlay={() => updatePlaylist(release)}
               />
             ))}
@@ -51,9 +53,6 @@ const MainContent = ({ trackReleases, albumReleases }) => {
           )}
         </div>
       </div>
-      
-      {/* Always render PlayerApp, regardless of playlist content 
-      <PlayerApp playlist={currentPlaylist} />*/}
     </div>
   );
 };
