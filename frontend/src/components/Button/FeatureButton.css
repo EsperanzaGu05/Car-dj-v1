@@ -10,6 +10,10 @@
     transition: background-color 200ms ease-in-out;
 }
 
+button.feature-button {
+    margin-top: 0px;
+}
+
 .feature-button:hover {
     background-color: #ccccf3;
     transition: background-color 200ms ease-in-out;

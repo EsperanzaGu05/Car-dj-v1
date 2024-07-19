@@ -7,7 +7,7 @@
 
 .left-section {
     flex-grow: 1;
-    width: 15%;
+    width: 10%;
     margin: 5px 10px 10px 10px;
     text-align: center;
     align-content: space-evenly;
@@ -15,7 +15,7 @@
 
 .mid-section {
     flex-grow: 4;
-    padding-right: 20px;
+    padding-right: 25px;
 }
 
 .mid-section div {

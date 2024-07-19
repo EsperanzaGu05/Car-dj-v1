@@ -4,8 +4,7 @@ import playlistSlice from "../Player/playlistSlice";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import "../HomeContent/Player.css";
-import { AuthContext } from "../contexts/AuthContext"; // Adjust the import path as needed
-
+import { AuthContext } from "../contexts/AuthContext";
 const PlayerApp = ({ className }) => {
   const { auth } = useContext(AuthContext);
   const playlist = useSelector((state) => state.playlist.playlist);
@@ -18,30 +17,33 @@ const PlayerApp = ({ className }) => {
   const handleClickNext = () => {
     if (!auth) return;
     console.log("click next ", playlist.length, " track:", trackId);
-    const trackId = trackId < playlist.length - 1 ? trackId + 1 : 0;
-    console.log("click next2 ", playlist.length, " track:", trackId);
-    dispatch(setCurrentTrack(trackId));
+    const newTrackId = trackId < playlist.length - 1 ? trackId + 1 : 0;
+    console.log("click next2 ", playlist.length, " track:", newTrackId);
+    dispatch(setCurrentTrack(newTrackId));
   };
 
   const handleClickPrevious = () => {
     if (!auth) return;
     console.log("previous");
-    const trackId = trackId === 0 ? playlist.length - 1 : trackId - 1;
-    dispatch(setCurrentTrack(trackId));
+    const newTrackId = trackId === 0 ? playlist.length - 1 : trackId - 1;
+    dispatch(setCurrentTrack(newTrackId));
   };
 
   const handleEnd = () => {
     if (!auth) return;
     console.log("end");
-    const trackId = trackId < playlist.length - 1 ? trackId + 1 : 0;
-    dispatch(setCurrentTrack(trackId));
+    const newTrackId = trackId < playlist.length - 1 ? trackId + 1 : 0;
+    dispatch(setCurrentTrack(newTrackId));
   };
+
+  const currentTrack =
+    playlist.length > 0 && playlist[trackId] ? playlist[trackId] : null;
 
   return (
     <div className={className}>
       <div className="flex-container">
         <div className="left-section">
-          {playlist.length > 0 ? playlist[trackId].name : "No track selected"}
+          {currentTrack ? currentTrack.name : "No track selected"}
         </div>
         <div className="mid-section">
           {auth ? (
@@ -49,8 +51,8 @@ const PlayerApp = ({ className }) => {
               autoPlayAfterSrcChange={true}
               volume="0.5"
               src={
-                playlist.length > 0 && playlist[trackId].preview_url
-                  ? playlist[trackId].preview_url
+                currentTrack && currentTrack.preview_url
+                  ? currentTrack.preview_url
                   : ""
               }
               showSkipControls
@@ -64,7 +66,6 @@ const PlayerApp = ({ className }) => {
           ) : (
             <div className="login-prompt">
               <p>Please log in to play songs</p>
-              {/* You can add a login button or link here */}
             </div>
           )}
         </div>
