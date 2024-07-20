@@ -20,7 +20,7 @@ router.get('/tracks', (req, res) => {
         }
 
         try {
-            let track = await instance.get(`/tracks/${id}`);
+            let track = await instance.get(/tracks/${id});
             return res.status(200).json({ ...track?.data });
         } catch (error) {
             console.error('Error fetching track from Spotify:', error);
@@ -34,7 +34,7 @@ router.get('/new-releases', (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get(`/browse/new-releases?limit=40&offset=0`);
+                let data = await instance.get(/browse/new-releases?limit=40&offset=0);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.log(error);
@@ -52,18 +52,18 @@ router.get('/artists', (req, res) => {
         if (instance) {
             if (ids) {
                 try {
-                    let data = await instance.get(`/artists?ids=${ids}`);
+                    let data = await instance.get(/artists?ids=${ids});
                     return res.status(200).json({ ...data?.data });
                 } catch (error) {
                     console.log(error);
                 }
             } else {
                 //When ids are not given this gives the artists of the newly released albums
-                let newAlbums = await instance.get(`/browse/new-releases?limit=15&offset=0`);
+                let newAlbums = await instance.get(/browse/new-releases?limit=15&offset=0);
                 let artArray = newAlbums.data.albums.items.map(item => item.artists).flat();
                 artArray = Array.from(new Set(artArray));
                 let idArray = artArray.map(artist => artist.id);
-                let data = await instance.get(`/artists?ids=${idArray.join(',')}`);
+                let data = await instance.get(/artists?ids=${idArray.join(',')});
                 return res.status(200).json({ ...data?.data });
             }
         } else {
@@ -73,30 +73,13 @@ router.get('/artists', (req, res) => {
 });
 
 
-router.get(`/artists/:id/albums`, (req, res) => {
+router.get(/artists/:id/albums, (req, res) => {
     const { id } = req.params;
 
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get(`artists/${id}/albums`);
-                return res.status(200).json({ ...data?.data });
-            } catch (error) {
-                console.log(error);
-            }
-        } else {
-            return res.status(error?.status).json(error);
-        }
-    })
-});
-
-router.get(`/artists/:id/top-tracks`, (req, res) => {
-    const { id } = req.params;
-
-    SpotifyConn(async (error, instance) => {
-        if (instance) {
-            try {
-                let data = await instance.get(`artists/${id}/top-tracks`);
+                let data = await instance.get(artists/${id}/albums);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.log(error);
@@ -107,13 +90,30 @@ router.get(`/artists/:id/top-tracks`, (req, res) => {
     })
 });
 
-router.get(`/artists/:id/related-artists`, (req, res) => {
+router.get(/artists/:id/top-tracks, (req, res) => {
     const { id } = req.params;
 
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get(`artists/${id}/related-artists`);
+                let data = await instance.get(artists/${id}/top-tracks);
+                return res.status(200).json({ ...data?.data });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
+router.get(/artists/:id/related-artists, (req, res) => {
+    const { id } = req.params;
+
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let data = await instance.get(artists/${id}/related-artists);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.log(error);
@@ -132,7 +132,7 @@ router.get('/albums', (req, res) => {
             if (ids) {
                 try {
 
-                    let data = await instance.get(`/albums?ids=${ids}`);
+                    let data = await instance.get(/albums?ids=${ids});
                     return res.status(200).json({ ...data?.data });
                 } catch (error) {
                     console.log(error);
@@ -159,7 +159,7 @@ router.get('/playlists', async (req, res) => {
                 let data;
                 if (id) {
 
-                    data = await instance.get(`/playlists/${id}`);
+                    data = await instance.get(/playlists/${id});
                 } else {
                     console.log("Fetching featured playlists");
                     data = await instance.get('/browse/featured-playlists?offset=0&limit=20');
@@ -177,12 +177,12 @@ router.get('/playlists', async (req, res) => {
     });
 });
 
-router.get(`/albums/:id/tracks`, (req, res) => {
+router.get(/albums/:id/tracks, (req, res) => {
     const { id } = req.params;
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get(`albums/${id}/tracks?market=IT`);
+                let data = await instance.get(albums/${id}/tracks?market=IT);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.log(error);
@@ -193,12 +193,12 @@ router.get(`/albums/:id/tracks`, (req, res) => {
     });
 });
 
-router.get(`/albums/:id/tracks`, (req, res) => {
+router.get(/albums/:id/tracks, (req, res) => {
     const { id } = req.params;
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                let data = await instance.get(`albums/${id}/tracks?market=ES`);
+                let data = await instance.get(albums/${id}/tracks?market=ES);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.log(error);
@@ -222,7 +222,7 @@ router.get('/search', (req, res) => {
     SpotifyConn(async (error, instance) => {
         if (instance) {
             try {
-                const data = await instance.get(`/search?q=${encodeURIComponent(q)}&type=${searchTypes}&limit=20`);
+                const data = await instance.get(/search?q=${encodeURIComponent(q)}&type=${searchTypes}&limit=20);
                 return res.status(200).json({ ...data?.data });
             } catch (error) {
                 console.error(error);

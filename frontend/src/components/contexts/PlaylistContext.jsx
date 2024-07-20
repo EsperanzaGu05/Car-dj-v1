@@ -32,10 +32,9 @@ export const PlaylistProvider = ({ children }) => {
       setError("Error fetching playlists");
     }
   }, [auth]);
-
   const fetchSongs = useCallback(async (playlistId) => {
     if (!auth || !auth.token) return; // Don't fetch if not authenticated
-
+  
     try {
       const response = await fetch(
         `http://localhost:5000/api/user/playlists/${playlistId}`,
@@ -46,20 +45,23 @@ export const PlaylistProvider = ({ children }) => {
         }
       );
       const data = await response.json();
-
+  
       if (response.ok) {
-        setSongs(data.songs || []);
+        console.log('Fetched songs data:', data); // Log fetched data
+        setSongs(data.songs || []); // Ensure state is updated with fetched data
         setError(null);
       } else {
+        console.error('API Error:', data.message);
         setSongs([]);
         setError(data.message || "Failed to fetch songs");
       }
     } catch (error) {
+      console.error('Error fetching songs:', error);
       setSongs([]);
       setError("Error fetching songs");
     }
   }, [auth]);
-
+  
   const createPlaylist = useCallback(async (name) => {
     if (!auth || !auth.token) return { success: false, message: "Not authenticated" };
 
@@ -110,7 +112,34 @@ export const PlaylistProvider = ({ children }) => {
       return { success: false, message: "Error removing playlist" };
     }
   }, [auth, fetchPlaylists]);
-
+  const addSongToPlaylist = useCallback(async (playlistId, song) => {
+    if (!auth || !auth.token) return { success: false, message: "Not authenticated" };
+  
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/user/playlists/${playlistId}/songs`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: JSON.stringify(song), // Make sure song includes preview_url
+        }
+      );
+  
+      if (response.ok) {
+        await fetchSongs(playlistId);
+        return { success: true, message: "Song added to playlist" };
+      } else {
+        const data = await response.json();
+        return { success: false, message: data.message || "Failed to add song to playlist" };
+      }
+    } catch (error) {
+      return { success: false, message: "Error adding song to playlist" };
+    }
+  }, [auth, fetchSongs]);
+  
   const removeSong = useCallback(async (playlistId, trackId) => {
     if (!auth || !auth.token) return { success: false, message: "Not authenticated" };
 
@@ -150,6 +179,7 @@ export const PlaylistProvider = ({ children }) => {
     fetchPlaylists,
     fetchSongs,
     createPlaylist,
+    addSongToPlaylist,
     removePlaylist,
     removeSong,
   };

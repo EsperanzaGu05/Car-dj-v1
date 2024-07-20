@@ -1,9 +1,106 @@
-.flex-container {
-    margin-top: 10px;
+.player-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 1000px;
+  }
+  
+  .flex-container {
     display: flex;
-    align-items: stretch;
-    background-color: white;
-}
+
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 30px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .left-section {
+    flex: 1;
+    padding: 0 10px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9em;
+  }
+  
+  .mid-section {
+    flex: 3;
+    padding: 0 10px;
+  }
+  
+  .mid-section .rhap_container {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  
+  .mid-section .rhap_main-controls-button {
+    color: #801db9;
+    font-size: 24px;
+  }
+  
+  .mid-section .rhap_progress-filled {
+    background-color: #1db954;
+  }
+  
+  .mid-section .rhap_download-progress {
+    background-color: #b3b3b3;
+  }
+  
+  .mid-section .rhap_volume-button {
+    color: #333;
+  }
+  
+  .mid-section .rhap_volume-bar {
+    background-color: #b3b3b3;
+  }
+  
+  .mid-section .rhap_volume-indicator {
+    background-color: #661db9;
+  }
+  
+  .login-prompt {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 0.9em;
+  }
+  
+  /* Custom styles for the audio player to make it more compact */
+  .rhap_container {
+    padding: 5px 0 !important;
+  }
+  
+  .rhap_main-controls {
+    gap: 10px;
+  }
+  
+  .rhap_additional-controls,
+  .rhap_volume-controls {
+    flex: none !important;
+  }
+  
+  /* Adjust the progress bar */
+  .rhap_progress-container {
+    margin: 0 10px;
+  }
+  
+  /* Adjust the volume control */
+  .rhap_volume-controls {
+    justify-content: flex-end;
+  }
+  
+  .rhap_volume-bar-area {
+    width: 50px;
+  }
+
+
 
 .left-section {
     flex-grow: 1;
@@ -25,3 +122,4 @@
 .right-section {
     max-width: 25%;
 }
+

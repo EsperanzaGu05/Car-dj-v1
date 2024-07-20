@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import playlistSlice from "./components/Player/playlistSlice";
+import playlistReducer from "./components/Player/playlistSlice"; // Make sure the path is correct
 
 const store = configureStore({
-    reducer: {
-        playlist: playlistSlice.reducer
-    }
-})
+  reducer: {
+    playlist: playlistReducer,
+  },
+});
 
-export default store
+export default store;

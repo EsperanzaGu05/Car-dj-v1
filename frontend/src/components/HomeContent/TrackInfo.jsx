@@ -14,7 +14,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { AuthContext } from "../contexts/AuthContext";
 import { useDispatch } from "react-redux";
-import playlistSlice from "../Player/playlistSlice";
+import { setCurrentPlaylist, setCurrentTrack } from "../Player/playlistSlice";
 import playButtonSrc from "../../assets/play-button.svg";
 import { getAlbumTracks } from "../../utils/utils/index";
 
@@ -22,7 +22,9 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const TrackInfo = ({ release }) => {
+const TrackInfo = ({ release, onPlay, showMenu = true }) => {
+  
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
   const [playlists, setPlaylists] = useState([]);
@@ -32,17 +34,79 @@ const TrackInfo = ({ release }) => {
     message: "",
     severity: "success",
   });
-  const { setCurrentPlaylist, setCurrentTrack } = playlistSlice.actions;
   const dispatch = useDispatch();
+
+  // Normalize the release object
+  const normalizedRelease = {
+    id: release.id || release.track?.id,
+    name: release.name || release.track?.name,
+    artists: release.artists || release.track?.artists || [],
+    album: release.album || {
+      images: release.images || release.album?.images || []
+    },
+    type: release.type || release.track?.type || 'track',
+    preview_url: release.preview_url || release.track?.preview_url
+  };
+
+  const fetchSongDetails = async (songId) => {
+    console.log("Fetching song details for ID:", songId);
+
+    if (!songId) {
+      console.error("No song ID provided");
+      showSnackbar("Error: No song ID available", "error");
+      return null;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/spotify/fetchSong?id=${songId}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to fetch song details:", response.status, errorData);
+        throw new Error(errorData.error || "Failed to fetch song details");
+      }
+
+      const data = await response.json();
+      console.log("Fetched song details:", data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching song details:", error.message);
+      showSnackbar(`Error fetching song details: ${error.message}`, "error");
+      return null;
+    }
+  };
+
   const updatePlayerStatus = async (track) => {
     try {
-      const trackData = await getAlbumTracks(track.id);
-      console.log(trackData.items[0].preview_url);
-      dispatch(setCurrentPlaylist(trackData.items));
-      dispatch(setCurrentTrack(0));
-      // QUITAR LOADER
+      let trackData;
+      if (track.type === 'album') {
+        trackData = await getAlbumTracks(track.id);
+      } else if (track.type === 'track') {
+        const songDetails = await fetchSongDetails(track.id);
+        if (songDetails) {
+          trackData = { items: [songDetails] };
+        } else {
+          trackData = { items: [track] };
+        }
+      } else {
+        throw new Error('Unsupported track type');
+      }
+
+      console.log("Track data:", trackData);
+      if (trackData.items && trackData.items.length > 0) {
+        const firstTrack = trackData.items[0];
+        if (firstTrack.preview_url) {
+          dispatch(setCurrentPlaylist(trackData.items));
+          dispatch(setCurrentTrack(0));
+        } else {
+          showSnackbar("This song doesn't have a preview URL.", "warning");
+        }
+      } else {
+        showSnackbar("No playable tracks found.", "error");
+      }
     } catch (error) {
-      console.error("Error fetching album tracks:", error);
+      console.error("Error updating player status:", error);
+      showSnackbar(`Error playing track: ${error.message}. Please try again.`, "error");
     }
   };
 
@@ -50,7 +114,7 @@ const TrackInfo = ({ release }) => {
     if (isPlaylistDialogOpen) {
       fetchPlaylists();
     }
-  }, [isPlaylistDialogOpen]);
+  }, [isPlaylistDialogOpen, auth]);
 
   const fetchPlaylists = async () => {
     if (!auth) {
@@ -83,6 +147,12 @@ const TrackInfo = ({ release }) => {
       return;
     }
 
+    const songDetails = await fetchSongDetails(normalizedRelease.id);
+    if (!songDetails) {
+      showSnackbar("Failed to fetch song details", "error");
+      return;
+    }
+
     try {
       const response = await fetch(
         `http://localhost:5000/api/user/playlists/${playlistId}/songs`,
@@ -93,10 +163,11 @@ const TrackInfo = ({ release }) => {
             Authorization: `Bearer ${auth.token}`,
           },
           body: JSON.stringify({
-            songId: release.id,
-            songName: release.name,
-            artist: artistName,
-            imageUrl: imageUrl,
+            songId: songDetails.id,
+            songName: songDetails.name,
+            artist: songDetails.artists[0].name,
+            imageUrl: songDetails.album.images[0].url,
+            preview_url: songDetails.preview_url,
           }),
         }
       );
@@ -127,19 +198,6 @@ const TrackInfo = ({ release }) => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  if (!release) {
-    return <div>No release information available</div>;
-  }
-
-  const isTrack = release.type === "track";
-  const imageUrl = isTrack
-    ? release.album?.images[0]?.url
-    : release.images?.[0]?.url;
-  const name = release.name || "Unknown";
-  const artistName = isTrack
-    ? release.artists?.[0]?.name
-    : release.artists?.[0]?.name || "Unknown Artist";
-
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -157,30 +215,37 @@ const TrackInfo = ({ release }) => {
     handleMenuClose();
   };
 
+  const handlePlayClick = () => {
+    console.log("Song ID:", normalizedRelease.id);
+    updatePlayerStatus(normalizedRelease);
+  };
+
   return (
     <div className="card-track" style={{ position: "relative" }}>
       <div className="play-button">
         <img
           src={playButtonSrc}
           alt=""
-          onClick={() => updatePlayerStatus(release)}
+          onClick={handlePlayClick}
         />
       </div>
-      <IconButton
-        aria-label="more"
-        aria-controls="track-menu"
-        aria-haspopup="true"
-        onClick={handleMenuOpen}
-        style={{
-          position: "absolute",
-          top: 5,
-          right: -80,
-          color: "white",
-          backgroundColor: "transparent",
-        }}
-      >
-        <MoreVertIcon />
-      </IconButton>
+      {showMenu && (
+        <IconButton
+          aria-label="more"
+          aria-controls="track-menu"
+          aria-haspopup="true"
+          onClick={handleMenuOpen}
+          style={{
+            position: "absolute",
+            top: 5,
+            right: -80,
+            color: "white",
+            backgroundColor: "transparent",
+          }}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      )}
       <Menu
         id="track-menu"
         anchorEl={anchorEl}
@@ -197,20 +262,22 @@ const TrackInfo = ({ release }) => {
           justifyContent: "center",
         }}
       >
-        {imageUrl && (
+        {normalizedRelease.album.images[0]?.url && (
           <img
-            src={imageUrl}
+            src={normalizedRelease.album.images[0].url}
             width={"200px"}
             height={"200px"}
-            alt={`${name}`}
+            alt={`${normalizedRelease.name}`}
           />
         )}
       </div>
       <div style={{ height: "25px", overflow: "hidden" }}>
         <div style={{ height: "25px", overflow: "hidden" }}>
-          <span>{name}</span>
+          <span>{normalizedRelease.name}</span>
         </div>
-        <span style={{ color: "#222222", opacity: 0.5 }}>{artistName}</span>
+        <span style={{ color: "#222222", opacity: 0.5 }}>
+          {normalizedRelease.artists[0]?.name}
+        </span>
 
         <Dialog
           open={isPlaylistDialogOpen}

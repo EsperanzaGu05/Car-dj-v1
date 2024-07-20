@@ -3,10 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { useSubscription } from "../contexts/SubscriptionContext";
 import { usePlaylist } from "../contexts/PlaylistContext";
+import { useDispatch } from 'react-redux';
+import { setCurrentPlaylist, setCurrentTrack } from "../Player/playlistSlice"; // Import the action creators
 import AccountSidebar from "./AccountSideBar";
 import "../AsideBar/AsideBar.css";
 import "../Button/Button.css";
 import listSrc from "../../assets/list.png";
+import playButtonSrc from "../../assets/play-button.svg"; // Import play button image
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -25,21 +28,19 @@ import MenuItem from "@mui/material/MenuItem";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
+// Alert component
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const AsidebarLoggedIn = () => {
   const { auth, logout } = useContext(AuthContext);
   const { daysLeft, subscriptionStatus, handleBuySubscription } = useSubscription();
-  const {
-    playlists,
-    songs,
-    error,
-    fetchPlaylists,
-    fetchSongs,
-    createPlaylist,
-    removePlaylist,
-    removeSong
-  } = usePlaylist();
+  const { playlists, songs, error, fetchPlaylists, fetchSongs, createPlaylist, removePlaylist, removeSong } = usePlaylist();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+
   const [isAccountSidebarOpen, setAccountSidebarOpen] = useState(false);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState("");
@@ -149,7 +150,9 @@ const AsidebarLoggedIn = () => {
       setSnackbarOpen(true);
       fetchPlaylists();
     } else {
-      setPlaylistNameError(result.message);
+      setSnackbarMessage(result.message);
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
 
     handleMenuClose();
@@ -157,10 +160,12 @@ const AsidebarLoggedIn = () => {
 
   const handlePlaylistItemClick = async (playlist) => {
     setSelectedPlaylist(playlist);
+    dispatch(setCurrentPlaylist(playlist.songs || [])); // Set the playlist songs in Redux
+    dispatch(setCurrentTrack(0)); // Start with the first track
     await fetchSongs(playlist._id);
     setSongsDialogOpen(true);
   };
-
+  
   const handleRemoveSong = (song) => {
     setSongToRemove(song);
     setSongRemoveDialogOpen(true);
@@ -176,7 +181,9 @@ const AsidebarLoggedIn = () => {
       setSnackbarOpen(true);
       await fetchSongs(selectedPlaylist._id);
     } else {
-      setPlaylistNameError(result.message);
+      setSnackbarMessage(result.message);
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
 
     setSongRemoveDialogOpen(false);
@@ -199,10 +206,19 @@ const AsidebarLoggedIn = () => {
     }
   };
 
+  const updatePlayerStatus = (track) => {
+    if (!track || !track.preview_url) {
+      console.error('Track or preview_url is not available');
+      return;
+    }
+
+    dispatch(setCurrentPlaylist([track]));
+    dispatch(setCurrentTrack(0));
+  };
+
   if (!auth) {
     return null;
   }
-
   return (
     <div>
       <div className="login-section">
@@ -223,7 +239,7 @@ const AsidebarLoggedIn = () => {
         {isAccountSidebarOpen && (
           <AccountSidebar onClose={() => setAccountSidebarOpen(false)} />
         )}
-
+  
         <Dialog
           open={isPlaylistDialogOpen}
           onClose={() => setPlaylistDialogOpen(false)}
@@ -254,7 +270,7 @@ const AsidebarLoggedIn = () => {
               {playlists.map((playlist) => (
                 <ListItem
                   button
-                  key={playlist._id}
+                  key={playlist._id || playlist.name}
                   onClick={() => handlePlaylistItemClick(playlist)}
                   secondaryAction={
                     <IconButton
@@ -267,7 +283,7 @@ const AsidebarLoggedIn = () => {
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar src={listSrc} />
+                    <Avatar src={playlist.coverImage || listSrc} />
                   </ListItemAvatar>
                   <ListItemText primary={playlist.name} />
                 </ListItem>
@@ -278,7 +294,7 @@ const AsidebarLoggedIn = () => {
             <Button onClick={() => setPlaylistDialogOpen(false)}>Close</Button>
           </DialogActions>
         </Dialog>
-
+  
         <Dialog
           open={isSongsDialogOpen}
           onClose={() => setSongsDialogOpen(false)}
@@ -289,7 +305,7 @@ const AsidebarLoggedIn = () => {
               <List>
                 {songs.map((song) => (
                   <ListItem
-                    key={song.trackId}
+                    key={song.trackId || song.name}
                     secondaryAction={
                       <IconButton
                         edge="end"
@@ -309,6 +325,13 @@ const AsidebarLoggedIn = () => {
                       primary={song.name || song.trackName}
                       secondary={song.artist || song.artistName}
                     />
+                    <div className="play-button">
+                      <img
+                        src={playButtonSrc}
+                        alt="Play"
+                        onClick={() => updatePlayerStatus(song)}
+                      />
+                    </div>
                   </ListItem>
                 ))}
               </List>
@@ -320,7 +343,7 @@ const AsidebarLoggedIn = () => {
             <Button onClick={() => setSongsDialogOpen(false)}>Close</Button>
           </DialogActions>
         </Dialog>
-
+  
         <Dialog
           open={isSongRemoveDialogOpen}
           onClose={() => setSongRemoveDialogOpen(false)}
@@ -336,7 +359,7 @@ const AsidebarLoggedIn = () => {
             </Button>
           </DialogActions>
         </Dialog>
-
+  
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
@@ -344,13 +367,14 @@ const AsidebarLoggedIn = () => {
         >
           <MenuItem onClick={handleRemovePlaylist}>Delete Playlist</MenuItem>
         </Menu>
-
+  
         <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-          <MuiAlert onClose={handleCloseSnackbar} severity={snackbarSeverity} elevation={6} variant="filled">
+          <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} elevation={6} variant="filled">
             {snackbarMessage}
-          </MuiAlert>
+          </Alert>
         </Snackbar>
       </div>
+  
       <button
         onClick={handleSubscriptionButton}
         className="feature-button"
@@ -361,6 +385,7 @@ const AsidebarLoggedIn = () => {
           ? `Subscribed (${daysLeft ?? 0} days left)`
           : "Buy Subscription"}
       </button>
+  
       <button
         onClick={handlePlaylistClick}
         className="feature-button"
@@ -379,6 +404,7 @@ const AsidebarLoggedIn = () => {
       </button>
     </div>
   );
+  
 };
-
+  
 export default AsidebarLoggedIn;

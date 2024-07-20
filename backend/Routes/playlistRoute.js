@@ -65,12 +65,13 @@ router.get('/:playlistId', verifyToken, async (req, res) => {
     res.status(500).json({ message: 'Error fetching playlist', error: error.message });
   }
 });
-
 router.post('/:playlistId/songs', verifyToken, async (req, res) => {
   const { playlistId } = req.params;
-  const { songId, songName, artist, imageUrl } = req.body;
+  const { songId, songName, artist, imageUrl, preview_url } = req.body; // Added preview_url here
   const userId = req.userId;
   const db = getDB();
+
+  console.log("Received song details:", { songId, songName, artist, imageUrl, preview_url }); // Log received data
 
   try {
     const playlist = await db.collection(collections.PLAYLIST).findOne({ _id: new ObjectId(playlistId), userId });
@@ -83,7 +84,7 @@ router.post('/:playlistId/songs', verifyToken, async (req, res) => {
 
     await db.collection(collections.PLAYLIST).updateOne(
       { _id: new ObjectId(playlistId) },
-      { $addToSet: { songs: { trackId: songId, name: songName, artist, imageUrl } } }
+      { $addToSet: { songs: { trackId: songId, name: songName, artist, imageUrl, preview_url } } } // Included preview_url here
     );
     res.status(200).json({ message: 'Song added to playlist' });
   } catch (error) {
