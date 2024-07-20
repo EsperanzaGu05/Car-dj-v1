@@ -42,8 +42,6 @@ export const getArtists = async (id = '') => {
     }
 };
 
-<<<<<<< Updated upstream
-=======
 export const getAlbums = async (id = '') => {
     try {
         let URL = 'http://localhost:5000/api/spotify/albums';
@@ -64,7 +62,6 @@ export const getAlbums = async (id = '') => {
         throw error;
     }
 };
->>>>>>> Stashed changes
 
 export const getArtistAlbums = async (id = '') => {
     try {
@@ -117,25 +114,6 @@ export const getArtistRelated = async (id = '') => {
     }
 };
 
-<<<<<<< Updated upstream
-
-export const getPlaylists = async () => {
-    try {
-        const URL = 'http://localhost:5000/api/spotify/playlists'
-        const response = await fetch(URL, {
-            method: "GET",
-        });
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-export const getAlbums = async () => {
-    try {
-        const URL = 'http://localhost:5000/api/spotify/albums'
-=======
 export const getPlaylists = async (id = '') => {
     try {
         let URL = 'http://localhost:5000/api/spotify/playlists';
@@ -143,7 +121,6 @@ export const getPlaylists = async (id = '') => {
             URL += `?id=${id}`;
         }
         URL = addTimestamp(URL);
->>>>>>> Stashed changes
         const response = await fetch(URL, {
             method: "GET",
         });
@@ -175,9 +152,6 @@ export const getAlbumTracks = async (id = '') => {
     }
 };
 
-<<<<<<< Updated upstream
-// New function for search
-=======
 export const getTracks = async (id = '') => {
     try {
         let URL = addTimestamp(`http://localhost:5000/api/spotify/tracks?id=${id}`);
@@ -195,7 +169,6 @@ export const getTracks = async (id = '') => {
     }
 };
 
->>>>>>> Stashed changes
 export const searchSpotify = async (query) => {
     try {
         const URL = addTimestamp(`http://localhost:5000/api/spotify/search?q=${encodeURIComponent(query)}`);

@@ -16,7 +16,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { useDispatch } from "react-redux";
 import { setCurrentPlaylist, setCurrentTrack } from "../Player/playlistSlice";
 import playButtonSrc from "../../assets/play-button.svg";
-import {getAlbumTracks} from '../../utils/utils/index';
+import { getAlbumTracks } from "../../utils/utils/index";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -34,17 +34,6 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
     message: "",
     severity: "success",
   });
-<<<<<<< Updated upstream
-  const { setCurrentPlaylist, setCurrentTrack} = playlistSlice.actions;
-  const dispatch = useDispatch();
-  const updatePlayerStatus = async (track) => {    
-    try {
-      const trackData = await getAlbumTracks(track.id);
-      console.log(trackData.items[0].preview_url)
-      dispatch(setCurrentPlaylist(trackData.items));
-      dispatch(setCurrentTrack(0));
-      // QUITAR LOADER
-=======
   const dispatch = useDispatch();
 
   // Normalize the release object
@@ -115,7 +104,6 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
       } else {
         showSnackbar("No playable tracks found.", "error");
       }
->>>>>>> Stashed changes
     } catch (error) {
       console.error("Error updating player status:", error);
       showSnackbar(`Error playing track: ${error.message}. Please try again.`, "error");
@@ -235,15 +223,11 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
   return (
     <div className="card-track" style={{ position: "relative" }}>
       <div className="play-button">
-<<<<<<< Updated upstream
-        <img src={playButtonSrc} alt="" onClick={() => updatePlayerStatus(release)}/>
-=======
         <img
           src={playButtonSrc}
           alt=""
           onClick={handlePlayClick}
         />
->>>>>>> Stashed changes
       </div>
       {showMenu && (
         <IconButton
@@ -288,9 +272,6 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
         )}
       </div>
       <div style={{ height: "25px", overflow: "hidden" }}>
-<<<<<<< Updated upstream
-        <span>{name}</span>
-=======
         <div style={{ height: "25px", overflow: "hidden" }}>
           <span>{normalizedRelease.name}</span>
         </div>
@@ -331,43 +312,7 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
             {snackbar.message}
           </Alert>
         </Snackbar>
->>>>>>> Stashed changes
       </div>
-      <span style={{ color: "#222222", opacity: 0.5 }}>{artistName}</span>
-
-      <Dialog
-        open={isPlaylistDialogOpen}
-        onClose={() => setPlaylistDialogOpen(false)}
-      >
-        <DialogTitle>Choose a Playlist</DialogTitle>
-        <DialogContent>
-          <List>
-            {playlists.map((playlist) => (
-              <ListItem
-                button
-                key={playlist._id}
-                onClick={() => handleAddToPlaylist(playlist._id)}
-              >
-                <ListItemText primary={playlist.name} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-      </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };

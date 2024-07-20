@@ -7,11 +7,14 @@ import { searchSpotify } from "../../utils/utils";
 import "../HomeContent/MainContent.css";
 
 const SearchResult = () => {
-  const [searchResults, setSearchResults] = useState({ tracks: [], albums: [], artists: [] });
+  const [searchResults, setSearchResults] = useState({
+    tracks: [],
+    albums: [],
+    artists: [],
+  });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const searchQuery = new URLSearchParams(location.search).get("q");
 
   useEffect(() => {
@@ -22,7 +25,7 @@ const SearchResult = () => {
       setError(null);
       try {
         const data = await searchSpotify(searchQuery);
-        console.log('Search results:', data); // For debugging
+        console.log("Search results:", data); // For debugging
         setSearchResults({
           tracks: data.tracks?.items || [],
           albums: data.albums?.items || [],
@@ -38,10 +41,6 @@ const SearchResult = () => {
 
     fetchSearchResults();
   }, [searchQuery]);
-
-  const handleArtistClick = (artistId) => {
-    navigate(`/artists/${artistId}`);
-  };
 
   if (isLoading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -86,13 +85,7 @@ const SearchResult = () => {
             {searchResults.artists.length > 0 ? (
               <div className="all-artists">
                 {searchResults.artists.map((artist) => (
-<<<<<<< Updated upstream
-                  <div key={artist.id} onClick={() => handleArtistClick(artist.id)}>
-                    <ArtistInfo artist={artist} />
-                  </div>
-=======
                   <ArtistInfo key={artist.id} artist={artist} />
->>>>>>> Stashed changes
                 ))}
               </div>
             ) : (

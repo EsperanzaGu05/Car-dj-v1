@@ -5,31 +5,30 @@ import {
   Routes,
   useNavigate,
   useLocation,
-  Outlet,
 } from "react-router-dom";
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import playlistReducer from './components/Player/playlistSlice';
 import "./App.css";
-import AsideBar from "./components/AsideBar/AsideBar";
-import SearchBar from "./components/SearchBar/SearchBar";
 import Verify from "./components/LoginSection/verify";
 import ResetPassword from "./components/LoginSection/Resetpassword";
 import Login from "./components/LoginSection/Login";
 import { AuthProvider, AuthContext } from "./components/contexts/AuthContext";
 import "./components/LoginSection/Login.css";
 import GoogleLoginCallback from "./components/LoginSection/GoogleLoginCallback";
+import Layout from "./shared/Layout/Layout.jsx";
 import Home from "./Pages/Home/Home.jsx";
 import Artists from "./Pages/Home/Artists.jsx";
 import Albums from "./Pages/Home/Albums.jsx";
 import Playlists from "./Pages/Home/Playlists.jsx";
-import Layout from "./shared/Layout/Layout.jsx";
-import SearchResult from "./components/SearchBar/SearchResults.jsx";
 import ArtistsDetailes from "./Pages/Home/ArtistsDetailes.jsx";
-import { PlaylistProvider } from "./components/contexts/PlaylistContext"
-import SubscriptionSuccess from './components/SubscriptionSuccess.jsx';
-import PaymentSuccess from './components/AsideBar/PaymentSuccess.jsx';
-import { SubscriptionProvider } from './components/contexts/SubscriptionContext';
+import AlbumsDetails from "./Pages/Home/AlbumsDetails.jsx";
+import SearchResult from "./components/SearchBar/SearchResults.jsx";
+import PlaylistDetailes from "./Pages/Home/PlaylistDetailes.jsx";
+import { PlaylistProvider } from "./components/contexts/PlaylistContext";
+import SubscriptionSuccess from "./components/SubscriptionSuccess.jsx";
+import PaymentSuccess from "./components/AsideBar/PaymentSuccess.jsx";
+import { SubscriptionProvider } from "./components/contexts/SubscriptionContext";
 
 // Create Redux store
 const store = configureStore({
@@ -75,8 +74,8 @@ function AppContent() {
         <Route
           path="/"
           element={
-            <Layout id="home" >
-              <Home/>
+            <Layout id="home">
+              <Home />
             </Layout>
           }
         />
@@ -91,7 +90,7 @@ function AppContent() {
         <Route
           path="/artists/:id"
           element={
-            <Layout>
+            <Layout id="artist">
               <ArtistsDetailes />
             </Layout>
           }
@@ -105,10 +104,26 @@ function AppContent() {
           }
         />
         <Route
+          path="/albums/:id"
+          element={
+            <Layout id="albums">
+              <AlbumsDetails />
+            </Layout>
+          }
+        />
+        <Route
           path="/playlist"
           element={
             <Layout id="playlist">
               <Playlists />
+            </Layout>
+          }
+        />
+        <Route
+          path="/playlist/:id"
+          element={
+            <Layout id="playlist">
+              <PlaylistDetailes />
             </Layout>
           }
         />
@@ -134,17 +149,6 @@ function AppContent() {
 
 function App() {
   return (
-<<<<<<< Updated upstream
-    <AuthProvider>
-       <SubscriptionProvider>
-      <PlaylistProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </PlaylistProvider>
-      </SubscriptionProvider>
-    </AuthProvider>
-=======
     <Provider store={store}>
       <AuthProvider>
         <SubscriptionProvider>
@@ -156,7 +160,6 @@ function App() {
         </SubscriptionProvider>
       </AuthProvider>
     </Provider>
->>>>>>> Stashed changes
   );
 }
 

@@ -1,4 +1,5 @@
 .layout-container {
+    width: 100%;
     display: grid;
     grid-template-columns: 225px repeat(1, 1fr);
     grid-template-rows: 100px repeat(1, 1fr);

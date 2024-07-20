@@ -13,16 +13,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const MainContent = ({ trackReleases, albumReleases }) => {
-<<<<<<< Updated upstream
-  const [currentPlaylist, setCurrentPlaylist] = useState([]);
-
-  const updatePlaylist = (track) => {
-    console.log("Updating playlist with track:", track);
-    setCurrentPlaylist([{ 
-      name: track.name,
-      src: track.preview_url // Make sure this matches the actual property name in your data
-    }]);
-=======
   const dispatch = useDispatch();
   const { auth } = React.useContext(AuthContext);
   const [snackbar, setSnackbar] = useState({
@@ -35,7 +25,6 @@ const MainContent = ({ trackReleases, albumReleases }) => {
     console.log("Updating playlist with track:", track);
     dispatch(setCurrentPlaylist([track]));
     dispatch(setCurrentTrack(track.id));
->>>>>>> Stashed changes
   };
 
   const showSnackbar = (message, severity = "success") => {
@@ -55,15 +44,6 @@ const MainContent = ({ trackReleases, albumReleases }) => {
       <div className="content-tracks">
         {(trackReleases && trackReleases.length) > 0 ? (
           <div className="all-tracks">
-<<<<<<< Updated upstream
-            {trackReleases.map((release) => (
-              <TrackInfo 
-                key={release.id} 
-                release={release} 
-                onPlay={() => updatePlaylist(release)}
-              />
-            ))}
-=======
             {trackReleases.map((release, index) => {
               
               return (
@@ -76,7 +56,6 @@ const MainContent = ({ trackReleases, albumReleases }) => {
                 </div>
               );
             })}
->>>>>>> Stashed changes
           </div>
         ) : (
           <p>No tracks available</p>
@@ -94,11 +73,6 @@ const MainContent = ({ trackReleases, albumReleases }) => {
           <p>No albums available</p>
         )}
       </div>
-<<<<<<< Updated upstream
-      
-      {/* Always render PlayerApp, regardless of playlist content 
-      <PlayerApp playlist={currentPlaylist} />*/}
-=======
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
@@ -112,7 +86,6 @@ const MainContent = ({ trackReleases, albumReleases }) => {
           {snackbar.message}
         </Alert>
       </Snackbar>
->>>>>>> Stashed changes
     </div>
   );
 };

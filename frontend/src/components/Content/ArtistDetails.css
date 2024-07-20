@@ -14,25 +14,72 @@
 .artistTopTrackItems {
     display: grid;
     grid-template-rows: 50px;
-    grid-template-columns: 50px 0.5fr 2fr 1fr 0.3fr;
+    grid-template-columns: 50px 0.5fr 2fr 1fr 0.3fr 50px;
     justify-items: start;
     align-items: center;
     padding-left: 10px;
     transition: background-color 200ms ease-in-out;
+    cursor: default;
+}
+
+.albumSongsItems {
+    display: grid;
+    grid-template-rows: 50px;
+    grid-template-columns: 50px 1.5fr 1fr 0.3fr 50px;
+    justify-items: start;
+    align-items: center;
+    padding-left: 10px;
+    transition: background-color 200ms ease-in-out;
+    cursor: default;
+}
+
+.playlistTrackItems {
+    display: grid;
+    grid-template-rows: 50px;
+    grid-template-columns: 50px 1.5fr 1fr 0.3fr 50px;
+    justify-items: start;
+    align-items: center;
+    padding-left: 10px;
+    transition: background-color 200ms ease-in-out;
+    cursor: default;
 }
 
 .artistTopTrackList {
     padding: 20px;
 }
 
-.artistTopTrackItems:hover {
+.albumSongsList {
+    padding: 20px;
+
+}
+
+.playlistSongsList {
+    padding: 20px;
+
+}
+
+.artistTopTrackItems:hover,
+.albumSongsItems:hover,
+.playlistTrackItems:hover {
     background-color: #e2e2e2;
     transition: background-color 200ms ease-in-out;
 }
 
-.artistTopTrackItems:active {
-    background-color: #e2e2e2;
+.albumSongsItems.selected,
+.artistTopTrackItems.selected,
+.playlistTrackItems.selected {
+    background-color: #f0f0f0;
+    /* Example background color for selected song */
 }
+
+/* .artistTopTrackItems:active {
+    background-color: #7f1f1f;
+} */
+
+/* .albumSongsItems:active { */
+
+
+
 
 .content-related-artists {
     background-color: white;
@@ -47,4 +94,9 @@
 
 .content-albums {
     width: 100%;
+}
+
+.label-style {
+    height: 25px;
+    overflow: hidden;
 }
