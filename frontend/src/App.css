@@ -13,11 +13,11 @@ html {
 
 footer {
   color: #222222;
-  font-size: small;
+
   background-color: #f5f5f5;
   display: flex;
   justify-content: center;
-  font-size: small;
+  font-size: 12px;
 }
 
 .success-alert {

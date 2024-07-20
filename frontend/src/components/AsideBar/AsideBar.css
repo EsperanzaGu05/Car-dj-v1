@@ -1,5 +1,5 @@
 .logo-side {
-    padding-bottom: 30px;
+    padding-bottom: 20px;
     display: flex;
     align-items: center;
     font-size: 17px;
@@ -23,7 +23,7 @@
 }
 
 .features {
-    margin-top: 40px;
+    margin-top: 20px;
     padding-bottom: 20px;
 }
 
@@ -47,6 +47,7 @@ aside {
     padding: 15px;
     font-size: 14px;
     margin-left: 10px;
+    margin-bottom: 10px;
     flex-direction: column;
 }
 
