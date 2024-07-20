@@ -6,6 +6,9 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import playlistReducer from './components/Player/playlistSlice';
 import "./App.css";
 import Verify from "./components/LoginSection/verify";
 import ResetPassword from "./components/LoginSection/Resetpassword";
@@ -26,6 +29,13 @@ import { PlaylistProvider } from "./components/contexts/PlaylistContext";
 import SubscriptionSuccess from "./components/SubscriptionSuccess.jsx";
 import PaymentSuccess from "./components/AsideBar/PaymentSuccess.jsx";
 import { SubscriptionProvider } from "./components/contexts/SubscriptionContext";
+
+// Create Redux store
+const store = configureStore({
+  reducer: {
+    playlist: playlistReducer,
+  },
+});
 
 function AppContent() {
   const { login } = useContext(AuthContext);
@@ -139,15 +149,17 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <SubscriptionProvider>
-        <PlaylistProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </PlaylistProvider>
-      </SubscriptionProvider>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <SubscriptionProvider>
+          <PlaylistProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </PlaylistProvider>
+        </SubscriptionProvider>
+      </AuthProvider>
+    </Provider>
   );
 }
 

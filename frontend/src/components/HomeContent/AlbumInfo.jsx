@@ -7,12 +7,7 @@ import playButtonSrc from "../../assets/play-button.svg";
 import { getAlbumTracks } from "../../utils/utils/index";
 
 const AlbumInfo = ({ release }) => {
-
   const dispatch = useDispatch();
-
-
-  const { setCurrentPlaylist, setCurrentTrack } = playlistSlice.actions;
- 
 
   const updatePlayerStatus = async (album) => {
     try {
