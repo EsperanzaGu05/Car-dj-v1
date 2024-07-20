@@ -22,6 +22,7 @@ const Home = () => {
       console.error("Error fetching releases:", error);
     }
   };
+
   useEffect(() => {
     fetchRelease();
   }, []);

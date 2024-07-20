@@ -184,7 +184,6 @@ router.get(`/artists/:id/related-artists`, (req, res) => {
 router.get('/albums', (req, res) => {
 
     const { ids } = req.query;
-
     SpotifyConn(async (error, instance) => {
         if (instance) {
             if (ids) {
