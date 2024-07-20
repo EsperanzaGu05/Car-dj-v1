@@ -1,10 +1,37 @@
 import React from "react";
-// import { getArtists } from "../../utils";
+
 import "../HomeContent/MainContent.css";
+import { useDispatch } from "react-redux";
+import { setCurrentPlaylist, setCurrentTrack } from "../Player/playlistSlice";
+import playButtonSrc from "../../assets/play-button.svg";
+import {getAlbumTracks} from '../../utils/utils/index';
 
 const AlbumInfo = ({ release }) => {
+<<<<<<< Updated upstream
+  const { setCurrentPlaylist, setCurrentTrack} = playlistSlice.actions;
+  const dispatch = useDispatch();
+  const updatePlayerStatus = async (album) => {    
+=======
+  const dispatch = useDispatch();
+
+  const updatePlayerStatus = async (album) => {
+>>>>>>> Stashed changes
+    try {
+      const trackData = await getAlbumTracks(album.id);
+      console.log(trackData.items[0].preview_url)
+      dispatch(setCurrentPlaylist(trackData.items));
+      dispatch(setCurrentTrack(0));
+      // QUITAR LOADER
+    } catch (error) {
+      console.error("Error fetching album tracks:", error);
+    }
+  };
+
   return (
     <div className="card-track">
+      <div className="play-button">
+        <img src={playButtonSrc} alt="" onClick={() => updatePlayerStatus(release)}/>
+      </div>
       <div
         style={{
           paddingBottom: "10px",
@@ -19,11 +46,9 @@ const AlbumInfo = ({ release }) => {
           alt={`${release.name}`}
         />
       </div>
-<<<<<<< HEAD
-      <span style={{ overflow: "hidden" }}>{release.name}</span>
-=======
-      <span>{release.name}</span>
->>>>>>> eb1faec4dd693945ae90e52e9113b102c38926b9
+      <div style={{ height: "25px", overflow: "hidden" }}>
+        <span>{release.name}</span>
+      </div>
       <span style={{ color: "#222222", opacity: 0.5 }}>
         {release.artists[0].name}
       </span>

@@ -5,17 +5,20 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: '1d',
   });
+  console.log('JWT Token generated:', token);
+  console.log('Token contents:', jwt.decode(token));
+  return token;
 };
 
-router.get('/google/signup', passport.authenticate('google', { 
+router.get('/google/signup', passport.authenticate('google', {
   scope: ['profile', 'email'],
   state: 'signup'
 }));
 
-router.get('/google/login', passport.authenticate('google', { 
+router.get('/google/login', passport.authenticate('google', {
   scope: ['profile', 'email'],
   state: 'login'
 }));
@@ -44,9 +47,9 @@ router.get('/google/callback', (req, res, next) => {
         return res.redirect(`http://localhost:5173/?status=error&message=${encodeURIComponent('Login failed')}`);
       }
       console.log('User successfully logged in:', user);
-      
+
       const token = generateToken(user._id);
-      
+
       if (isSignup) {
         return res.redirect(`http://localhost:5173/?status=success&message=${encodeURIComponent('Google signup successful. You can now log in.')}`);
       } else {

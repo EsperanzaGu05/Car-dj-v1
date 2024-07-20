@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import LoggedInAsideBar from "./AsidebarLoggedIn";
 import Login from "../LoginSection/Login";
@@ -10,7 +10,7 @@ import noteSrc from "../../assets/note.png";
 import microphoneSrc from "../../assets/microphone.png";
 import listSrc from "../../assets/list.png";
 
-const AsideBar = () => {
+const AsideBar = ({ fetchArtist, fetchAlbum, className, id }) => {
   const { auth } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,10 +34,12 @@ const AsideBar = () => {
   }, [location, navigate]);
 
   return (
-    <aside>
-      <h1 id="logo-side">
-        <img src={iconSrc} alt="Icon" width="30px" height="30px" />
-        Car DJ
+    <aside className={className}>
+      <h1 className="logo-side">
+        <Link to="/" className="logo-side__link" title="Home">
+          <img src={iconSrc} alt="Icon" width="30px" height="30px" />
+          <span className="logo-side__label">Car DJ</span>
+        </Link>
       </h1>
       {message && (
         <div
@@ -63,25 +65,39 @@ const AsideBar = () => {
       {auth ? (
         <LoggedInAsideBar />
       ) : (
-        <section id="login-section-button">
+        <section>
           <Login />
         </section>
       )}
-      <div id="features">
-        <FeatureButton src={noteSrc} featureName="Albums" />
-        <FeatureButton src={microphoneSrc} featureName="Artists" />
-        <FeatureButton src={listSrc} featureName="Playlists" />
+      <div className="features">
+        <FeatureButton
+          className={id === "artist" ? "feature-active" : ""}
+          src={microphoneSrc}
+          name="Artists"
+          to="/artists"
+        />
+        <FeatureButton
+          className={id === "albums" ? "feature-active" : ""}
+          src={noteSrc}
+          name="Albums"
+          to="/albums"
+        />
+        <FeatureButton
+          className={id === "playlist" ? "feature-active" : ""}
+          src={listSrc}
+          name="Playlists"
+          to="/playlist"
+        />
       </div>
       <div>
         <footer
           style={{
-            height: "230px",
+            height: "150px",
             display: "flex",
             flexDirection: "column-reverse",
             justifyContent: "flex-start",
           }}
         >
-          {" "}
           Copyright 2024 Car DJ
         </footer>
       </div>

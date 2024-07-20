@@ -1,0 +1,50 @@
+.artist-detailes {
+    display: flex;
+    padding: 30px;
+}
+
+.artist-detailes-info {
+    display: flex;
+    align-content: stretch;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 20px;
+}
+
+.artistTopTrackItems {
+    display: grid;
+    grid-template-rows: 50px;
+    grid-template-columns: 50px 0.5fr 2fr 1fr 0.3fr;
+    justify-items: start;
+    align-items: center;
+    padding-left: 10px;
+    transition: background-color 200ms ease-in-out;
+}
+
+.artistTopTrackList {
+    padding: 20px;
+}
+
+.artistTopTrackItems:hover {
+    background-color: #e2e2e2;
+    transition: background-color 200ms ease-in-out;
+}
+
+.artistTopTrackItems:active {
+    background-color: #e2e2e2;
+}
+
+.content-related-artists {
+    background-color: white;
+    color: black;
+    width: 100%;
+    height: 300px;
+    box-sizing: border-box;
+    display: flex;
+    overflow-x: scroll;
+
+}
+
+.content-albums {
+    width: 100%;
+}
