@@ -179,7 +179,10 @@ export const PlaylistProvider = ({ children }) => {
     fetchPlaylists,
     fetchSongs,
     createPlaylist,
+<<<<<<< HEAD
     addSongToPlaylist,
+=======
+>>>>>>> 83e0e5105280e13737c1048eef873063e2f0cde5
     removePlaylist,
     removeSong,
   };

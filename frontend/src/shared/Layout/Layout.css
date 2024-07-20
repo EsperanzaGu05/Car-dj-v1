@@ -1,5 +1,8 @@
 .layout-container {
+<<<<<<< HEAD
     width: 100%;
+=======
+>>>>>>> 83e0e5105280e13737c1048eef873063e2f0cde5
     display: grid;
     grid-template-columns: 225px repeat(1, 1fr);
     grid-template-rows: 100px repeat(1, 1fr);

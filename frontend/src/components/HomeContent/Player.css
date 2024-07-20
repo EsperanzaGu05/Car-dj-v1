@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .player-container {
     position: fixed;
     bottom: 20px;
@@ -98,3 +99,27 @@
   .rhap_volume-bar-area {
     width: 50px;
   }
+=======
+.flex-container {
+    margin-top: 10px;
+    display: flex;
+    align-items: stretch;
+    background-color: white;
+  }
+.left-section{
+    flex-grow: 1;
+    width:fit-content;
+    margin: 5px 20px 10px 20px;
+    text-align: center;
+    align-content: space-evenly;
+}
+.mid-section{
+    flex-grow:4;
+}
+
+.mid-section div{box-shadow: none;}
+
+.right-section{
+    max-width: 25%;
+}
+>>>>>>> 83e0e5105280e13737c1048eef873063e2f0cde5
