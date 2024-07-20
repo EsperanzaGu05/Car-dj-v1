@@ -1,59 +1,105 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setPlaylist, setCurrentTrack } from "../Player/playlistSlice";
+import { setCurrentTrack } from "../Player/playlistSlice";
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import '../HomeContent/Player.css';
-import { AuthContext } from "../contexts/AuthContext"; // Adjust the import path as needed
-import axios from 'axios';
+import { AuthContext } from "../contexts/AuthContext";
 
-const PlayerApp = ({ className }) => {
+const PlayerApp = () => {
   const { auth } = useContext(AuthContext);
-  const playlist = useSelector((state) => state.playlist.playlist);
-  const trackId = useSelector((state) => state.playlist.trackid);
+  const playlist = useSelector((state) => state.playlist.playlist || []);
+  const trackId = useSelector((state) => state.playlist.trackid || 0);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchPlaylist = async () => {
-      try {
-        const response = await axios.get('/api/user/playlists/your-playlist-id'); // Adjust the endpoint as needed
-        dispatch(setPlaylist(response.data.songs));
-      } catch (error) {
-        console.error('Error fetching playlist:', error);
-      }
-    };
-
-    fetchPlaylist();
-  }, [dispatch]);
-
-  console.log("Rendering PlayerApp with playlist:", playlist);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const playerRef = useRef(null);
 
   const handleClickNext = () => {
-    if (!auth) return;
-    console.log('click next ', playlist.length, ' track:', trackId);
+    if (!auth || !playlist.length) return;
     const newTrackId = trackId < playlist.length - 1 ? trackId + 1 : 0;
-    console.log('click next2 ', playlist.length, ' track:', newTrackId);
     dispatch(setCurrentTrack(newTrackId));
   };
 
   const handleClickPrevious = () => {
-    if (!auth) return;
-    console.log('previous');
+    if (!auth || !playlist.length) return;
     const newTrackId = trackId === 0 ? playlist.length - 1 : trackId - 1;
     dispatch(setCurrentTrack(newTrackId));
   };
 
   const handleEnd = () => {
-    if (!auth) return;
-    console.log('end');
+    if (!auth || !playlist.length) return;
     const newTrackId = trackId < playlist.length - 1 ? trackId + 1 : 0;
     dispatch(setCurrentTrack(newTrackId));
   };
 
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    const rect = playerRef.current.getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const newX = e.clientX - dragOffset.x;
+    const newY = e.clientY - dragOffset.y;
+    playerRef.current.style.left = `${newX}px`;
+    playerRef.current.style.bottom = `${window.innerHeight - newY - playerRef.current.offsetHeight}px`;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    setIsDragging(true);
+    const rect = playerRef.current.getBoundingClientRect();
+    setDragOffset({
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    const newX = touch.clientX - dragOffset.x;
+    const newY = touch.clientY - dragOffset.y;
+    playerRef.current.style.left = `${newX}px`;
+    playerRef.current.style.bottom = `${window.innerHeight - newY - playerRef.current.offsetHeight}px`;
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, dragOffset]);
+
   const currentTrack = playlist.length > 0 && playlist[trackId] ? playlist[trackId] : null;
 
   return (
-    <div className={className}>
+    <div 
+      ref={playerRef}
+      className="player-container"
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+    >
       <div className="flex-container">
         <div className="left-section">
           {currentTrack ? currentTrack.name : "No track selected"}
@@ -62,9 +108,11 @@ const PlayerApp = ({ className }) => {
           {auth ? (
             <AudioPlayer
               autoPlayAfterSrcChange={true}
-              volume="0.5"
+              volume={0.5}
               src={currentTrack && currentTrack.preview_url ? currentTrack.preview_url : ""}
               showSkipControls
+              showJumpControls={true}
+              showFilledVolume={true}
               onClickNext={handleClickNext}
               onClickPrevious={handleClickPrevious}
               onEnded={handleEnd}
@@ -73,12 +121,8 @@ const PlayerApp = ({ className }) => {
           ) : (
             <div className="login-prompt">
               <p>Please log in to play songs</p>
-              {/* You can add a login button or link here */}
             </div>
           )}
-        </div>
-        <div className="right-section">
-          <p></p>
         </div>
       </div>
     </div>

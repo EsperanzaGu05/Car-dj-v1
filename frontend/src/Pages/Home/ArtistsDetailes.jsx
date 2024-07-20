@@ -26,10 +26,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { AuthContext } from "../../components/contexts/AuthContext";
 import { useDispatch } from "react-redux";
-
 import { setCurrentPlaylist, setCurrentTrack } from "../../components/Player/playlistSlice";
-
-
 import playButtonSrc from "../../assets/play-button.svg";
 
 const Alert = React.forwardRef(function Alert(props, ref) {

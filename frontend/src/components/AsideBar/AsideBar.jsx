@@ -89,15 +89,17 @@ const AsideBar = ({ fetchArtist, fetchAlbum, className, id }) => {
           to="/playlist"
         />
       </div>
-      <div
-        style={{
-          height: "5%",
-          display: "flex",
-          flexDirection: "column-reverse",
-          justifyContent: "flex-start",
-        }}
-      >
-        <footer>Copyright 2024 Car DJ</footer>
+      <div>
+        <footer
+          style={{
+            height: "150px",
+            display: "flex",
+            flexDirection: "column-reverse",
+            justifyContent: "flex-start",
+          }}
+        >
+          Copyright 2024 Car DJ
+        </footer>
       </div>
     </aside>
   );

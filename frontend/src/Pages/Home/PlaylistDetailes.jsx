@@ -16,8 +16,8 @@ import ListItemText from "@mui/material/ListItemText";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useDispatch } from "react-redux";
-import Store from "../../components/Player/playlistSlice";
-const { setCurrentPlaylist, setCurrentTrack } = Store.actions;
+
+import { setCurrentPlaylist, setCurrentTrack } from "../../components/Player/playlistSlice";
 
 import playButtonSrc from "../../assets/play-button.svg";
 
@@ -76,7 +76,7 @@ const PlaylistDetails = () => {
     try {
       const response = await fetch("http://localhost:5000/api/user/playlists", {
         headers: {
-          Authorization: Bearer ${auth.token},
+          Authorization: `Bearer ${auth.token}`,
         },
       });
       const data = await response.json();
@@ -100,12 +100,12 @@ const PlaylistDetails = () => {
 
     try {
       const response = await fetch(
-        http://localhost:5000/api/user/playlists/${playlistId}/songs,
+        `http://localhost:5000/api/user/playlists/${playlistId}/songs`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: Bearer ${auth.token},
+            Authorization: `Bearer ${auth.token}`,
           },
           body: JSON.stringify({
             songId: selectedTrack.track.id,
@@ -237,7 +237,7 @@ const PlaylistDetails = () => {
                 <span>
                   <IconButton
                     aria-label="more"
-                    aria-controls={track-menu-${song.track.id}}
+                    aria-controls={`track-menu-${song.track.id}`}
                     aria-haspopup="true"
                     onClick={(event) => handleMenuOpen(event, song)}
                     style={{
@@ -248,7 +248,7 @@ const PlaylistDetails = () => {
                     <MoreVertIcon />
                   </IconButton>
                   <Menu
-                    id={track-menu-${song.track.id}}
+                    id={`track-menu-${song.track.id}`}
                     anchorEl={anchorEl}
                     keepMounted
                     open={Boolean(
