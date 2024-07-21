@@ -7,6 +7,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { AuthContext } from "../../components/contexts/AuthContext";
+import { useSubscription } from "../../components/contexts/SubscriptionContext";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -16,9 +17,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useDispatch } from "react-redux";
-
 import { setCurrentPlaylist, setCurrentTrack } from "../../components/Player/playlistSlice";
-
 import playButtonSrc from "../../assets/play-button.svg";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -31,6 +30,8 @@ const PlaylistDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { auth } = useContext(AuthContext);
+  const { subscriptionStatus } = useSubscription();
+  const isSubscribed = subscriptionStatus === 'Subscribed';
   const [anchorEl, setAnchorEl] = useState(null);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
   const [playlists, setPlaylists] = useState([]);
@@ -97,6 +98,10 @@ const PlaylistDetails = () => {
       showSnackbar("You need an account to add songs to a playlist", "error");
       return;
     }
+    if (!isSubscribed) {
+      showSnackbar("You need an active subscription to add songs to playlists", "error");
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -158,6 +163,10 @@ const PlaylistDetails = () => {
   const handleAddToPlaylistClick = () => {
     if (!auth) {
       showSnackbar("You need an account to add songs to a playlist", "error");
+      return;
+    }
+    if (!isSubscribed) {
+      showSnackbar("You need an active subscription to add songs to playlists", "error");
       return;
     }
     setPlaylistDialogOpen(true);
@@ -256,8 +265,8 @@ const PlaylistDetails = () => {
                     )}
                     onClose={handleMenuClose}
                   >
-                    <MenuItem onClick={handleAddToPlaylistClick}>
-                      Add to Playlist
+                    <MenuItem onClick={handleAddToPlaylistClick} disabled={!isSubscribed}>
+                      {isSubscribed ? "Add to Playlist" : "Subscribe to Add to Playlist"}
                     </MenuItem>
                   </Menu>
                   <Dialog
@@ -273,17 +282,21 @@ const PlaylistDetails = () => {
                   >
                     <DialogTitle>Choose a Playlist</DialogTitle>
                     <DialogContent>
-                      <List>
-                        {playlists.map((playlist) => (
-                          <ListItem
-                            button
-                            key={playlist._id}
-                            onClick={() => handleAddToPlaylist(playlist._id)}
-                          >
-                            <ListItemText primary={playlist.name} />
-                          </ListItem>
-                        ))}
-                      </List>
+                      {isSubscribed ? (
+                        <List>
+                          {playlists.map((playlist) => (
+                            <ListItem
+                              button
+                              key={playlist._id}
+                              onClick={() => handleAddToPlaylist(playlist._id)}
+                            >
+                              <ListItemText primary={playlist.name} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      ) : (
+                        <p>You need an active subscription to add songs to playlists.</p>
+                      )}
                     </DialogContent>
                   </Dialog>
                 </span>

@@ -25,6 +25,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { AuthContext } from "../../components/contexts/AuthContext";
+import { useSubscription } from "../../components/contexts/SubscriptionContext";
 import { useDispatch } from "react-redux";
 import { setCurrentPlaylist, setCurrentTrack } from "../../components/Player/playlistSlice";
 import playButtonSrc from "../../assets/play-button.svg";
@@ -36,6 +37,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const ArtistsDetailes = () => {
   const { id } = useParams();
   const { auth } = useContext(AuthContext);
+  const { subscriptionStatus } = useSubscription();
+  const isSubscribed = subscriptionStatus === 'Subscribed';
   const [artistDetails, setArtistDetails] = useState(null);
   const [artistAlbums, setArtistAlbums] = useState(null);
   const [artistRelated, setArtistRelated] = useState(null);
@@ -65,10 +68,6 @@ const ArtistsDetailes = () => {
       setArtistTopTracks(fetchedArtistTopTracks);
       setArtistRelated(fetchedArtistRelated);
       dispatch(setCurrentPlaylist(fetchedArtistTopTracks.tracks));
-      console.log(fetchedArtistDetails);
-      console.log(fetchedArtistAlbums.items);
-      console.log(fetchedArtistTopTracks);
-      console.log(fetchedArtistRelated);
     } catch (error) {
       setError("Error fetching artist details.");
       console.error(error);
@@ -107,10 +106,14 @@ const ArtistsDetailes = () => {
       showSnackbar("Error fetching playlists", "error");
     }
   };
-  console.log(artistTopTracks);
+
   const handleAddToPlaylist = async (playlistId) => {
     if (!auth) {
       showSnackbar("You need an account to add songs to a playlist", "error");
+      return;
+    }
+    if (!isSubscribed) {
+      showSnackbar("You need an active subscription to add songs to playlists", "error");
       return;
     }
 
@@ -162,6 +165,7 @@ const ArtistsDetailes = () => {
     setAnchorEl(event.currentTarget);
     setSelectedTrack(track);
   };
+
   const handleSongClick = (track) => {
     setSelectedSong(track.id === selectedSong ? null : track.id);
   };
@@ -173,6 +177,10 @@ const ArtistsDetailes = () => {
   const handleAddToPlaylistClick = () => {
     if (!auth) {
       showSnackbar("You need an account to add songs to a playlist", "error");
+      return;
+    }
+    if (!isSubscribed) {
+      showSnackbar("You need an active subscription to add songs to playlists", "error");
       return;
     }
     setPlaylistDialogOpen(true);
@@ -197,6 +205,7 @@ const ArtistsDetailes = () => {
   if (error) {
     return <div>{error}</div>;
   }
+
   const updatePlaylist = (track) => {
     dispatch(setCurrentTrack(track));
   };
@@ -205,7 +214,6 @@ const ArtistsDetailes = () => {
   const albumsArtist = artistAlbums.items;
   const topTracksArtist = artistTopTracks.tracks;
   const relatedArtists = artistRelated;
-  console.log(topTracksArtist);
 
   return (
     <div>
@@ -283,8 +291,8 @@ const ArtistsDetailes = () => {
                     )}
                     onClose={handleMenuClose}
                   >
-                    <MenuItem onClick={handleAddToPlaylistClick}>
-                      Add to Playlist
+                    <MenuItem onClick={handleAddToPlaylistClick} disabled={!isSubscribed}>
+                      {isSubscribed ? "Add to Playlist" : "Subscribe to Add to Playlist"}
                     </MenuItem>
                   </Menu>
                   <Dialog
@@ -301,17 +309,21 @@ const ArtistsDetailes = () => {
                   >
                     <DialogTitle>Choose a Playlist</DialogTitle>
                     <DialogContent>
-                      <List>
-                        {playlists.map((playlist) => (
-                          <ListItem
-                            button
-                            key={playlist._id}
-                            onClick={() => handleAddToPlaylist(playlist._id)}
-                          >
-                            <ListItemText primary={playlist.name} />
-                          </ListItem>
-                        ))}
-                      </List>
+                      {isSubscribed ? (
+                        <List>
+                          {playlists.map((playlist) => (
+                            <ListItem
+                              button
+                              key={playlist._id}
+                              onClick={() => handleAddToPlaylist(playlist._id)}
+                            >
+                              <ListItemText primary={playlist.name} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      ) : (
+                        <p>You need an active subscription to add songs to playlists.</p>
+                      )}
                     </DialogContent>
                   </Dialog>
 
