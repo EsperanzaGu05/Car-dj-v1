@@ -1,16 +1,24 @@
-#features {
-    margin-top: 40px;
-    padding-bottom: 20px;
-}
-
 .feature-button {
     border: none;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
     display: flex;
     background-color: #f5f5f6;
-    color: #000000;
-    font-size: 14;
+    color: #222;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background-color 200ms ease-in-out;
+}
+
+button.feature-button {
+    margin-top: 0px;
+}
+
+.feature-button:hover {
+    background-color: #ccccf3;
+    transition: background-color 200ms ease-in-out;
+}
+
+.feature-active {
+    background-color: #e1e1f4;
 }
