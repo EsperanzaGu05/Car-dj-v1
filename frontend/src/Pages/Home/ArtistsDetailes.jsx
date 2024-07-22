@@ -55,7 +55,6 @@ const ArtistsDetailes = () => {
   });
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [selectedSong, setSelectedSong] = useState(null);
-  const [ismenuOpen, setisMenuOpen] = useState(false);
   const dispatch = useDispatch();
 
   const fetchArtistDetails = async () => {
@@ -68,7 +67,6 @@ const ArtistsDetailes = () => {
       setArtistAlbums(fetchedArtistAlbums);
       setArtistTopTracks(fetchedArtistTopTracks);
       setArtistRelated(fetchedArtistRelated);
-      //dispatch(setCurrentPlaylist(fetchedArtistTopTracks.tracks));
     } catch (error) {
       setError("Error fetching artist details.");
       console.error(error);
@@ -78,10 +76,27 @@ const ArtistsDetailes = () => {
   };
 
   useEffect(() => {
-    if (isPlaylistDialogOpen) {
-      fetchPlaylists();
+    if (id) {
+      fetchArtistDetails();
+      handleMenuClose();
     }
-  }, [id, isPlaylistDialogOpen]);
+  }, [id]);
+
+  const updatePlayerStatus = (track, index) => {
+    if (!track || !track.preview_url) {
+      console.error('Track or preview_url is not available');
+      return;
+    }
+
+    dispatch(setCurrentPlaylist(artistTopTracks.tracks));
+    dispatch(setCurrentTrack(index));
+  };
+
+  const handlePlayArtist = () => {
+    if (artistTopTracks.tracks && artistTopTracks.tracks.length > 0) {
+      updatePlayerStatus(artistTopTracks.tracks[0], 0);
+    }
+  };
 
   const fetchPlaylists = async () => {
     if (!auth) {
@@ -163,19 +178,18 @@ const ArtistsDetailes = () => {
   };
 
   const handleMenuOpen = (event, track) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedTrack(track);
-    setisMenuOpen(true);
-    event.stopPropagation();
   };
 
-  const handleSongClick = (track) => {
+  const handleSongClick = (track, index) => {
     setSelectedSong(track.id === selectedSong ? null : track.id);
+    updatePlayerStatus(track, index);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setisMenuOpen(false);
   };
 
   const handleAddToPlaylistClick = () => {
@@ -192,30 +206,18 @@ const ArtistsDetailes = () => {
   };
 
   useEffect(() => {
-    if (id) {
-      fetchArtistDetails();
-      handleMenuClose();
+    if (isPlaylistDialogOpen) {
+      fetchPlaylists();
     }
-  }, [id]);
+  }, [isPlaylistDialogOpen]);
 
   if (loading) {
-    return (
-      <div style={{ top: "20px", left: "20px" }} className="loader">
-        Loading...
-      </div>
-    );
+    return <div className="loader">Loading...</div>;
   }
 
   if (error) {
     return <div>{error}</div>;
   }
-
-  const updatePlaylist = (track) => {
-    if(!ismenuOpen){
-      dispatch(setCurrentPlaylist(artistTopTracks.tracks));
-      dispatch(setCurrentTrack(track));
-    }
-  };
 
   const artist = artistDetails.artists[0];
   const albumsArtist = artistAlbums.items;
@@ -247,7 +249,7 @@ const ArtistsDetailes = () => {
             {artist.genres}
           </span>
           <div style={{ padding: "10px" }}>
-            <img src={playButtonSrc} alt="" onClick={() => updatePlaylist(0)} />
+            <img src={playButtonSrc} alt="Play" onClick={handlePlayArtist} />
           </div>
         </div>
       </section>
@@ -261,10 +263,7 @@ const ArtistsDetailes = () => {
                 className={`artistTopTrackItems ${
                   topTrack.id === selectedSong ? "selected" : ""
                 }`}
-                onClick={() => {
-                  handleSongClick(topTrack);
-                  updatePlaylist(index);
-                }}
+                onClick={() => handleSongClick(topTrack, index)}
               >
                 <span>{index + 1}. </span>
                 <img
@@ -272,7 +271,7 @@ const ArtistsDetailes = () => {
                   width={"40px"}
                   height={"40px"}
                   alt={`${topTrack.name}`}
-                ></img>
+                />
                 <span>{topTrack.name} </span>
                 <span>{topTrack.artists[0].name}</span>
                 <span>{millisToMinutesAndSeconds(topTrack.duration_ms)}</span>
@@ -302,51 +301,6 @@ const ArtistsDetailes = () => {
                       {isSubscribed ? "Add to Playlist" : "Subscribe to Add to Playlist"}
                     </MenuItem>
                   </Menu>
-                  <Dialog
-                    open={isPlaylistDialogOpen}
-                    onClose={() => setPlaylistDialogOpen(false)}
-                    slotProps={{
-                      backdrop: {
-                        style: {
-                          backgroundColor: "rgba(0,0,0,0.03)",
-                          boxShadow: "0px 0px 0px 0px",
-                        },
-                      },
-                    }}
-                  >
-                    <DialogTitle>Choose a Playlist</DialogTitle>
-                    <DialogContent>
-                      {isSubscribed ? (
-                        <List>
-                          {playlists.map((playlist) => (
-                            <ListItem
-                              button
-                              key={playlist._id}
-                              onClick={() => handleAddToPlaylist(playlist._id)}
-                            >
-                              <ListItemText primary={playlist.name} />
-                            </ListItem>
-                          ))}
-                        </List>
-                      ) : (
-                        <p>You need an active subscription to add songs to playlists.</p>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-
-                  <Snackbar
-                    open={snackbar.open}
-                    autoHideDuration={6000}
-                    onClose={handleCloseSnackbar}
-                  >
-                    <Alert
-                      onClose={handleCloseSnackbar}
-                      severity={snackbar.severity}
-                      sx={{ width: "100%" }}
-                    >
-                      {snackbar.message}
-                    </Alert>
-                  </Snackbar>
                 </span>
               </li>
             ))}
@@ -379,6 +333,44 @@ const ArtistsDetailes = () => {
           <span className="loader">Loading...</span>
         )}
       </div>
+
+      <Dialog
+        open={isPlaylistDialogOpen}
+        onClose={() => setPlaylistDialogOpen(false)}
+      >
+        <DialogTitle>Choose a Playlist</DialogTitle>
+        <DialogContent>
+          {isSubscribed ? (
+            <List>
+              {playlists.map((playlist) => (
+                <ListItem
+                  button
+                  key={playlist._id}
+                  onClick={() => handleAddToPlaylist(playlist._id)}
+                >
+                  <ListItemText primary={playlist.name} />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <p>You need an active subscription to add songs to playlists.</p>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
