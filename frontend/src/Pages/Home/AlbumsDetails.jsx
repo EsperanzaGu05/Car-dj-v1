@@ -43,6 +43,7 @@ const AlbumsDetails = () => {
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [selectedSong, setSelectedSong] = useState(null);
   const dispatch = useDispatch();
+  const [ismenuOpen, setisMenuOpen] = useState(false);
 
   const fetchAlbumDetails = async () => {
     try {
@@ -56,7 +57,7 @@ const AlbumsDetails = () => {
         currentTracks,
       });
 
-      dispatch(setCurrentPlaylist(currentTracks));
+      //dispatch(setCurrentPlaylist(currentTracks));
       console.log(fetchedAlbum);
       console.log(currentTracks);
     } catch (error) {
@@ -155,6 +156,8 @@ const AlbumsDetails = () => {
   const handleMenuOpen = (event, track) => {
     setAnchorEl(event.currentTarget);
     setSelectedTrack(track);
+    setisMenuOpen(true);
+    event.stopPropagation();
   };
 
   const handleSongClick = (track) => {
@@ -163,6 +166,7 @@ const AlbumsDetails = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setisMenuOpen(false);
   };
 
   const handleAddToPlaylistClick = () => {
@@ -198,7 +202,10 @@ const AlbumsDetails = () => {
   }
 
   const updatePlaylist = (track) => {
-    dispatch(setCurrentTrack(track));
+    if(!ismenuOpen){
+      dispatch(setCurrentPlaylist(albumTracks.currentTracks));
+      dispatch(setCurrentTrack(track));
+    }
   };
 
   return (

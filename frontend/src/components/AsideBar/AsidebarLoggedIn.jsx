@@ -133,6 +133,7 @@ const AsidebarLoggedIn = () => {
   const handleMenuOpen = (event, playlist) => {
     setAnchorEl(event.currentTarget);
     setSelectedPlaylist(playlist);
+    event.stopPropagation();
   };
 
   const handleMenuClose = () => {
