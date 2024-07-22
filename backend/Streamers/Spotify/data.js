@@ -84,6 +84,45 @@ router.get('/new-releases', (req, res) => {
     })
 });
 
+//Getting the new-releases with data and omitting ones with null values for preview_url
+router.get('/new-releases2', (req, res) => {
+    SpotifyConn(async (error, instance) => {
+        if (instance) {
+            try {
+                let albums = []
+                let offset = 20;
+                while(albums.length < 40){
+                    let newReleases = await instance.get(`/browse/new-releases?limit=20&offset=${offset}`);
+                    let albumIds = newReleases?.data.albums.items.filter(item => item.album_type=="single" || item.album_type=="album").map(item => item.id).join(',');
+                    let albumData = await instance.get(`/albums?ids=${albumIds}`);
+                    console.log(albumIds);
+                    albumData.data.albums.forEach(album => {
+                    let a = album
+                    let i = album.tracks.items.filter(item => item.preview_url)
+                        if(i.length > 0){
+                            a.tracks.items = i
+                            albums.push(a)
+                        }
+                    })
+                    console.log(offset)
+                    offset+=20
+                }
+                const ids = albums.map(({ id }) => id);
+                albums = albums.filter(({ id }, index) => !ids.includes(id, index + 1))
+                return res.status(200).json({
+                    albums:{
+                        items:albums
+                    } 
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            return res.status(error?.status).json(error);
+        }
+    })
+});
+
 router.get('/artists', (req, res) => {
     const { ids } = req.query;
 
