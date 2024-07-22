@@ -55,6 +55,7 @@ const ArtistsDetailes = () => {
   });
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [selectedSong, setSelectedSong] = useState(null);
+  const [ismenuOpen, setisMenuOpen] = useState(false);
   const dispatch = useDispatch();
 
   const fetchArtistDetails = async () => {
@@ -67,7 +68,7 @@ const ArtistsDetailes = () => {
       setArtistAlbums(fetchedArtistAlbums);
       setArtistTopTracks(fetchedArtistTopTracks);
       setArtistRelated(fetchedArtistRelated);
-      dispatch(setCurrentPlaylist(fetchedArtistTopTracks.tracks));
+      //dispatch(setCurrentPlaylist(fetchedArtistTopTracks.tracks));
     } catch (error) {
       setError("Error fetching artist details.");
       console.error(error);
@@ -164,6 +165,8 @@ const ArtistsDetailes = () => {
   const handleMenuOpen = (event, track) => {
     setAnchorEl(event.currentTarget);
     setSelectedTrack(track);
+    setisMenuOpen(true);
+    event.stopPropagation();
   };
 
   const handleSongClick = (track) => {
@@ -172,6 +175,7 @@ const ArtistsDetailes = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setisMenuOpen(false);
   };
 
   const handleAddToPlaylistClick = () => {
@@ -207,7 +211,10 @@ const ArtistsDetailes = () => {
   }
 
   const updatePlaylist = (track) => {
-    dispatch(setCurrentTrack(track));
+    if(!ismenuOpen){
+      dispatch(setCurrentPlaylist(artistTopTracks.tracks));
+      dispatch(setCurrentTrack(track));
+    }
   };
 
   const artist = artistDetails.artists[0];
