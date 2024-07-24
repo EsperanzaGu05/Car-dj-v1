@@ -4,12 +4,11 @@ import { AuthContext } from "../contexts/AuthContext";
 import { useSubscription } from "../contexts/SubscriptionContext";
 import { usePlaylist } from "../contexts/PlaylistContext";
 import { useDispatch } from 'react-redux';
-import { setCurrentPlaylist, setCurrentTrack } from "../Player/playlistSlice"; // Import the action creators
+import { setCurrentPlaylist, setCurrentTrack } from "../Player/playlistSlice";
 import AccountSidebar from "./AccountSideBar";
 import "../AsideBar/AsideBar.css";
 import "../Button/Button.css";
 import listSrc from "../../assets/list.png";
-import playButtonSrc from "../../assets/play-button.svg"; // Import play button image
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -28,7 +27,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
-// Alert component
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -54,7 +52,8 @@ const AsidebarLoggedIn = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
-
+  const [songAnchorEl, setSongAnchorEl] = useState(null);
+  const [selectedSong, setSelectedSong] = useState(null);
 
   useEffect(() => {
     if (location.state?.showSubscriptionSuccess) {
@@ -96,30 +95,27 @@ const AsidebarLoggedIn = () => {
     setPlaylistDialogOpen(true);
   };
 
+
+
   const handleCreatePlaylist = async () => {
     setPlaylistNameError("");
-  
     if (subscriptionStatus !== 'Subscribed' && subscriptionStatus !== 'Cancelled') {
       setSnackbarMessage("You need to subscribe in order to create a playlist.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       return;
     }
-  
     if (!newPlaylistName.trim()) {
       setPlaylistNameError("Please enter a playlist name");
       return;
     }
-  
     const playlistExists = playlists.some(
-      (playlist) =>
-        playlist.name.toLowerCase() === newPlaylistName.trim().toLowerCase()
+      (playlist) => playlist.name.toLowerCase() === newPlaylistName.trim().toLowerCase()
     );
     if (playlistExists) {
       setPlaylistNameError("A playlist with this name already exists");
       return;
     }
-  
     const result = await createPlaylist(newPlaylistName);
     if (result.success) {
       setNewPlaylistName("");
@@ -131,6 +127,7 @@ const AsidebarLoggedIn = () => {
       setPlaylistNameError(result.message);
     }
   };
+
   const handleMenuOpen = (event, playlist) => {
     setAnchorEl(event.currentTarget);
     setSelectedPlaylist(playlist);
@@ -144,7 +141,6 @@ const AsidebarLoggedIn = () => {
 
   const handleRemovePlaylist = async () => {
     if (!selectedPlaylist) return;
-
     const result = await removePlaylist(selectedPlaylist._id);
     if (result.success) {
       setSnackbarMessage(result.message);
@@ -156,26 +152,38 @@ const AsidebarLoggedIn = () => {
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
-
     handleMenuClose();
   };
 
   const handlePlaylistItemClick = async (playlist) => {
     setSelectedPlaylist(playlist);
-    dispatch(setCurrentPlaylist(playlist.songs || [])); // Set the playlist songs in Redux
-    dispatch(setCurrentTrack(0)); // Start with the first track
+    dispatch(setCurrentPlaylist(playlist.songs || []));
+    dispatch(setCurrentTrack(0));
     await fetchSongs(playlist._id);
     setSongsDialogOpen(true);
   };
   
-  const handleRemoveSong = (song) => {
-    setSongToRemove(song);
-    setSongRemoveDialogOpen(true);
+  const handleSongMenuOpen = (event, song) => {
+    setSongAnchorEl(event.currentTarget);
+    setSelectedSong(song);
+    event.stopPropagation();
+  };
+
+  const handleSongMenuClose = () => {
+    setSongAnchorEl(null);
+    setSelectedSong(null);
+  };
+
+  const handleRemoveSong = () => {
+    if (selectedSong) {
+      setSongToRemove(selectedSong);
+      setSongRemoveDialogOpen(true);
+    }
+    handleSongMenuClose();
   };
 
   const confirmRemoveSong = async () => {
     if (!selectedPlaylist || !songToRemove) return;
-
     const result = await removeSong(selectedPlaylist._id, songToRemove.trackId);
     if (result.success) {
       setSnackbarMessage(result.message);
@@ -187,7 +195,6 @@ const AsidebarLoggedIn = () => {
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
-
     setSongRemoveDialogOpen(false);
     setSongToRemove(null);
   };
@@ -197,7 +204,6 @@ const AsidebarLoggedIn = () => {
       navigate('/manage-subscription');
       return;
     }
-
     try {
       const checkoutUrl = await handleBuySubscription();
       window.location.href = checkoutUrl;
@@ -207,6 +213,7 @@ const AsidebarLoggedIn = () => {
       setSnackbarOpen(true);
     }
   };
+
   const handleCancelSubscription = () => {
     setCancelDialogOpen(true);
   };
@@ -240,15 +247,28 @@ const AsidebarLoggedIn = () => {
       console.error('Track or preview_url is not available');
       return;
     }
-
     dispatch(setCurrentPlaylist([track]));
     dispatch(setCurrentTrack(0));
+  };
+
+  const handlePlaySong = () => {
+    if (selectedSong && selectedPlaylist) {
+      const songIndex = selectedPlaylist.songs.findIndex(song => song.trackId === selectedSong.trackId);
+      if (songIndex !== -1) {
+        dispatch(setCurrentPlaylist(selectedPlaylist.songs));
+        dispatch(setCurrentTrack(songIndex));
+      } else {
+        console.error('Selected song not found in the playlist');
+        dispatch(setCurrentPlaylist([selectedSong]));
+        dispatch(setCurrentTrack(0));
+      }
+    }
+    handleSongMenuClose();
   };
 
   if (!auth) {
     return null;
   }
- 
   return (
     <div>
       <div className="login-section">
@@ -318,65 +338,66 @@ const AsidebarLoggedIn = () => {
       </div>
   
       <Dialog
-  open={isPlaylistDialogOpen}
-  onClose={() => setPlaylistDialogOpen(false)}
->
-  <DialogTitle>My Playlists</DialogTitle>
-  <DialogContent>
-    {subscriptionStatus === 'Subscribed' || subscriptionStatus === 'Cancelled' ? (
-      <>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="New Playlist Name"
-          type="text"
-          fullWidth
-          variant="standard"
-          value={newPlaylistName}
-          onChange={(e) => setNewPlaylistName(e.target.value)}
-          error={!!playlistNameError}
-          helperText={playlistNameError}
-        />
-        <Button
-          onClick={handleCreatePlaylist}
-          disabled={!newPlaylistName.trim()}
-        >
-          Create New Playlist
-        </Button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <List>
-          {playlists.map((playlist) => (
-            <ListItem
-              button
-              key={playlist._id || playlist.name}
-              onClick={() => handlePlaylistItemClick(playlist)}
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="more"
-                  onClick={(event) => handleMenuOpen(event, playlist)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              }
-            >
-              <ListItemAvatar>
-                <Avatar src={playlist.coverImage || listSrc} />
-              </ListItemAvatar>
-              <ListItemText primary={playlist.name} />
-            </ListItem>
-          ))}
-        </List>
-      </>
-    ) : (
-      <p style={{ color: "orange" }}>You need to subscribe to create and manage playlists.</p>
-    )}
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={() => setPlaylistDialogOpen(false)}>Close</Button>
-  </DialogActions>
-</Dialog>
+        open={isPlaylistDialogOpen}
+        onClose={() => setPlaylistDialogOpen(false)}
+      >
+        <DialogTitle>My Playlists</DialogTitle>
+        <DialogContent>
+          {subscriptionStatus === 'Subscribed' || subscriptionStatus === 'Cancelled' ? (
+            <>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="New Playlist Name"
+                type="text"
+                fullWidth
+                variant="standard"
+                value={newPlaylistName}
+                onChange={(e) => setNewPlaylistName(e.target.value)}
+                error={!!playlistNameError}
+                helperText={playlistNameError}
+              />
+              <Button
+                onClick={handleCreatePlaylist}
+                disabled={!newPlaylistName.trim()}
+              >
+                Create New Playlist
+              </Button>
+              {error && <p style={{ color: "red" }}>{error}</p>}
+              <List>
+                {playlists.map((playlist) => (
+                  <ListItem
+                    button
+                    key={playlist._id || playlist.name}
+                    onClick={() => handlePlaylistItemClick(playlist)}
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label="more"
+                        onClick={(event) => handleMenuOpen(event, playlist)}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar src={playlist.coverImage || listSrc} />
+                    </ListItemAvatar>
+                    <ListItemText primary={playlist.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          ) : (
+            <p style={{ color: "orange" }}>You need to subscribe to create and manage playlists.</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPlaylistDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+  
       <Dialog
         open={isSongsDialogOpen}
         onClose={() => setSongsDialogOpen(false)}
@@ -391,8 +412,8 @@ const AsidebarLoggedIn = () => {
                   secondaryAction={
                     <IconButton
                       edge="end"
-                      aria-label="delete"
-                      onClick={() => handleRemoveSong(song)}
+                      aria-label="more"
+                      onClick={(event) => handleSongMenuOpen(event, song)}
                     >
                       <MoreVertIcon />
                     </IconButton>
@@ -407,13 +428,6 @@ const AsidebarLoggedIn = () => {
                     primary={song.name || song.trackName}
                     secondary={song.artist || song.artistName}
                   />
-                  <div className="play-button">
-                    <img
-                      src={playButtonSrc}
-                      alt="Play"
-                      onClick={() => updatePlayerStatus(song)}
-                    />
-                  </div>
                 </ListItem>
               ))}
             </List>
@@ -466,12 +480,24 @@ const AsidebarLoggedIn = () => {
         <MenuItem onClick={handleRemovePlaylist}>Delete Playlist</MenuItem>
       </Menu>
   
+      <Menu
+        anchorEl={songAnchorEl}
+        open={Boolean(songAnchorEl)}
+        onClose={handleSongMenuClose}
+      >
+        <MenuItem onClick={handlePlaySong}>Play</MenuItem>
+        <MenuItem onClick={handleRemoveSong}>Remove from Playlist</MenuItem>
+      </Menu>
+  
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
         <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
     </div>
-  );};
-  
+  );
+
+};
+
 export default AsidebarLoggedIn;
+  
