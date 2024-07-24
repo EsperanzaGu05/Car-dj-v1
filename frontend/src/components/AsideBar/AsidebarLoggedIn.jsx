@@ -35,12 +35,12 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const AsidebarLoggedIn = () => {
   const { auth, logout } = useContext(AuthContext);
-  const { daysLeft, subscriptionStatus, handleBuySubscription } = useSubscription();
+  const { daysLeft, subscriptionStatus, handleBuySubscription, cancelSubscription, fetchUserSubscriptionStatus } = useSubscription();
   const { playlists, songs, error, fetchPlaylists, fetchSongs, createPlaylist, removePlaylist, removeSong } = usePlaylist();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-
+  
   const [isAccountSidebarOpen, setAccountSidebarOpen] = useState(false);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState("");
@@ -53,6 +53,8 @@ const AsidebarLoggedIn = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
+
 
   useEffect(() => {
     if (location.state?.showSubscriptionSuccess) {
@@ -96,19 +98,19 @@ const AsidebarLoggedIn = () => {
 
   const handleCreatePlaylist = async () => {
     setPlaylistNameError("");
-
-    if (subscriptionStatus !== 'Subscribed') {
+  
+    if (subscriptionStatus !== 'Subscribed' && subscriptionStatus !== 'Cancelled') {
       setSnackbarMessage("You need to subscribe in order to create a playlist.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       return;
     }
-
+  
     if (!newPlaylistName.trim()) {
       setPlaylistNameError("Please enter a playlist name");
       return;
     }
-
+  
     const playlistExists = playlists.some(
       (playlist) =>
         playlist.name.toLowerCase() === newPlaylistName.trim().toLowerCase()
@@ -117,7 +119,7 @@ const AsidebarLoggedIn = () => {
       setPlaylistNameError("A playlist with this name already exists");
       return;
     }
-
+  
     const result = await createPlaylist(newPlaylistName);
     if (result.success) {
       setNewPlaylistName("");
@@ -129,7 +131,6 @@ const AsidebarLoggedIn = () => {
       setPlaylistNameError(result.message);
     }
   };
-
   const handleMenuOpen = (event, playlist) => {
     setAnchorEl(event.currentTarget);
     setSelectedPlaylist(playlist);
@@ -206,6 +207,33 @@ const AsidebarLoggedIn = () => {
       setSnackbarOpen(true);
     }
   };
+  const handleCancelSubscription = () => {
+    setCancelDialogOpen(true);
+  };
+
+  const confirmCancelSubscription = async () => {
+    try {
+      console.log("Attempting to cancel subscription...");
+      const result = await cancelSubscription();
+      console.log("Cancellation result:", result);
+      if (result.message) {
+        setSnackbarMessage(result.message || "Subscription cancelled successfully");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+        fetchUserSubscriptionStatus();
+      } else {
+        throw new Error(result.message || "Failed to cancel subscription");
+      }
+    } catch (error) {
+      console.error("Error in confirmCancelSubscription:", error);
+      console.error("Auth state during error:", auth);
+      setSnackbarMessage(`An error occurred: ${error.message}`);
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setCancelDialogOpen(false);
+    }
+  };
 
   const updatePlayerStatus = (track) => {
     if (!track || !track.preview_url) {
@@ -220,6 +248,7 @@ const AsidebarLoggedIn = () => {
   if (!auth) {
     return null;
   }
+ 
   return (
     <div>
       <div className="login-section">
@@ -241,171 +270,208 @@ const AsidebarLoggedIn = () => {
           <AccountSidebar onClose={() => setAccountSidebarOpen(false)} />
         )}
   
-        <Dialog
-          open={isPlaylistDialogOpen}
-          onClose={() => setPlaylistDialogOpen(false)}
+        {subscriptionStatus === 'Cancelled' && (
+          <div className="subscription-status">
+            Subscription Cancelled ({daysLeft ?? 0} days left)
+          </div>
+        )}
+  
+        {subscriptionStatus !== 'Cancelled' && (
+          <button
+            onClick={handleSubscriptionButton}
+            className="feature-button"
+            style={{ fontWeight: "400", fontFamily: "poppins" }}
+            disabled={subscriptionStatus === 'Subscribed'}
+          >
+            {subscriptionStatus === 'Subscribed' 
+              ? `Subscribed (${daysLeft ?? 0} days left)`
+              : "Buy Subscription"}
+          </button>
+        )}
+  
+        {subscriptionStatus === 'Subscribed' && (
+          <button
+            onClick={handleCancelSubscription}
+            className="feature-button"
+            style={{ fontWeight: "400", fontFamily: "poppins" }}
+          >
+            Cancel Subscription
+          </button>
+        )}
+  
+        <button
+          onClick={handlePlaylistClick}
+          className="feature-button"
+          style={{ fontWeight: "400", fontFamily: "poppins" }}
         >
-          <DialogTitle>My Playlists</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="New Playlist Name"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={newPlaylistName}
-              onChange={(e) => setNewPlaylistName(e.target.value)}
-              error={!!playlistNameError}
-              helperText={playlistNameError}
-            />
-            <Button
-              onClick={handleCreatePlaylist}
-              disabled={!newPlaylistName.trim() || subscriptionStatus !== 'Subscribed'}
+          <img
+            src={listSrc}
+            alt="My Playlist"
+            style={{
+              width: "20px",
+              height: "20px",
+              marginRight: "8px",
+            }}
+          />
+          My Playlists
+        </button>
+      </div>
+  
+      <Dialog
+  open={isPlaylistDialogOpen}
+  onClose={() => setPlaylistDialogOpen(false)}
+>
+  <DialogTitle>My Playlists</DialogTitle>
+  <DialogContent>
+    {subscriptionStatus === 'Subscribed' || subscriptionStatus === 'Cancelled' ? (
+      <>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="name"
+          label="New Playlist Name"
+          type="text"
+          fullWidth
+          variant="standard"
+          value={newPlaylistName}
+          onChange={(e) => setNewPlaylistName(e.target.value)}
+          error={!!playlistNameError}
+          helperText={playlistNameError}
+        />
+        <Button
+          onClick={handleCreatePlaylist}
+          disabled={!newPlaylistName.trim()}
+        >
+          Create New Playlist
+        </Button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <List>
+          {playlists.map((playlist) => (
+            <ListItem
+              button
+              key={playlist._id || playlist.name}
+              onClick={() => handlePlaylistItemClick(playlist)}
+              secondaryAction={
+                <IconButton
+                  edge="end"
+                  aria-label="more"
+                  onClick={(event) => handleMenuOpen(event, playlist)}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              }
             >
-              Create New Playlist
-            </Button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+              <ListItemAvatar>
+                <Avatar src={playlist.coverImage || listSrc} />
+              </ListItemAvatar>
+              <ListItemText primary={playlist.name} />
+            </ListItem>
+          ))}
+        </List>
+      </>
+    ) : (
+      <p style={{ color: "orange" }}>You need to subscribe to create and manage playlists.</p>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setPlaylistDialogOpen(false)}>Close</Button>
+  </DialogActions>
+</Dialog>
+      <Dialog
+        open={isSongsDialogOpen}
+        onClose={() => setSongsDialogOpen(false)}
+      >
+        <DialogTitle>{selectedPlaylist?.name}</DialogTitle>
+        <DialogContent>
+          {songs.length > 0 ? (
             <List>
-              {playlists.map((playlist) => (
+              {songs.map((song) => (
                 <ListItem
-                  button
-                  key={playlist._id || playlist.name}
-                  onClick={() => handlePlaylistItemClick(playlist)}
+                  key={song.trackId || song.name}
                   secondaryAction={
                     <IconButton
                       edge="end"
-                      aria-label="more"
-                      onClick={(event) => handleMenuOpen(event, playlist)}
+                      aria-label="delete"
+                      onClick={() => handleRemoveSong(song)}
                     >
                       <MoreVertIcon />
                     </IconButton>
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar src={playlist.coverImage || listSrc} />
+                    <Avatar src={song.albumArt || song.imageUrl} alt={song.name}>
+                      {!song.albumArt && !song.imageUrl && song.name.charAt(0)}
+                    </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary={playlist.name} />
+                  <ListItemText
+                    primary={song.name || song.trackName}
+                    secondary={song.artist || song.artistName}
+                  />
+                  <div className="play-button">
+                    <img
+                      src={playButtonSrc}
+                      alt="Play"
+                      onClick={() => updatePlayerStatus(song)}
+                    />
+                  </div>
                 </ListItem>
               ))}
             </List>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setPlaylistDialogOpen(false)}>Close</Button>
-          </DialogActions>
-        </Dialog>
+          ) : (
+            <p>No songs in playlist</p>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSongsDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
   
-        <Dialog
-          open={isSongsDialogOpen}
-          onClose={() => setSongsDialogOpen(false)}
-        >
-          <DialogTitle>{selectedPlaylist?.name}</DialogTitle>
-          <DialogContent>
-            {songs.length > 0 ? (
-              <List>
-                {songs.map((song) => (
-                  <ListItem
-                    key={song.trackId || song.name}
-                    secondaryAction={
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => handleRemoveSong(song)}
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
-                    }
-                  >
-                    <ListItemAvatar>
-                      <Avatar src={song.albumArt || song.imageUrl} alt={song.name}>
-                        {!song.albumArt && !song.imageUrl && song.name.charAt(0)}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={song.name || song.trackName}
-                      secondary={song.artist || song.artistName}
-                    />
-                    <div className="play-button">
-                      <img
-                        src={playButtonSrc}
-                        alt="Play"
-                        onClick={() => updatePlayerStatus(song)}
-                      />
-                    </div>
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <p>No songs in playlist</p>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setSongsDialogOpen(false)}>Close</Button>
-          </DialogActions>
-        </Dialog>
-  
-        <Dialog
-          open={isSongRemoveDialogOpen}
-          onClose={() => setSongRemoveDialogOpen(false)}
-        >
-          <DialogTitle>Confirm Removal</DialogTitle>
-          <DialogContent>
-            <p>Are you sure you want to remove this song?</p>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setSongRemoveDialogOpen(false)}>Cancel</Button>
-            <Button onClick={confirmRemoveSong} color="primary">
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
-  
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleRemovePlaylist}>Delete Playlist</MenuItem>
-        </Menu>
-  
-        <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-          <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} elevation={6} variant="filled">
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
-      </div>
-  
-      <button
-        onClick={handleSubscriptionButton}
-        className="feature-button"
-        style={{ fontWeight: "400", fontFamily: "poppins" }}
-        disabled={subscriptionStatus === 'Subscribed'}
+      <Dialog
+        open={isSongRemoveDialogOpen}
+        onClose={() => setSongRemoveDialogOpen(false)}
       >
-        {subscriptionStatus === 'Subscribed' 
-          ? `Subscribed (${daysLeft ?? 0} days left)`
-          : "Buy Subscription"}
-      </button>
+        <DialogTitle>Confirm Removal</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to remove this song?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSongRemoveDialogOpen(false)}>Cancel</Button>
+          <Button onClick={confirmRemoveSong} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
   
-      <button
-        onClick={handlePlaylistClick}
-        className="feature-button"
-        style={{ fontWeight: "400", fontFamily: "poppins" }}
+      <Dialog
+        open={isCancelDialogOpen}
+        onClose={() => setCancelDialogOpen(false)}
       >
-        <img
-          src={listSrc}
-          alt="My Playlist"
-          style={{
-            width: "20px",
-            height: "20px",
-            marginRight: "8px",
-          }}
-        />
-        My Playlists
-      </button>
+        <DialogTitle>Confirm Cancellation</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to cancel your subscription?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCancelDialogOpen(false)}>No</Button>
+          <Button onClick={confirmCancelSubscription} color="primary">
+            Yes, Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+  
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleRemovePlaylist}>Delete Playlist</MenuItem>
+      </Menu>
+  
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
-  );
-  
-};
+  );};
   
 export default AsidebarLoggedIn;

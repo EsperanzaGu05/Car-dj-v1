@@ -66,16 +66,27 @@ passport.use(new GoogleTokenStrategy({
 }, googleStrategyHandler));
 
 passport.serializeUser((user, done) => {
+  console.log('Serializing user with ID:', user._id);
   done(null, user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
   const db = getDB();
+  console.log('Deserializing user with ID:', id);
+
+  // Validate if id is a valid 24-character hex string
+  if (!ObjectId.isValid(id)) {
+    console.error('Invalid ID format:', id);
+    return done(new Error('Invalid ID format'), null);
+  }
+
   try {
     const user = await db.collection(collections.USER).findOne({ _id: new ObjectId(id) });
     if (user) {
+      console.log('User found:', user);
       done(null, user);
     } else {
+      console.error('User not found for ID:', id);
       done(new Error('User not found'), null);
     }
   } catch (error) {

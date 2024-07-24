@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { FcGoogle } from 'react-icons/fc';  // Import the Google icon
+import { FcGoogle } from 'react-icons/fc';
 import "./LoginForm.css";
 
 const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
@@ -9,18 +10,25 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get('token');
     const name = urlParams.get('name');
     const email = urlParams.get('email');
+    const userId = urlParams.get('userId');
 
-    if (token && name && email) {
-      login(token, name, email);
+    console.log('URL Params:', { token, name, email, userId }); // Debug URL params
+
+    if (token && name && email && userId) {
+      console.log('Logging in with:', { token, name, email, userId });
+      login(token, name, email, userId);
       onClose();
+      navigate('/'); // or your preferred route after login
     }
-  }, [login, onClose]);
+  }, [login, onClose, navigate, location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,15 +41,17 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await response.json();
-  
+
       console.log('Server response:', data);
-  
+
       if (response.ok) {
-        if (data.token && data.name && data.email) {
-          login(data.token, data.name, data.email);
+        console.log('Received login data:', { token: data.token, name: data.name, email: data.email, userId: data.userId });
+        if (data.token && data.name && data.email && data.userId) {
+          login(data.token, data.name, data.email, data.userId);
           onClose();
+          navigate('/'); // or your preferred route after login
         } else {
           setError("Invalid server response");
         }
@@ -49,16 +59,13 @@ const LoginForm = ({ onClose, onForgotPassword, onSignup }) => {
         setError(data.message);
       }
     } catch (error) {
+      console.error('Error in handleSubmit:', error);
       setError("An error occurred. Please try again later.");
     }
   };
-  
-  const handleGoogleSignIn = async () => {
-    try {
-      window.location.href = "http://localhost:5000/api/auth/google/login";
-    } catch (error) {
-      setError("An error occurred with Google Sign-In. Please try again later.");
-    }
+
+  const handleGoogleSignIn = () => {
+    window.location.href = "http://localhost:5000/api/auth/google/login";
   };
 
   return (

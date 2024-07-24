@@ -35,7 +35,8 @@ router.post('/', async (req, res) => {
     return res.status(200).json({
       token,
       name: user.name, 
-      email: user.email
+      email: user.email,
+      userId: user._id.toString() // Include userId in the response
     });
   } catch (error) {
     console.error('Error during login:', error);

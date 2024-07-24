@@ -148,8 +148,8 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
       return;
     }
 
-    if (!isSubscribed) {
-      showSnackbar("You need an active subscription to add songs to playlists", "error");
+    if (subscriptionStatus !== 'Subscribed' && subscriptionStatus !== 'Cancelled') {
+      showSnackbar("You need an active or recently cancelled subscription to add songs to playlists", "error");
       return;
     }
 
@@ -217,13 +217,14 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
       showSnackbar("You need an account to add songs to a playlist", "error");
       return;
     }
-    if (!isSubscribed) {
-      showSnackbar("You need an active subscription to add songs to playlists", "error");
+    if (subscriptionStatus !== 'Subscribed' && subscriptionStatus !== 'Cancelled') {
+      showSnackbar("You need an active or recently cancelled subscription to add songs to playlists", "error");
       return;
     }
     setPlaylistDialogOpen(true);
     handleMenuClose();
   };
+  
 
   const handlePlayClick = () => {
     console.log("Song ID:", normalizedRelease.id);
@@ -263,9 +264,14 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleAddToPlaylistClick} disabled={!isSubscribed}>
-          {isSubscribed ? "Add to Playlist" : "Subscribe to Add to Playlist"}
-        </MenuItem>
+        <MenuItem 
+  onClick={handleAddToPlaylistClick} 
+  disabled={subscriptionStatus !== 'Subscribed' && subscriptionStatus !== 'Cancelled'}
+>
+  {(subscriptionStatus === 'Subscribed' || subscriptionStatus === 'Cancelled') 
+    ? "Add to Playlist" 
+    : "Subscribe to Add to Playlist"}
+</MenuItem>
       </Menu>
       <div
         style={{
@@ -295,26 +301,25 @@ const TrackInfo = ({ release, onPlay, showMenu = true }) => {
           open={isPlaylistDialogOpen}
           onClose={() => setPlaylistDialogOpen(false)}
         >
-          <DialogTitle>Choose a Playlist</DialogTitle>
-          <DialogContent>
-            {isSubscribed ? (
-              <List>
-                {playlists.map((playlist) => (
-                  <ListItem
-                    button
-                    key={playlist._id}
-                    onClick={() => handleAddToPlaylist(playlist._id)}
-                  >
-                    <ListItemText primary={playlist.name} />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <p>You need an active subscription to add songs to playlists.</p>
-            )}
-          </DialogContent>
-        </Dialog>
-
+           <DialogTitle>Choose a Playlist</DialogTitle>
+  <DialogContent>
+    {subscriptionStatus === 'Subscribed' || subscriptionStatus === 'Cancelled' ? (
+      <List>
+        {playlists.map((playlist) => (
+          <ListItem
+            button
+            key={playlist._id}
+            onClick={() => handleAddToPlaylist(playlist._id)}
+          >
+            <ListItemText primary={playlist.name} />
+          </ListItem>
+        ))}
+      </List>
+    ) : (
+      <p>You need an active or recently cancelled subscription to add songs to playlists.</p>
+    )}
+  </DialogContent>
+</Dialog>
         <Snackbar
           open={snackbar.open}
           autoHideDuration={6000}

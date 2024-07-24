@@ -65,7 +65,20 @@ export const register_complete = async (id, secret) => {
     isVerifying[id] = true;
 
     console.log(`Finding temporary user with ID: ${id} and secret: ${secret}`);
-    const tempUser = await db.collection(collections.TEMP).findOne({ _id: new ObjectId(id), secret });
+    
+    // Log the ID and ensure it's converted to ObjectId correctly
+    console.log(`ID before conversion: ${id}`);
+    let objectId;
+    try {
+      objectId = new ObjectId(id);
+    } catch (error) {
+      console.log("Error converting ID to ObjectId:", error);
+      isVerifying[id] = false;
+      throw { status: 400, message: 'Invalid ID format.' };
+    }
+    console.log(`ID after conversion to ObjectId: ${objectId}`);
+
+    const tempUser = await db.collection(collections.TEMP).findOne({ _id: objectId, secret });
     console.log("Temporary user found:", tempUser);
 
     if (!tempUser) {
@@ -95,12 +108,10 @@ export const register_complete = async (id, secret) => {
       }
     });
 
-  
-
     console.log("User inserted into USER collection");
 
     console.log("Deleting temporary user...");
-    await db.collection(collections.TEMP).deleteOne({ _id: new ObjectId(id) });
+    await db.collection(collections.TEMP).deleteOne({ _id: objectId });
     console.log("Temporary user deleted");
 
     isVerifying[id] = false;

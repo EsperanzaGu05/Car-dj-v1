@@ -8,7 +8,26 @@ dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Process Payment
+const checkSubscriptionStatus = async (userId) => {
+  const db = getDB();
+  const user = await db.collection(collections.USER).findOne({ _id: new ObjectId(userId) });
+  
+  if (user && user.subscription) {
+    const now = new Date();
+    if (now > user.subscription.endDate) {
+      if (user.subscription.status === 'Subscribed' || user.subscription.status === 'Cancelled') {
+        await db.collection(collections.USER).updateOne(
+          { _id: new ObjectId(userId) },
+          { $set: { 'subscription.status': 'Expired' } }
+        );
+        return 'Expired';
+      }
+    }
+    return user.subscription.status;
+  }
+  return 'Not Subscribed';
+};
+
 export const processPayment = async (req, res) => {
   console.log('processPayment called with body:', req.body);
   const { email } = req.body;
@@ -28,7 +47,7 @@ export const processPayment = async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'cad',
             product_data: {
               name: 'Premium Subscription',
             },
@@ -104,32 +123,35 @@ export const handlePaymentSuccess = async (req, res) => {
   }
 };
 
-// Get Subscription Status
 export const getSubscriptionStatus = async (req, res) => {
   console.log('getSubscriptionStatus called with params:', req.params);
   const { userId } = req.params;
-  const db = getDB();
 
   try {
-    const user = await db.collection(collections.USER).findOne({ _id: new ObjectId(userId) });
-    if (!user) {
-      console.log('User not found for userId:', userId);
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const subscriptionStatus = user.subscription?.status || 'Not Subscribed';
-    console.log('Subscription status for userId:', userId, 'is:', subscriptionStatus);
-    res.status(200).json({ status: subscriptionStatus });
+    const status = await checkSubscriptionStatus(userId);
+    console.log('Subscription status for userId:', userId, 'is:', status);
+    res.status(200).json({ status: status });
   } catch (error) {
     console.error('Error getting subscription status:', error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
 
-// Cancel Subscription
 export const cancelSubscription = async (req, res) => {
-  console.log('cancelSubscription called with params:', req.params);
   const { userId } = req.params;
+  console.log('cancelSubscription called with params:', req.params);
+  console.log('User ID:', userId);
+
+  if (!userId) {
+    console.error('User ID is required');
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  if (!ObjectId.isValid(userId)) {
+    console.error('Invalid userId format:', userId);
+    return res.status(400).json({ message: 'Invalid user ID format' });
+  }
+
   const db = getDB();
 
   try {
@@ -138,29 +160,27 @@ export const cancelSubscription = async (req, res) => {
       {
         $set: {
           'subscription.status': 'Cancelled',
-          'subscription.endDate': new Date(), // Set end date to now
         },
       }
     );
 
-    if (result.modifiedCount === 0) {
-      console.log('User not found or subscription not active for userId:', userId);
-      return res.status(404).json({ message: 'User not found or subscription not active' });
+    if (result.modifiedCount > 0) {
+      console.log('Subscription cancelled successfully');
+      res.status(200).json({ message: 'Subscription cancelled successfully' });
+    } else {
+      console.error('User not found or subscription already cancelled');
+      res.status(404).json({ message: 'User not found or subscription already cancelled' });
     }
-
-    console.log('Subscription cancelled successfully for userId:', userId);
-    res.status(200).json({ message: 'Subscription cancelled successfully' });
   } catch (error) {
     console.error('Error cancelling subscription:', error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
+    res.status(500).json({ message: 'Error cancelling subscription', error });
   }
 };
 
-// Verify Payment (assuming user is authenticated and userId is extracted from token)
 export const verifyPayment = async (req, res) => {
   console.log('verifyPayment called with body:', req.body);
   const { sessionId } = req.body;
-  const userId = req.user.id; // Assuming you have middleware to extract user from token
+  const userId = req.user.id;
 
   try {
     console.log('Retrieving Stripe session:', sessionId);
@@ -171,7 +191,7 @@ export const verifyPayment = async (req, res) => {
       console.log('Payment status is paid. Updating user subscription.');
       const db = getDB();
       const startDate = new Date();
-      const endDate = new Date(startDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days from now
+      const endDate = new Date(startDate.getTime() + (30 * 24 * 60 * 60 * 1000));
 
       await db.collection(collections.USER).updateOne(
         { _id: new ObjectId(userId) },
