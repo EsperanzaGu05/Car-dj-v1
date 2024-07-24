@@ -12,9 +12,16 @@ router.post('/', async (req, res) => {
 
   try {
     const user = await db.collection(collections.USER).findOne({ email });
+    
     if (!user) {
       console.log(`User with email ${email} not found`);
       return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Check if the user account is a Google Login account
+    if (!user.password) {
+      console.log(`User ${email} is registered with Google Login`);
+      return res.status(400).json({ message: 'This account is registered with Google. Please use Google Login.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -29,14 +36,16 @@ router.post('/', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
+
     console.log('JWT Token generated:', token);
     console.log('Token contents:', jwt.decode(token));
     console.log(`User ${email} logged in successfully`);
+
     return res.status(200).json({
       token,
       name: user.name, 
       email: user.email,
-      userId: user._id.toString() // Include userId in the response
+      userId: user._id.toString()
     });
   } catch (error) {
     console.error('Error during login:', error);
