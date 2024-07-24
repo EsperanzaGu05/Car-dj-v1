@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../Button/Button";
 import SignupForm from "./Signup";
 import LoginForm from "./LoginForm";
@@ -12,6 +13,16 @@ const Login = () => {
   const [isLoginFormVisible, setLoginFormVisible] = useState(false);
   const [isForgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const status = urlParams.get('status');
+    if (status === 'success') {
+      handleGoogleSignInCallback();
+    }
+  }, [location]);
 
   const handleSignupClick = () => {
     setSignupFormVisible(true);
@@ -46,8 +57,9 @@ const Login = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        login(data.token);
+        login(data.token, data.name, data.email, data.userId);
         handleCloseForm();
+        navigate('/'); // or wherever you want to redirect after login
       } else {
         setError(data.message);
       }
@@ -55,15 +67,24 @@ const Login = () => {
       setError("An error occurred. Please try again.");
     }
   };
-  const handleGoogleSignIn = async () => {
-    try {
-      window.location.href = "http://localhost:5000/api/auth/google";
-    } catch (error) {
-      setError(
-        "An error occurred with Google Sign-In. Please try again later."
-      );
-    }
+
+  const handleGoogleSignIn = () => {
+    window.location.href = "http://localhost:5000/api/auth/google/login";
   };
+
+  const handleGoogleSignInCallback = () => {
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get('token');
+    const name = urlParams.get('name');
+    const email = urlParams.get('email');
+    const userId = urlParams.get('userId');
+
+    if (token && name && email && userId) {
+      login(token, name, email, userId);
+      navigate('/'); // or wherever you want to redirect after login
+    } 
+  };
+
   return (
     <div className="login-section">
       <span className="login-section-text">Hi Sign Up Now </span>
@@ -80,6 +101,7 @@ const Login = () => {
             onForgotPassword={handleForgotPasswordClick}
             onSignup={handleSignupClick}
             onSubmit={handleLoginSubmit}
+            onGoogleSignIn={handleGoogleSignIn}
           />
         )}
         {isForgotPasswordVisible && (

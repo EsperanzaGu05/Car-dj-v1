@@ -30,7 +30,7 @@ const AlbumsDetails = () => {
   const [loading, setLoading] = useState(true);
   const { auth } = useContext(AuthContext);
   const { subscriptionStatus } = useSubscription();
-  const isSubscribed = subscriptionStatus === 'Subscribed';
+  const isSubscribed = subscriptionStatus === 'Subscribed' || subscriptionStatus === 'Cancelled';
   const [error, setError] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isPlaylistDialogOpen, setPlaylistDialogOpen] = useState(false);
@@ -185,7 +185,7 @@ const AlbumsDetails = () => {
       return;
     }
     if (!isSubscribed) {
-      showSnackbar("You need an active subscription to add songs to playlists", "error");
+      showSnackbar("You need an active or recently cancelled subscription to add songs to playlists", "error");
       return;
     }
     setPlaylistDialogOpen(true);
@@ -292,7 +292,7 @@ const AlbumsDetails = () => {
               ))}
             </List>
           ) : (
-            <p>You need an active subscription to add songs to playlists.</p>
+            <p>You need an active or recently cancelled subscription to add songs to playlists.</p>
           )}
         </DialogContent>
       </Dialog>

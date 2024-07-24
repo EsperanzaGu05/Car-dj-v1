@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TrackInfo from "../HomeContent/TrackInfo";
 import AlbumInfo from "../HomeContent/AlbumInfo";
 import ArtistInfo from "../HomeContent/ArtistInfo";
@@ -15,7 +15,26 @@ const SearchResult = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
-  const searchQuery = new URLSearchParams(location.search).get("q");
+  const navigate = useNavigate();
+
+  // Get the search query from URL or localStorage
+  const getSearchQuery = () => {
+    const params = new URLSearchParams(location.search);
+    let query = params.get("q");
+    
+    if (!query) {
+      query = localStorage.getItem("lastSearchQuery");
+      if (query) {
+        navigate(`/search?q=${encodeURIComponent(query)}`, { replace: true });
+      }
+    } else {
+      localStorage.setItem("lastSearchQuery", query);
+    }
+
+    return query;
+  };
+
+  const searchQuery = getSearchQuery();
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -40,7 +59,7 @@ const SearchResult = () => {
     };
 
     fetchSearchResults();
-  }, [searchQuery]);
+  }, [searchQuery, navigate]);
 
   if (isLoading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
