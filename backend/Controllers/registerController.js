@@ -66,17 +66,14 @@ export const register_complete = async (id, secret) => {
 
     console.log(`Finding temporary user with ID: ${id} and secret: ${secret}`);
     
-    // Log the ID and ensure it's converted to ObjectId correctly
-    console.log(`ID before conversion: ${id}`);
     let objectId;
     try {
       objectId = new ObjectId(id);
     } catch (error) {
       console.log("Error converting ID to ObjectId:", error);
       isVerifying[id] = false;
-      throw { status: 400, message: 'Invalid ID format.' };
+      return { status: 400, message: 'Invalid ID format.' };
     }
-    console.log(`ID after conversion to ObjectId: ${objectId}`);
 
     const tempUser = await db.collection(collections.TEMP).findOne({ _id: objectId, secret });
     console.log("Temporary user found:", tempUser);
@@ -84,7 +81,7 @@ export const register_complete = async (id, secret) => {
     if (!tempUser) {
       console.log("Invalid token or token has expired");
       isVerifying[id] = false;
-      throw { status: 400, message: 'Invalid token or token has expired.' };
+      return { status: 410, message: 'Verification link expired.' };
     }
 
     const { name, email, password } = tempUser;
@@ -92,7 +89,7 @@ export const register_complete = async (id, secret) => {
     if (existingUser) {
       console.log("User already exists in USER collection");
       isVerifying[id] = false;
-      return { status: 200, message: 'Email confirmed, you can now log in.' };
+      return { status: 410, message: 'Verification link expired.' };
     }
 
     console.log("Inserting user into USER collection...");
