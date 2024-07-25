@@ -165,7 +165,7 @@ const ArtistsDetailes = () => {
       return;
     }
     if (!isSubscribed) {
-      showSnackbar("You need an active or recently cancelled subscription to add songs to playlists", "error");
+      showSnackbar("You need an active subscription to add songs to playlists", "error");
       return;
     }
 
