@@ -63,6 +63,9 @@ const AccountSidebar = ({ onClose }) => {
   }, [auth]);
 
   const validatePassword = (password) => {
+    if (password.includes(' ')) {
+      return false;
+    }
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
     return regex.test(password);
   };
@@ -83,7 +86,9 @@ const AccountSidebar = ({ onClose }) => {
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-    if (newPassword && !validatePassword(newPassword)) {
+    if (newPassword.includes(' ')) {
+      setPasswordError("Password cannot contain spaces.");
+    } else if (newPassword && !validatePassword(newPassword)) {
       setPasswordError('Password must contain at least one capital letter, one number, one lowercase letter, one special character, and be at least 8 characters long.');
     } else {
       setPasswordError('');
