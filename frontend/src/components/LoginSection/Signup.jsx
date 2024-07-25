@@ -12,6 +12,7 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [nameError, setNameError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,9 +50,25 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
     return re.test(email);
   };
 
+  const handleNameChange = (e) => {
+    const newName = e.target.value;
+    setName(newName);
+    if (newName.trim() === "") {
+      setNameError("Name cannot be empty or consist only of spaces");
+    } else {
+      setNameError("");
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    if (name.trim() === "") {
+      setNameError("Name cannot be empty or consist only of spaces");
+      setIsLoading(false);
+      return;
+    }
 
     if (!validateEmail(email)) {
       setErrorMessage("Please enter a valid email address.");
@@ -60,7 +77,7 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
     }
 
     const data = {
-      name,
+      name: name.trim(),
       email,
       password,
     };
@@ -128,10 +145,11 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
               type="text"
               name="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={handleNameChange}
               className="login-form-box"
               required
             />
+            {nameError && <span className="error-message" style={{ color: "red" }}>{nameError}</span>}
           </label>
           <label className="login-form-label">
             Email
@@ -191,7 +209,7 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
             type="submit" 
             value={isLoading ? "PROCESSING..." : "SIGNUP"} 
             className="form-btn" 
-            disabled={isLoading}
+            disabled={isLoading || name.trim() === ""}
           />
           <span
             style={{
