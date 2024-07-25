@@ -21,13 +21,7 @@ router.post("/", async (req, res) => {
     });
   }
 
-  if (password !== rePassword) {
-    console.log("Password mismatch");
-    return res.status(422).json({
-      status: 422,
-      message: "Passwords do not match."
-    });
-  }
+  
 
   const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 

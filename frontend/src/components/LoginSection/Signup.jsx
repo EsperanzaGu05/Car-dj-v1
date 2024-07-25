@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FcGoogle } from 'react-icons/fc';  // Import the Google icon
+import { FcGoogle } from 'react-icons/fc';
 import "./LoginForm.css";
 
 const SignupForm = ({ onClose, onLoginSuccess }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rePassword, setRePassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [pwerror, setPwerror] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -45,12 +44,17 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
     }
   };
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (password !== rePassword) {
-      setErrorMessage("Passwords do not match.");
+    if (!validateEmail(email)) {
+      setErrorMessage("Please enter a valid email address.");
       setIsLoading(false);
       return;
     }
@@ -59,7 +63,6 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
       name,
       email,
       password,
-      rePassword,
     };
 
     try {
@@ -88,7 +91,6 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
         setName("");
         setEmail("");
         setPassword("");
-        setRePassword("");
         setTimeout(() => {
           setSuccessMessage("");
         }, 5000);
@@ -138,7 +140,6 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              pattern=".+@.+"
               className="login-form-box"
               required
             />
@@ -179,17 +180,6 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
               </button>
             </div>
             {pwerror && <span className="password-error">{pwerror}</span>}
-          </label>
-          <label className="login-form-label">
-            Re-enter Password{" "}
-            <input
-              type="password"
-              name="rePassword"
-              value={rePassword}
-              onChange={(e) => setRePassword(e.target.value)}
-              className="login-form-box"
-              required
-            />
           </label>
           {errorMessage && (
             <span className="error-message" style={{ color: "red" }}>

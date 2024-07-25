@@ -14,11 +14,11 @@ const SearchResult = () => {
   });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Get the search query from URL or localStorage
-  const getSearchQuery = () => {
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     let query = params.get("q");
     
@@ -31,10 +31,8 @@ const SearchResult = () => {
       localStorage.setItem("lastSearchQuery", query);
     }
 
-    return query;
-  };
-
-  const searchQuery = getSearchQuery();
+    setSearchQuery(query || "");
+  }, [location.search, navigate]);
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -44,7 +42,7 @@ const SearchResult = () => {
       setError(null);
       try {
         const data = await searchSpotify(searchQuery);
-        console.log("Search results:", data); // For debugging
+        console.log("Search results:", data);
         setSearchResults({
           tracks: data.tracks?.items || [],
           albums: data.albums?.items || [],
@@ -59,7 +57,7 @@ const SearchResult = () => {
     };
 
     fetchSearchResults();
-  }, [searchQuery, navigate]);
+  }, [searchQuery]);
 
   if (isLoading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
