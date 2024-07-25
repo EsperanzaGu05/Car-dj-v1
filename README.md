@@ -24,3 +24,11 @@ SPOTIFY_CLIENT_SECRET=
 SPOTIFY_CALLBACK_URL=
 
 STRIPE_SECRET_KEY=
+
+Next Step is npm install in Backend folder
+npm install in frontend folder 
+
+To run the Backend  -  npm start 
+
+To run the frontend - npm run dev 
+
