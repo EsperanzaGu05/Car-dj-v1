@@ -79,6 +79,10 @@ const AccountSidebar = ({ onClose }) => {
       setNameError('Name cannot start with a number');
       return false;
     }
+    if (/^[^a-zA-Z]/.test(name)) {
+      setNameError('Name cannot start with a special character');
+      return false;
+    }
     setNameError('');
     return true;
   };
