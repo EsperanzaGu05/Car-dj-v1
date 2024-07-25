@@ -18,6 +18,7 @@ const AccountSidebar = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [passwordError, setPasswordError] = useState('');
   const [originalName, setOriginalName] = useState('');
+  const [nameError, setNameError] = useState('');
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -66,6 +67,19 @@ const AccountSidebar = ({ onClose }) => {
     return regex.test(password);
   };
 
+  const validateName = (name) => {
+    if (name.trim() === '') {
+      setNameError('Name cannot be empty or consist only of spaces');
+      return false;
+    }
+    if (/^\d/.test(name)) {
+      setNameError('Name cannot start with a number');
+      return false;
+    }
+    setNameError('');
+    return true;
+  };
+
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -76,16 +90,26 @@ const AccountSidebar = ({ onClose }) => {
     }
   };
 
+  const handleNameChange = (e) => {
+    const newName = e.target.value;
+    setName(newName);
+    validateName(newName);
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setMessage('');
+
+    if (!validateName(name)) {
+      return;
+    }
 
     if (password && !validatePassword(password)) {
       setMessage('Please correct the password errors before updating.');
       return;
     }
 
-    const isNameChanged = name !== originalName;
+    const isNameChanged = name.trim() !== originalName.trim();
     const isPasswordChanged = password !== '';
 
     if (!isNameChanged && !isPasswordChanged) {
@@ -100,7 +124,7 @@ const AccountSidebar = ({ onClose }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${auth.token}`,
         },
-        body: JSON.stringify({ name, password }),
+        body: JSON.stringify({ name: name.trim(), password }),
       });
       const data = await response.json();
       
@@ -114,7 +138,7 @@ const AccountSidebar = ({ onClose }) => {
         } else {
           setMessage('No changes were made to your account.');
         }
-        setOriginalName(name);
+        setOriginalName(name.trim());
         setPassword('');
         setPasswordError('');
       } else {
@@ -149,9 +173,10 @@ const AccountSidebar = ({ onClose }) => {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameChange}
             required
           />
+          {nameError && <p className="error-message">{nameError}</p>}
         </div>
         <div className="form-group">
           <label>Email</label>
