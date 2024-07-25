@@ -40,10 +40,13 @@ router.put('/', authMiddleware, async (req, res) => {
     const updates = { name };
 
     if (password) {
-      // Check if the new password is the same as the current one
-      const isSamePassword = await bcrypt.compare(password, user.password);
-      if (isSamePassword) {
-        return res.status(400).json({ message: "New password must be different from the current password" });
+      // Check if the user has a password (not a Google-authenticated user)
+      if (user.password) {
+        // Check if the new password is the same as the current one
+        const isSamePassword = await bcrypt.compare(password, user.password);
+        if (isSamePassword) {
+          return res.status(400).json({ message: "New password must be different from the current password" });
+        }
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -80,7 +83,7 @@ router.get('/sub', authMiddleware, async (req, res) => {
       subscription: user.subscription || {} // Return an empty object if subscription is null
     });
   } catch (error) {
-    console.error('Error fetching user data:', error); // Add this line
+    console.error('Error fetching user data:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
