@@ -16,7 +16,7 @@ const SearchBar = ({ className, onSearch }) => {
 
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        console.log("Spoken words:", transcript); // Log the transcript to console
+        console.log("Spoken words:", transcript);
         setSearchQuery(transcript);
         setIsListening(false);
         handleSearch(null, transcript);
@@ -50,7 +50,7 @@ const SearchBar = ({ className, onSearch }) => {
 
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        console.log("Spoken words:", transcript); // Log the transcript to console
+        console.log("Spoken words:", transcript);
         setSearchQuery(transcript);
         setIsListening(false);
         handleSearch(null, transcript);
@@ -70,7 +70,11 @@ const SearchBar = ({ className, onSearch }) => {
   return (
     <div className={className}>
       <form id="search-section" onSubmit={handleSearch}>
-        <FaSearch className="search-icon" />
+        <FaSearch 
+          className="search-icon" 
+          onClick={() => handleSearch(null)}
+          style={{ cursor: 'pointer' }}
+        />
         <input
           type="text"
           placeholder="Search..."

@@ -21,14 +21,6 @@ router.post("/", async (req, res) => {
     });
   }
 
-  if (password !== rePassword) {
-    console.log("Password mismatch");
-    return res.status(422).json({
-      status: 422,
-      message: "Passwords do not match."
-    });
-  }
-
   const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
   if (!email.match(validRegex)) {
@@ -145,6 +137,12 @@ router.post("/pending", async (req, res) => {
       if (response.status === 200) {
         console.log(`User registration completed for ID: ${id}`);
         return res.status(200).json(response);
+      } else if (response.status === 410) {
+        console.log(`Verification link expired for ID: ${id}`);
+        return res.status(410).json({
+          status: 410,
+          message: "Verification link expired",
+        });
       } else {
         console.log(`Error completing registration: ${response.message}`);
         return res.status(response.status).json(response);

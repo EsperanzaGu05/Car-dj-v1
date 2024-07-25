@@ -21,11 +21,12 @@ router.post('/request', async (req, res) => {
     const token = crypto.randomBytes(20).toString('hex');
     const expireAt = Date.now() + 3600000; // 1 hour
 
-    await db.collection(collections.TEMP).insertOne({
-      email,
-      token,
-      expireAt
-    });
+    // Update the existing document or insert a new one
+    await db.collection(collections.TEMP).updateOne(
+      { email },
+      { $set: { token, expireAt } },
+      { upsert: true }
+    );
 
     const emailTemplatePath = path.resolve(`${path.dirname("")}/mail/static/resetPassword.html`);
     const html = await fs.promises.readFile(emailTemplatePath, "utf-8");
