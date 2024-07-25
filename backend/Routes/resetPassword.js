@@ -1,4 +1,3 @@
-// reset.js
 import express from 'express';
 import bcrypt from 'bcrypt';
 import { getDB } from '../Database/connection.js';
@@ -14,7 +13,7 @@ router.get('/:token', async (req, res) => {
   try {
     const tempUser = await db.collection(collections.TEMP).findOne({ token });
     if (!tempUser || tempUser.expireAt < Date.now()) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'Link is Expired' });
     }
 
     res.status(200).json({ email: tempUser.email });
@@ -33,7 +32,22 @@ router.post('/:token', async (req, res) => {
     const tempUser = await db.collection(collections.TEMP).findOne({ token });
 
     if (!tempUser || tempUser.expireAt < Date.now()) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'Link is Expired' });
+    }
+
+    // Validate password
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.' });
+    }
+
+    // Check if the new password is different from the current one
+    const user = await db.collection(collections.USER).findOne({ email: tempUser.email });
+    if (user && user.password) {
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      if (isSamePassword) {
+        return res.status(400).json({ message: 'New password must be different from the current password' });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

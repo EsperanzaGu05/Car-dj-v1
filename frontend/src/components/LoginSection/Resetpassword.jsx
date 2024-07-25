@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Popup from "./Popups";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./ResetPassword.css";
 
 const ResetPassword = () => {
@@ -10,6 +11,8 @@ const ResetPassword = () => {
   const [rePassword, setRePassword] = useState("");
   const [message, setMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRePassword, setShowRePassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,10 +34,21 @@ const ResetPassword = () => {
     fetchEmail();
   }, [token]);
 
+  const validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/;
+    return regex.test(password);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== rePassword) {
       setMessage("Passwords do not match.");
+      setShowPopup(true);
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setMessage("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
       setShowPopup(true);
       return;
     }
@@ -69,6 +83,7 @@ const ResetPassword = () => {
   return (
     <div className="reset-password-container">
       <form onSubmit={handleSubmit} className="reset-password-form">
+        <h2>Car DJ </h2>
         <h2>Reset Password</h2>
         <label>
           Email
@@ -80,21 +95,39 @@ const ResetPassword = () => {
         </label>
         <label>
           New Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="password-input-container">
+  <input
+    type={showPassword ? "text" : "password"}
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
+  <button
+    type="button"
+    className="password-toggle"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </button>
+</div>
         </label>
         <label>
           Confirm Password
-          <input
-            type="password"
-            value={rePassword}
-            onChange={(e) => setRePassword(e.target.value)}
-            required
-          />
+          <div className="password-input-container">
+            <input
+              type={showRePassword ? "text" : "password"}
+              value={rePassword}
+              onChange={(e) => setRePassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowRePassword(!showRePassword)}
+            >
+              {showRePassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
         </label>
         <input type="submit" value="Update Password" />
       </form>
