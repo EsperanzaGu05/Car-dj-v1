@@ -32,13 +32,20 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
   }, [onClose]);
 
   const handlePasswordChange = (e) => {
-    setPassword(e);
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    if (newPassword.includes(' ')) {
+      setPwerror("Don't put spaces between, before, or after the password.");
+      return;
+    }
+
     const passwordRegex = new RegExp(
-      "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\s0-9]).{8,}$"
+      "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^\w\d]).{8,}$"
     );
-    if (!passwordRegex.test(e)) {
+    if (!passwordRegex.test(newPassword)) {
       setPwerror(
-        "Password should have letter, capital letter, digit and special character and minimum 8 in length"
+        "Password should have letter, capital letter, digit and special character and minimum 8 in length."
       );
     } else {
       setPwerror("");
@@ -72,6 +79,12 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
 
     if (!validateEmail(email)) {
       setErrorMessage("Please enter a valid email address.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (pwerror) {
+      setErrorMessage("Please correct the password errors before submitting.");
       setIsLoading(false);
       return;
     }
@@ -168,7 +181,7 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => handlePasswordChange(e.target.value)}
+                onChange={handlePasswordChange}
                 name="password"
                 className="login-form-box"
                 style={{
@@ -209,7 +222,7 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
             type="submit" 
             value={isLoading ? "PROCESSING..." : "SIGNUP"} 
             className="form-btn" 
-            disabled={isLoading || name.trim() === ""}
+            disabled={isLoading || name.trim() === "" || pwerror !== ""}
           />
           <span
             style={{
