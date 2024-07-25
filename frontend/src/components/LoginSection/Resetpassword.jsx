@@ -11,6 +11,7 @@ const ResetPassword = () => {
   const [message, setMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [passwordMatchError, setPasswordMatchError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +42,7 @@ const ResetPassword = () => {
     const newPassword = e.target.value.replace(/\s/g, ''); // Remove spaces
     if (isConfirm) {
       setRePassword(newPassword);
+      setPasswordMatchError(newPassword !== password ? "Passwords do not match." : "");
     } else {
       setPassword(newPassword);
       if (!validatePassword(newPassword)) {
@@ -48,6 +50,7 @@ const ResetPassword = () => {
       } else {
         setPasswordError("");
       }
+      setPasswordMatchError(newPassword !== rePassword ? "Passwords do not match." : "");
     }
   };
 
@@ -122,8 +125,13 @@ const ResetPassword = () => {
             onChange={(e) => handlePasswordChange(e, true)}
             required
           />
+          {passwordMatchError && <p className="error-message">{passwordMatchError}</p>}
         </label>
-        <input type="submit" value="Update Password" disabled={!!passwordError} />
+        <input 
+          type="submit" 
+          value="Update Password" 
+          disabled={!!passwordError || !!passwordMatchError} 
+        />
       </form>
       {showPopup && <Popup message={message} onClose={() => setShowPopup(false)} />}
     </div>
