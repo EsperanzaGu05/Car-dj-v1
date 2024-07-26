@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, { useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentTrack } from "../Player/playlistSlice";
 import AudioPlayer from 'react-h5-audio-player';
@@ -11,10 +11,6 @@ const PlayerApp = () => {
   const playlist = useSelector((state) => state.playlist.playlist || []);
   const trackId = useSelector((state) => state.playlist.trackid || 0);
   const dispatch = useDispatch();
-
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const playerRef = useRef(null);
 
   const handleClickNext = () => {
     if (!auth || !playlist.length) return;
@@ -34,72 +30,10 @@ const PlayerApp = () => {
     dispatch(setCurrentTrack(newTrackId));
   };
 
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    const rect = playerRef.current.getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const newX = e.clientX - dragOffset.x;
-    const newY = e.clientY - dragOffset.y;
-    playerRef.current.style.left = `${newX}px`;
-    playerRef.current.style.bottom = `${window.innerHeight - newY - playerRef.current.offsetHeight}px`;
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    setIsDragging(true);
-    const rect = playerRef.current.getBoundingClientRect();
-    setDragOffset({
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top
-    });
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    const newX = touch.clientX - dragOffset.x;
-    const newY = touch.clientY - dragOffset.y;
-    playerRef.current.style.left = `${newX}px`;
-    playerRef.current.style.bottom = `${window.innerHeight - newY - playerRef.current.offsetHeight}px`;
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [isDragging, dragOffset]);
-
   const currentTrack = playlist.length > 0 && playlist[trackId] ? playlist[trackId] : null;
 
   return (
-    <div 
-      ref={playerRef}
-      className="player-container"
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
-    >
+    <div className="player-container">
       <div className="flex-container">
         <div className="left-section">
           {currentTrack ? currentTrack.name : "No track selected"}

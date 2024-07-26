@@ -60,8 +60,13 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
   const handleNameChange = (e) => {
     const newName = e.target.value;
     setName(newName);
+    
     if (newName.trim() === "") {
       setNameError("Name cannot be empty or consist only of spaces");
+    } else if (/^[0-9]/.test(newName)) {
+      setNameError("Name cannot start with a number");
+    } else if (/^[^a-zA-Z]/.test(newName)) {
+      setNameError("Name cannot start with a special character");
     } else {
       setNameError("");
     }
@@ -152,77 +157,86 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
         </span>
         <h3 id="login-title">Register</h3>
         <form onSubmit={handleSignup}>
-          <label className="login-form-label">
-            Name
-            <input
-              type="text"
-              name="name"
-              value={name}
-              onChange={handleNameChange}
-              className="login-form-box"
-              required
-            />
-            {nameError && <span className="error-message" style={{ color: "red" }}>{nameError}</span>}
-          </label>
-          <label className="login-form-label">
-            Email
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="login-form-box"
-              required
-            />
-          </label>
-          <label className="login-form-label">
-            Password{" "}
-            <div id="password-input">
+          <div style={{ marginBottom: '20px' }}>
+            <label className="login-form-label">
+              Name
               <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={handlePasswordChange}
-                name="password"
+                type="text"
+                name="name"
+                value={name}
+                onChange={handleNameChange}
                 className="login-form-box"
-                style={{
-                  width: "330px",
-                  padding: "0px",
-                  margin: "0px",
-                  border: "none",
-                }}
                 required
               />
-              <button
-                type="button"
-                id="show-password"
-                onClick={() => setShowPassword((prev) => !prev)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                <img
-                  src={showPassword ? "./src/assets/hide.png" : "./src/assets/view.png"}
-                  width="18px"
-                  height="18px"
-                  alt="Toggle password visibility"
+            </label>
+            {nameError && (
+              <span className="error-message" style={{ color: "red", display: "block", marginTop: "5px" }}>
+                {nameError}
+              </span>
+            )}
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <label className="login-form-label">
+              Email
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="login-form-box"
+                required
+              />
+            </label>
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <label className="login-form-label">
+              Password{" "}
+              <div id="password-input">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={handlePasswordChange}
+                  name="password"
+                  className="login-form-box"
+                  style={{
+                    width: "330px",
+                    padding: "0px",
+                    margin: "0px",
+                    border: "none",
+                  }}
+                  required
                 />
-              </button>
-            </div>
-            {pwerror && <span className="password-error">{pwerror}</span>}
-          </label>
+                <button
+                  type="button"
+                  id="show-password"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  <img
+                    src={showPassword ? "./src/assets/hide.png" : "./src/assets/view.png"}
+                    width="18px"
+                    height="18px"
+                    alt="Toggle password visibility"
+                  />
+                </button>
+              </div>
+              {pwerror && <span className="password-error" style={{ display: "block", marginTop: "5px" }}>{pwerror}</span>}
+            </label>
+          </div>
           {errorMessage && (
-            <span className="error-message" style={{ color: "red" }}>
+            <span className="error-message" style={{ color: "red", display: "block", marginBottom: "10px" }}>
               {errorMessage}
             </span>
           )}
-          <br />
           <input 
             type="submit" 
             value={isLoading ? "PROCESSING..." : "SIGNUP"} 
             className="form-btn" 
-            disabled={isLoading || name.trim() === "" || pwerror !== ""}
+            disabled={isLoading || name.trim() === "" || pwerror !== "" || nameError !== ""}
           />
           <span
             style={{
@@ -231,6 +245,7 @@ const SignupForm = ({ onClose, onLoginSuccess }) => {
               display: "flex",
               justifyContent: "center",
               fontWeight: 700,
+              margin: "10px 0",
             }}
           >
             OR

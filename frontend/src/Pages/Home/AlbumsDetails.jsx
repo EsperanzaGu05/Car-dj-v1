@@ -69,19 +69,56 @@ const AlbumsDetails = () => {
     }
   }, [id]);
 
-  const updatePlayerStatus = (track, index) => {
+  const fetchSongDetails = async (songId) => {
+    console.log("Fetching song details for ID:", songId);
+
+    if (!songId) {
+      console.error("No song ID provided");
+      showSnackbar("Error: No song ID available", "error");
+      return null;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/spotify/fetchSong?id=${songId}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to fetch song details:", response.status, errorData);
+        throw new Error(errorData.error || "Failed to fetch song details");
+      }
+
+      const data = await response.json();
+      console.log("Fetched song details:", data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching song details:", error.message);
+      showSnackbar(`Error fetching song details: ${error.message}`, "error");
+      return null;
+    }
+  };
+
+  const updatePlayerStatus = async (track, index) => {
     if (!track || !track.preview_url) {
       console.error('Track or preview_url is not available');
       return;
     }
 
-    dispatch(setCurrentPlaylist(albumTracks.currentTracks));
-    dispatch(setCurrentTrack(index));
+    const songDetails = await fetchSongDetails(track.id);
+    if (songDetails) {
+      dispatch(setCurrentPlaylist([songDetails]));
+      dispatch(setCurrentTrack(0));
+    } else {
+      showSnackbar("Failed to fetch song details", "error");
+    }
   };
 
-  const handlePlayAlbum = () => {
+  const handlePlayAlbum = async () => {
     if (albumTracks.currentTracks && albumTracks.currentTracks.length > 0) {
-      updatePlayerStatus(albumTracks.currentTracks[0], 0);
+      const playlistSongs = await Promise.all(
+        albumTracks.currentTracks.map(track => fetchSongDetails(track.id))
+      );
+      dispatch(setCurrentPlaylist(playlistSongs.filter(Boolean)));
+      dispatch(setCurrentTrack(0));
     }
   };
 
@@ -120,6 +157,12 @@ const AlbumsDetails = () => {
       return;
     }
 
+    const songDetails = await fetchSongDetails(selectedTrack.id);
+    if (!songDetails) {
+      showSnackbar("Failed to fetch song details", "error");
+      return;
+    }
+
     try {
       const response = await fetch(
         `http://localhost:5000/api/user/playlists/${playlistId}/songs`,
@@ -130,10 +173,11 @@ const AlbumsDetails = () => {
             Authorization: `Bearer ${auth.token}`,
           },
           body: JSON.stringify({
-            songId: selectedTrack.id,
-            songName: selectedTrack.name,
-            artist: albumTracks.artist,
-            imageUrl: albumTracks.image,
+            songId: songDetails.id,
+            songName: songDetails.name,
+            artist: songDetails.artists[0].name,
+            imageUrl: songDetails.album.images[0].url,
+            preview_url: songDetails.preview_url,
           }),
         }
       );
@@ -292,7 +336,7 @@ const AlbumsDetails = () => {
               ))}
             </List>
           ) : (
-            <p>You need an active or recently cancelled subscription to add songs to playlists.</p>
+            <p>You need an active  subscription to add songs to playlists.</p>
           )}
         </DialogContent>
       </Dialog>

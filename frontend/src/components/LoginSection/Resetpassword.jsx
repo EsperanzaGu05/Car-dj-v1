@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Popup from "./Popups";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./ResetPassword.css";
 
 const ResetPassword = () => {
@@ -11,8 +10,8 @@ const ResetPassword = () => {
   const [rePassword, setRePassword] = useState("");
   const [message, setMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showRePassword, setShowRePassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordMatchError, setPasswordMatchError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,8 +34,24 @@ const ResetPassword = () => {
   }, [token]);
 
   const validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[^\s]{8,}$/;
     return regex.test(password);
+  };
+
+  const handlePasswordChange = (e, isConfirm = false) => {
+    const newPassword = e.target.value.replace(/\s/g, ''); // Remove spaces
+    if (isConfirm) {
+      setRePassword(newPassword);
+      setPasswordMatchError(newPassword !== password ? "Passwords do not match." : "");
+    } else {
+      setPassword(newPassword);
+      if (!validatePassword(newPassword)) {
+        setPasswordError("Password must contain at least one lowercase letter, one uppercase letter, one number, one special character, be at least 8 characters long, and contain no spaces.");
+      } else {
+        setPasswordError("");
+      }
+      setPasswordMatchError(newPassword !== rePassword ? "Passwords do not match." : "");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -48,7 +63,7 @@ const ResetPassword = () => {
     }
 
     if (!validatePassword(password)) {
-      setMessage("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+      setMessage("Password does not meet the requirements.");
       setShowPopup(true);
       return;
     }
@@ -83,7 +98,6 @@ const ResetPassword = () => {
   return (
     <div className="reset-password-container">
       <form onSubmit={handleSubmit} className="reset-password-form">
-        <h2>Car DJ </h2>
         <h2>Reset Password</h2>
         <label>
           Email
@@ -95,41 +109,29 @@ const ResetPassword = () => {
         </label>
         <label>
           New Password
-          <div className="password-input-container">
-  <input
-    type={showPassword ? "text" : "password"}
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-  />
-  <button
-    type="button"
-    className="password-toggle"
-    onClick={() => setShowPassword(!showPassword)}
-  >
-    {showPassword ? <FaEyeSlash /> : <FaEye />}
-  </button>
-</div>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => handlePasswordChange(e)}
+            required
+          />
+          {passwordError && <p className="error-message">{passwordError}</p>}
         </label>
         <label>
           Confirm Password
-          <div className="password-input-container">
-            <input
-              type={showRePassword ? "text" : "password"}
-              value={rePassword}
-              onChange={(e) => setRePassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              className="password-toggle"
-              onClick={() => setShowRePassword(!showRePassword)}
-            >
-              {showRePassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
+          <input
+            type="password"
+            value={rePassword}
+            onChange={(e) => handlePasswordChange(e, true)}
+            required
+          />
+          {passwordMatchError && <p className="error-message">{passwordMatchError}</p>}
         </label>
-        <input type="submit" value="Update Password" />
+        <input 
+          type="submit" 
+          value="Update Password" 
+          disabled={!!passwordError || !!passwordMatchError} 
+        />
       </form>
       {showPopup && <Popup message={message} onClose={() => setShowPopup(false)} />}
     </div>
