@@ -3,6 +3,7 @@ import collections from '../Database/collections.js';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { ObjectId } from 'mongodb';
+import cron from 'node-cron';
 
 dotenv.config();
 
@@ -11,17 +12,33 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const checkSubscriptionStatus = async (userId) => {
   const db = getDB();
   const user = await db.collection(collections.USER).findOne({ _id: new ObjectId(userId) });
-  
+
   if (user && user.subscription) {
     const now = new Date();
-    if (now > user.subscription.endDate) {
+    const endDate = new Date(user.subscription.endDate);
+
+    console.log(`Checking subscription status for user ${userId}`);
+    console.log(`Current date: ${now}`);
+    console.log(`Subscription end date: ${endDate}`);
+
+    if (now > endDate) {
+      console.log('Subscription has expired');
       if (user.subscription.status === 'Subscribed' || user.subscription.status === 'Cancelled') {
-        await db.collection(collections.USER).updateOne(
+        const result = await db.collection(collections.USER).updateOne(
           { _id: new ObjectId(userId) },
           { $set: { 'subscription.status': 'Expired' } }
         );
+
+        if (result.modifiedCount > 0) {
+          console.log('Subscription status updated to Expired');
+        } else {
+          console.error('Failed to update subscription status to Expired');
+        }
+
         return 'Expired';
       }
+    } else {
+      console.log('Subscription is still active');
     }
     return user.subscription.status;
   }
@@ -215,3 +232,19 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
+
+const updateAllSubscriptions = async () => {
+  const db = getDB();
+  const users = await db.collection(collections.USER).find({}).toArray();
+
+  for (const user of users) {
+    await checkSubscriptionStatus(user._id);
+  }
+};
+// Schedule to run every day at 9:18 PM
+cron.schedule('18 21 * * *', () => {
+  console.log('Running daily subscription status update at 9:18 PM');
+  updateAllSubscriptions()
+    .then(() => console.log('Subscription statuses updated successfully'))
+    .catch(err => console.error('Error updating subscription statuses:', err));
+});
