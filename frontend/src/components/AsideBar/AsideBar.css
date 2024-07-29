@@ -137,3 +137,38 @@ aside {
 .my-playlist-button:hover {
     background-color: #0056b3;
 }
+.contact-us {
+    margin-top: 20px;
+    background-color: #f5f5f6; /* Grey background */
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .contact-us ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 15px; /* Space between icons */
+    justify-content: center; /* Center align icons */
+  }
+  
+  .contact-us li {
+    display: flex;
+    align-items: center;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  .icon {
+    color: #007bff; /* Change to your preferred color */
+    font-size: 20px; /* Adjust size as needed */
+  }
+  
+  .icon:hover {
+    opacity: 0.8; /* Slight darkening on hover */
+  }
+  
